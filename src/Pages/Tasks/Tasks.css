@@ -1,0 +1,64 @@
+:root {
+  --text-color: white;
+  --font-family: "Rubik", serif;
+  --green-color: #c4f85c;
+  --container-color: #1c1c1e;
+  --container-color-two: #b9bbbc;
+  --background-color: #000000;
+  --purple-color: #7685f7;
+  --blue-color: #0098EA;
+  --blue-another-color: #1d71d1;
+}
+
+html, .bodytaskspage {
+  width: 100%; 
+  min-height: 100vh;
+  margin: 0; 
+  padding: 0;
+  flex-direction: column;
+}
+
+.bodytaskspage {
+  margin: 0;
+  height: 100vh;
+  width: 100vw;
+  background: var(--background-color); 
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+.button-container-tasks {
+  font-family: var(--font-family);
+  border-radius: 25px;
+  background-color: #0f0f0f;
+  margin-top: 20px;
+  display: flex; 
+}
+.button-container-tasks button {
+  font-size: 14px;
+  width: 120px;
+  height: 40px;
+  flex: 1; 
+  border: none; 
+  padding: 10px; 
+  cursor: pointer; 
+  background-color: #0f0f0f; 
+  color: var(--text-color); 
+  transition: background-color 0.3s ease, color 0.3s ease; 
+}
+
+.button-container-tasks button.active {
+  background-color: var(--green-color); 
+  color: var(--background-color); 
+}
+
+.button-container-tasks button:not(.active) {
+  background-color: #0f0f0f; 
+  color: var(--text-color); 
+}

@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
+:root {
+  --text-color: white;
+  --font-family: "Rubik", serif;
+  --green-color: #c4f85c;
+  --container-color: #1c1c1e;
+  --container-color-two: #b9bbbc;
+  --background-color: #000000;
+  --purple-color: #7685f7;
+  --blue-color: #0098EA;
+  --blue-another-color: #1d71d1;
+}
+
+.html-home, .bodyhomepage {
+  width: 100%; 
+  min-height: 100vh;
+  margin: 0; 
+  padding: 0;
+  flex-direction: column;
+}
+
+.bodyhomepage {
+  flex: 1;
+  margin: 0;
+  height: 100vh;
+  width: 100vw;
+  background: var(--background-color); 
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+.UserNameTG {
+  font-size: 16px;
+}
+
+.UserContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; 
+  text-align: center; 
+}
+
+.points-count {
+  font-family: var(--font-family);
+  font-size: 45px;
+  margin: 30px 0; 
+  color: var(--green-color);
+}
+
+.ButtonGroup {
+  margin-top: 25px;
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center;
+  gap: 15px;
+}
+
+.FarmButton {
+  text-align: center;
+  font-family: var(--font-family);
+  background: var(--green-color); 
+  color: var(--background-color);
+  padding: 10px;
+  border-radius: 15px;
+  width: 360px;
+  height: 55px;
+  font-size: 16px;
+  border: none; 
+}

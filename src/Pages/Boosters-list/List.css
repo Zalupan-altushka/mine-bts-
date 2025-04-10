@@ -1,0 +1,174 @@
+:root {
+  --text-color: white;
+  --font-family: "Rubik", serif;
+  --green-color: #c4f85c;
+  --container-color: #1c1c1e;
+  --container-color-two: #b9bbbc;
+  --background-color: #000000;
+  --purple-color: #7685f7;
+  --blue-color: #0098EA;
+  --blue-another-color: #1d71d1;
+}
+
+html, .listbody {
+  width: 100%; 
+  margin: 0; 
+  padding: 0;
+  flex-direction: column;
+  background-color: var(--background-color);
+  min-height: 100vh;
+}
+
+.listbody {
+  margin: 0;
+  width: 100vw;
+  background-color: var(--background-color);
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+}
+
+.lists-container {
+  margin-top: 20px;
+  display: flex; 
+  gap: 20px; 
+}
+
+.boosters-list-ton {
+  font-family: var(--font-family);
+  background: linear-gradient(45deg, var(--blue-another-color), var(--container-color));
+  width: 330px; 
+  height: 215px; 
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+  padding: 15px; 
+  border-radius: 25px; 
+}
+
+.boosters-list-prm {
+  font-family: var(--font-family);
+  background: linear-gradient(45deg, var(--container-color), var(--purple-color)); 
+  width: 140px; 
+  height: 215px; 
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+  padding: 15px; 
+  border-radius: 25px; 
+}
+
+.boosters-list-center {
+  font-family: var(--font-family);
+  background: linear-gradient(45deg, var(--container-color), var(--blue-another-color)); 
+  width: 140px; 
+  height: 215px; 
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+  padding: 15px; 
+  border-radius: 25px; 
+}
+
+.boosters-list-ETH {
+  font-family: var(--font-family);
+  background: linear-gradient(45deg, var(--container-color), var(--container-color-two)); 
+  width: 140px; 
+  height: 215px; 
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+  padding: 15px; 
+  border-radius: 25px; 
+}
+
+.boosters-list-BTS {
+  font-family: var(--font-family);
+  background: linear-gradient(45deg, var(--container-color) , gold); 
+  width: 140px; 
+  height: 215px; 
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+  padding: 15px; 
+  border-radius: 25px; 
+}
+
+.hight-section-list {
+  color: var(--text-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center; 
+}
+
+.mid-section-list {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  flex-grow: 1; 
+  font-size: 20px;
+}
+
+.footer-section-list {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; 
+}
+
+.ListButtonTon {
+  background: linear-gradient(45deg, var(--blue-color), var(--container-color-two));
+  color: var(--background-color);
+  font-size: 12px;
+  border-radius: 25px;
+  border: none;
+  box-shadow: 0 0 15px var(--blue-color), 0 0 25px var(--container-color-two);
+}
+
+.ListButtonPrm {
+  background: linear-gradient(45deg, var(--purple-color), var(--container-color-two));
+  color: var(--background-color);
+  font-size: 12px;
+  border-radius: 25px;
+  border: none;
+  box-shadow: 0 0 15px var(--purple-color), 0 0 25px var(--container-color-two);
+}
+
+.ListButtonCenter {
+  background: linear-gradient(45deg, var(--blue-another-color), var(--container-color-two));
+  color: var(--background-color);
+  font-size: 12px;
+  border-radius: 25px;
+  border: none;
+  box-shadow: 0 0 15px var(--blue-another-color), 0 0 25px var(--container-color-two);
+}
+
+.ListButtonBTC {
+  background: linear-gradient(45deg, gold, orange);
+  color: var(--background-color);
+  font-size: 12px;
+  border-radius: 25px;
+  border: none;
+  box-shadow: 0 0 15px gold , 0 0 25px orange;
+}
+
+.ListButtonETH {
+  background: linear-gradient(45deg, var(--background-color), var(--text-color));
+  color: var(--background-color);
+  font-size: 12px;
+  border-radius: 25px;
+  border: none;
+  box-shadow: 0 0 15px var(--background-color) , 0 0 25px var(--text-color);
+}
+
+
+.text-power {
+  color: var(--container-color-two);
+  font-size: 12px;
+}
+
+.text-power-hr-ton, .text-power-hr-star, .text-power-hr-center, .text-power-hr-bts {
+  font-size: 15px;
+  color: var(--text-color);
+}

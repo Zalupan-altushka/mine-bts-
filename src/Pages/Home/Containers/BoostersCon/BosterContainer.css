@@ -1,0 +1,28 @@
+
+.boost-container {
+  margin-top: 20px;
+  width: 320px;
+  border-radius: 15px;
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+  background-color: #0f0f0f;
+  padding: 20px; 
+}
+
+.mid-left-section {
+  color: var(--text-color);
+  font-size: 15px;
+  display: flex; 
+  flex-direction: column; 
+  align-items: flex-start; 
+}
+
+.boost-go-button {
+  margin-top: 10px;
+  border-radius: 25px;
+  font-size: 14px;
+  color: var(--background-color);
+  background-color: var(--text-color);
+  box-shadow: 0 0 15px var(--text-color), 0 0 25px var(--container-color);
+}

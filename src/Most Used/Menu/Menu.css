@@ -1,0 +1,38 @@
+:root {
+  --text-color: white;
+  --font-family: "Rubik", serif;
+  --green-color: #c4f85c;
+  --container-color: #1c1c1e;
+  --container-color-two: #b9bbbc;
+  --background-color: #000000;
+  --purple-color: #7685f7;
+  --blue-color: #0098EA;
+  --blue-another-color: #1d71d1;
+}
+
+.menu {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.8); /* Полупрозрачный фон */
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+  z-index: 1000; /* Убедитесь, что z-index достаточно высок */
+  border-top: 1px solid var(--container-color-two);
+  backdrop-filter: blur(10px); /* Размытие фона под меню (опционально) */
+}
+
+.menu-item {
+  display: flex; /* Use flexbox to align items */
+  flex-direction: column; /* Stack icon and text vertically */
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.Name {
+  font-weight: bold;
+  font-size: 12px;
+  font-family: var(--font-family);
+}

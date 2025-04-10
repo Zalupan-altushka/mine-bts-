@@ -1,0 +1,87 @@
+:root {
+  --text-color: white;
+  --font-family: "Rubik", serif;
+  --green-color: #c4f85c;
+  --container-color: #1c1c1e;
+  --container-color-two: #b9bbbc;
+  --background-color: #000000;
+  --purple-color: #7685f7;
+  --blue-color: #0098EA;
+  --blue-another-color: #1d71d1;
+}
+
+html, .bodyfriendspage {
+  width: 100%; 
+  min-height: 100vh; 
+  margin: 0; 
+  padding: 0;
+  flex-direction: column;
+}
+
+.bodyfriendspage {
+  margin: 0;
+  height: 100vh;
+  width: 100vw;
+  background: var(--background-color);
+  display: flex;
+  text-align: left;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+.Invite-button {
+  text-align: center;
+  font-family: var(--font-family);
+  background: var(--green-color); 
+  color: var(--background-color);
+  padding: 10px;
+  border-radius: 15px;
+  width: 360px;
+  height: 55px;
+  border: none; 
+}
+
+.Container-button {
+  margin-top: 35px;
+}
+ 
+.reward-section-fr {
+  width: 320px;
+  margin-top: 20px;
+  display: flex; /* Используем Flexbox для расположения элементов */
+  justify-content: space-between; /* Размещаем элементы по краям */
+  align-items: center; /* Выравниваем элементы по центру по вертикали */
+  background-color: #0f0f0f; /* Устанавливаем фоновый цвет */
+  padding: 20px; /* Добавляем отступы */
+  border-radius: 15px; /* Закругляем углы */
+}
+
+.left-section-reward-fr {
+  gap: 15px;
+  display: flex; /* Используем Flexbox для вертикального расположения элементов */
+  flex-direction: column; /* Устанавливаем вертикальное направление */
+}
+
+.title-total-frends {
+  font-size: 15px; /* Размер шрифта для заголовка */
+  font-weight: bold; /* Жирный шрифт */
+}
+
+.span-reward-fr {
+  padding: 10px;
+  border-radius: 20px;
+  justify-content: center;
+  text-align: center;
+  background-color: var(--container-color);
+  font-size: 24px; /* Размер шрифта для суммы вознаграждения */
+  color: var(--green-color); /* Цвет текста для суммы вознаграждения */
+}
+
+.span-about-fr {
+  color: var(--container-color-two);
+  font-size: 14px;
+}

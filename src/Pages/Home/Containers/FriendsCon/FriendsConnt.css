@@ -1,0 +1,43 @@
+:root {
+  --text-color: white;
+  --font-family: "Rubik", serif;
+  --green-color: #c4f85c;
+  --container-color: #1c1c1e;
+  --container-color-two: #b9bbbc;
+  --background-color: #000000;
+  --purple-color: #7685f7;
+  --blue-color: #0098EA;
+  --blue-another-color: #1d71d1;
+}
+
+.friends-container {
+  border-radius: 15px;
+  width: 320px;
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between; 
+  align-items: center; 
+  background-color: #0f0f0f; 
+  padding: 20px; 
+}
+
+.left-section-gif {
+  flex: 0 0 auto; 
+}
+
+.mid-right-section {
+  font-size: 15px;
+  display: flex;
+  text-align: left;
+  flex-direction: column;
+  align-items: center;
+}
+
+.invite-home-button {
+  width: 230px;
+  margin-top: 10px;
+  border-radius: 25px;
+  background-color: var(--green-color);
+  color: var(--background-color);
+  box-shadow: 0 0 15px var(--green-color), 0 0 15px var(--container-color-two);
+}

@@ -1,0 +1,45 @@
+.section-total {
+  margin-top: 20px;
+  border-radius: 15px;
+  width: 340px;
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  background-color: #0f0f0f; 
+  padding: 10px; 
+}
+
+.left-section-gif-fr {
+  flex: 0 0 auto; 
+}
+
+.mid-section-text-fr {
+  font-size: 15px;
+  margin-right: 110px;
+  margin-left: 5px;
+  display: flex; 
+  flex-direction: column; 
+  align-items: flex-start; 
+}
+
+.second-span {
+  color: var(--container-color-two);
+}
+
+.right-section-total-fr {
+  margin-left: 10px;
+  flex: 0 0 auto;
+}
+
+.span-count {
+  display: flex; /* Use flex to center the text */
+  align-items: center; /* Center vertically */
+  justify-content: center; /* Center horizontally */
+  width: 36px; /* Set a fixed width */
+  height: 36px; /* Set a fixed height */
+  background-color: var(--green-color); /* Set your desired background color */
+  border-radius: 50%; /* Make it circular */
+  color: var(--background-color); /* Set text color */
+  font-weight: bold; /* Optional: make the text bold */
+  box-shadow: 0 0 10px var(--green-color), 0 0 10px var(--container-color-two);
+}

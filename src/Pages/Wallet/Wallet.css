@@ -1,0 +1,51 @@
+:root {
+  --text-color: white;
+  --font-family: "Rubik", serif;
+  --green-color: #c4f85c;
+  --container-color: #1c1c1e;
+  --container-color-two: #b9bbbc;
+  --background-color: #000000;
+  --purple-color: #7685f7;
+  --blue-color: #0098EA;
+  --blue-another-color: #1d71d1;
+  --black-colot-two: #0f0f0f;
+}
+
+html, .bodywalletpage {
+  width: 100%; 
+  min-height: 100vh;
+  margin: 0; 
+  padding: 0;
+  flex-direction: column;
+}
+
+.bodywalletpage {
+  flex: 1;
+  margin: 0;
+  height: 100vh;
+  width: 100vw;
+  background: var(--background-color); 
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+.content-section {
+  background: linear-gradient(to top, #326381 -200%, var(--background-color) 100%); /* Gradient from bottom to top */
+  border-radius: 0 0 50px 50px; /* Rounded corners at the bottom */
+  padding: 20px; /* Add padding as desired */
+  width: 340px;
+  height: 550px;
+  display: flex; /* Enable flexbox */
+  flex-direction: column; /* Stack children vertically */
+  align-items: center; /* Center children horizontally */
+  justify-content: center; /* Center children vertically (optional) */
+}
+
+.balanc-margin {
+  margin-top: 20px;
+}

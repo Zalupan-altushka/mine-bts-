@@ -1,0 +1,30 @@
+.balans-container {
+  margin-top: 15px; /* Space between containers */
+  font-weight: bold;
+  height: 35px;
+  border-radius: 15px;
+  width: 250px;
+  display: flex;
+  justify-content: space-between; /* Distribute elements to the edges */
+  align-items: center; /* Center vertically */
+  background: var(--container-color); /* Background color */
+  padding: 10px; /* Add padding */
+}
+
+.left-section-wallet {
+  display: flex;
+  align-items: center; /* Выравниваем иконку и текст по центру */
+}
+
+.left-section-wallet span {
+  margin-bottom: 5px;
+  margin-left: 10px; /* Отступ между иконкой и текстом */
+}
+
+.right-section-wallet {
+  margin-bottom: 5px;
+}
+
+.for-margin{
+  margin-top: 10px;
+}

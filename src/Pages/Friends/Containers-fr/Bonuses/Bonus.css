@@ -1,0 +1,56 @@
+
+.right-section-bonus-fr {
+  margin-top: 20px;
+  border-radius: 15px;
+  width: 320px;
+  background-color: #0f0f0f; /* Задайте нужный цвет фона */
+  display: flex;
+  justify-content: space-between; /* Размещает элементы по краям */
+  padding: 20px; /* Добавьте отступы по вашему усмотрению */
+}
+
+.text-section-bonus-fr {
+  display: flex;
+  flex-direction: column; /* Размещает блоки вертикально */
+  align-items: flex-start; /* Выравнивание по левому краю */
+}
+
+.block-text {
+  margin-left: 40px;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column; /* Размещает span вертикально */
+  margin-bottom: 10px; /* Отступ между блоками */
+  position: relative; /* Для позиционирования псевдоэлемента */
+}
+
+.block-text::before {
+  content: ''; /* Создаем пустой контент для псевдоэлемента */
+  width: 10px; /* Ширина круга */
+  height: 10px; /* Высота круга */
+  background-color: #c4f85c; /* Цвет круга */
+  border-radius: 50%; /* Делаем круг */
+  position: absolute; /* Позиционируем относительно родителя */
+  left: -40px; /* Отступ от левого края */
+  top: 25%; /* Центрируем по вертикали */
+  transform: translateY(-50%); /* Центрируем по вертикали */
+  box-shadow: 0 0 10px var(--green-color), 0 0 10px var(--container-color-two);
+}
+
+.left-section-gif-bonus-fr {
+  margin-top: 50px;
+  display: flex; /* Добавлено для центрирования содержимого */
+  justify-content: center; /* Центрирует содержимое по горизонтали */
+  align-items: center; /* Центрирует содержимое по вертикали */
+  align-self: flex-start; /* Выравнивание по левому краю */
+}
+
+/* Новый стиль для заголовка */
+.title-how-it-works {
+  font-weight: bold;
+  margin-bottom: 20px; /* Отступ снизу для заголовка */
+}
+
+.second-span-bonus {
+  color: var(--container-color-two);
+}

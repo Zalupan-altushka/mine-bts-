@@ -1,0 +1,88 @@
+:root {
+  --text-color: white;
+  --font-family: "Rubik", serif;
+  --green-color: #c4f85c;
+  --container-color: #1c1c1e;
+  --container-color-two: #b9bbbc;
+  --background-color: #000000;
+  --purple-color: #7685f7;
+  --blue-color: #0098EA;
+  --blue-another-color: #1d71d1;
+}
+
+
+html, .bodyboostpage {
+  width: 100%; 
+  margin: 0; 
+  padding: 0;
+  flex-direction: column;
+  min-height: 150vh; 
+}
+
+.bodyboostpage {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center; 
+  width: 100vw;
+  height: 100%;
+  margin: 0;
+  background: var(--background-color);  
+  box-sizing: border-box;
+  position: relative;
+}
+
+.Clame_Box {
+  margin-top: 20px;
+  font-family: var(--font-family);
+  border-radius: 25px;
+  background: linear-gradient(90deg, var(--background-color), var(--container-color));
+  padding: 10px; 
+  display: flex;
+  flex-direction: column; 
+  align-items: center; 
+  position: relative; 
+  height: 150px; 
+  width: 340px;
+  border: 1px solid var(--green-color);
+}
+
+.Points-balance {
+  color: var(--green-color);
+}
+
+.left-section {
+  position: absolute; 
+  left: 20px; 
+  top: 20px; 
+  gap: 20px;
+  display: flex;
+  flex-direction: column; 
+}
+
+.right-section {
+  position: absolute; 
+  right: 20px; 
+  display: flex;
+  flex-direction: column; 
+}
+
+.right-buttons {
+  background: linear-gradient(45deg, var(--background-color), var(--container-color-two));
+  color: var(--text-color);
+  margin-top: 10px; 
+  font-size: 12px;
+  border-radius: 25px;
+  border: none;
+}
+
+.Boost_clame_button {
+  background: var(--green-color);
+  color: var(--background-color);
+  position: absolute; 
+  bottom: 20px;
+  left: 50%; 
+  transform: translateX(-50%); 
+  width: 320px;
+  border-radius: 25px;
+  border: none;
+}

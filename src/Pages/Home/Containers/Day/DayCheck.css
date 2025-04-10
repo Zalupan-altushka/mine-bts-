@@ -1,0 +1,59 @@
+:root {
+  --text-color: white;
+  --font-family: "Rubik", serif;
+  --green-color: #c4f85c;
+  --container-color: #1c1c1e;
+  --container-color-two: #b9bbbc;
+  --background-color: #000000;
+  --purple-color: #7685f7;
+  --blue-color: #0098EA;
+  --blue-another-color: #1d71d1;
+}
+
+.container-check-day {
+  border-radius: 15px;
+  width: 340px;
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  background-color: #0f0f0f; 
+  padding: 10px; 
+}
+
+.left-section-gif {
+  flex: 0 0 auto; 
+}
+
+.mid-section-textabout {
+  margin-right: 70px;
+  margin-left: 5px;
+  display: flex; 
+  flex-direction: column; 
+  align-items: flex-start; 
+}
+
+.second-span {
+  color: var(--container-color-two);
+}
+
+.right-section-button {
+  margin-left: 10px;
+  flex: 0 0 auto;
+}
+
+.Get-button {
+  background-color: var(--green-color);
+  color: var(--background-color);
+  box-shadow: 0 0 10px var(--green-color), 0 0 10px var(--container-color-two);
+  border-radius: 25px;
+  font-size: 12px;
+  transition: background-color 0.3s, color 0.3s; /* Добавляем плавный переход */
+}
+
+.Get-button.disabled {
+  background-color: #1c1c1e; /* Цвет фона для неактивной кнопки */
+  color: #b9bbbc; /* Цвет текста для неактивной кнопки */
+  box-shadow: none; /* Убираем тень для неактивной кнопки */
+  pointer-events: none; /* Отключаем взаимодействие с кнопкой */
+  transition: none; /* Убираем переход для неактивной кнопки */
+}
