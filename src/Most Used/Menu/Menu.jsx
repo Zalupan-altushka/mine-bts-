@@ -42,18 +42,18 @@ const Menu = () => {
           </Link>
         </div>
         <div className="menu-item">
-          <Link to="/tasks" onClick={handleClick('/tasks')}>
-            {currentPath === '/tasks' ? <TasksIconOne /> : <TasksIconTwo />}
-            <span className="Name" style={{ color: currentPath === '/tasks' ? '#c4f85c' : 'var(--container-color-two)' }}>
-              Tasks
-            </span>
-          </Link>
-        </div>
-        <div className="menu-item">
           <Link to="/boost" onClick={handleClick('/boost')}>
             {currentPath === '/boost' ? <BoostIconTwo /> : <BoostIconOne />}
             <span className="Name" style={{ color: currentPath === '/boost' ? '#c4f85c' : 'var(--container-color-two)' }}>
               Boost
+            </span>
+          </Link>
+        </div>
+        <div className="menu-item">
+          <Link to="/tasks" onClick={handleClick('/tasks')}>
+            {currentPath === '/tasks' ? <TasksIconOne /> : <TasksIconTwo />}
+            <span className="Name" style={{ color: currentPath === '/tasks' ? '#c4f85c' : 'var(--container-color-two)' }}>
+              Tasks
             </span>
           </Link>
         </div>
@@ -70,3 +70,4 @@ const Menu = () => {
 };
 
 export default Menu;
+

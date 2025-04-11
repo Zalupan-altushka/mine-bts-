@@ -32,7 +32,7 @@
   align-items: flex-start; 
 }
 
-.second-span {
+.second-span{
   color: var(--container-color-two);
 }
 

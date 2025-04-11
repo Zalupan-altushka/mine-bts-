@@ -19,10 +19,11 @@ function Boosters() {
             <span>Storage: <span className='Points-balance'>0%</span></span>
           </article>
           <article className='right-section'>
-            <button className='right-buttons' onClick={() => setModalOneVisible(true)}>Storage X2</button>
-            <button className='right-buttons' onClick={() => setModalTwoVisible(true)}>Time waiting</button>
+            <button className='right-buttons' onClick={() => setModalOneVisible(true)}>Unlimited Storage</button>
+            <button className='right-buttons' onClick={() => setModalTwoVisible(true)}>Unlimited Time Claim</button>
           </article>
-          <button className='Boost_clame_button'>Claim BTS</button>
+          <button className='Boost_clame_button'>Claim $BTS</button>
+          
         </section>
         <ListsContainerFirst />
         <ListsContainerSecond />

@@ -1,11 +1,11 @@
 import React from 'react';
-import timer from '../../Most Used/Image/timer.svg'; 
+import Timerblack from '../../Most Used/Image/Timerblack.svg'; 
 
 function Timer() {
 
   return(
     <div>
-      <img src={timer} alt="Star" style={{ width: '20px', height: '20px' }}/>
+      <img src={Timerblack} alt="Star" style={{ width: '20px', height: '20px' }}/>
     </div>
   );
 }

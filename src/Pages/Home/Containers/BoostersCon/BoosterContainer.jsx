@@ -10,7 +10,7 @@ function BoosterContainer(){
         <span>Buy Booster to earn more BTS</span>
         <span>for passive mining</span>
         <Link to='/boost'>
-          <button className='boost-go-button'>Let's go</button>
+          <button className='boost-go-button'>Let's go!</button>
         </Link>
       </div>
       <div className='right-section-gif'>

@@ -9,52 +9,6 @@ import FriendsConnt from './Containers/FriendsCon/FriendsConnt';
 
 const tg = window.Telegram.WebApp;
 
-const UserProfile = ({ userId }) => {
-  const [userName, setUserName] = useState('');
-  const [userPhoto, setUserPhoto] = useState('');
-
-  useEffect(() => {
-    if (tg) {
-      const user = tg.initDataUnsafe.user;
-      if (user) {
-        const name = user.first_name || '';
-        const photo = user.photo_url || '';
-
-        setUserName(name);
-        setUserPhoto(photo);
-
-        // Save user data to MongoDB on profile load
-        saveUserData(userId, 0.0333); // Initial points are 0.0333
-      }
-    }
-  }, [userId]);
-
-  const saveUserData = async (userId, points) => {
-    if (!userId) return; // Prevent saving if userId is not available
-    try {
-      await axios.post(`${process.env.REACT_APP_API_URL}/api/user`, { userId, points });
-    } catch (error) {
-      console.error('Error saving user data:', error);
-    }
-  };
-
-  return (
-    <div className="user-profile" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', backgroundColor: '#000000', width: '340px', height: '45px', borderRadius: '25px', padding: '0 10px' }}>
-      {userPhoto ? (
-        <img
-          src={userPhoto}
-          alt="User Avatar"
-          style={{ width: '25px', height: '25px', borderRadius: '50%', marginRight: '10px' }}
-        />
-      ) : (
-        <div style={{ width: '25px', height: '25px', borderRadius: '50%', backgroundColor: '#ccc', marginRight: '10px' }} />
-      )}
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        {userName ? <h2 className='UserNameTG' style={{ margin: 0 }}>{userName}</h2> : <h2 style={{ margin: 0 }}>Loading...</h2>}
-      </div>
-    </div>
-  );
-};
 
 function HomePage() {
   const [points, setPoints] = useState(() => {
@@ -67,7 +21,10 @@ function HomePage() {
     const savedTime = localStorage.getItem('timeRemaining');
     return savedTime ? parseInt(savedTime, 10) : 0;
   });
-  const [isClaimButton, setIsClaimButton] = useState(false);
+  const [isClaimButton, setIsClaimButton] = useState(() => {
+    const savedClaimButtonState = localStorage.getItem('isClaimButton');
+    return savedClaimButtonState === 'true'; // Convert string to boolean
+  });
   const [timerInterval, setTimerInterval] = useState(null);
 
   useEffect(() => {
@@ -119,7 +76,9 @@ function HomePage() {
       setTimeRemaining(remainingTime);
       localStorage.setItem('timeRemaining', remainingTime); // Save remaining time to local storage
       setIsButtonDisabled(remainingTime > 0);
-      setIsClaimButton(remainingTime <= 0);
+      const claimButtonState = remainingTime <= 0;
+      setIsClaimButton(claimButtonState);
+      localStorage.setItem('isClaimButton', claimButtonState); // Save claim button state to local storage
       if (remainingTime <= 0) {
         clearInterval(interval);
         localStorage.removeItem('endTime'); // Clear end time when timer is done
@@ -150,6 +109,7 @@ function HomePage() {
     const newPoints = points + 52.033;
     updatePoints(newPoints);
     setIsClaimButton(false);
+    localStorage.setItem('isClaimButton', false); // Update local storage
   };
 
   const formatTime = (seconds) => {
@@ -161,9 +121,6 @@ function HomePage() {
 
   return (
     <section className='bodyhomepage'>
-      <div className='UserContainer'>
-        <UserProfile userId={userId} />
-      </div>
       <span className='points-count'>{points.toFixed(4)}</span>
       <DayCheck onPointsUpdate={handlePointsUpdate} />
       <BoosterContainer />
@@ -174,8 +131,8 @@ function HomePage() {
           onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
           disabled={isButtonDisabled && !isClaimButton}
           style={{
-            backgroundColor: isClaimButton ? 'white' : (isButtonDisabled ? '#0f0f0f' : ''),
-            color: isClaimButton ? 'black' : (isButtonDisabled ? '#b9bbbc' : ''),
+            backgroundColor: isClaimButton ? 'white' : (isButtonDisabled ? '#c4f85c' : ''),
+            color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -191,3 +148,4 @@ function HomePage() {
 }
 
 export default HomePage;
+
