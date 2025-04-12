@@ -15,6 +15,7 @@ function Friends() {
 
   return (
     <section className='bodyfriendspage'>
+      <div className='margin-div'></div>
       <TotalFR />
       <Bonus />
       <Reward />
