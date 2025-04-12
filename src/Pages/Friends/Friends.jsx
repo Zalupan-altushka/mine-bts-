@@ -15,11 +15,12 @@ function Friends() {
 
   return (
     <section className='bodyfriendspage'>
-      <div className='margin-div'></div>
+      <div className='margin-div-fr'></div>
       <TotalFR />
       <Bonus />
       <Reward />
       <section className='Container-button'>
+        <button className='get-reward-button'>Claim Reward</button>
         <button className='Invite-button' onClick={handleInviteClick}>Invite Friends</button>
       </section>
       <Menu />

@@ -33,6 +33,10 @@ html, .bodyfriendspage {
   overflow: hidden;
 }
 
+.margin-div-fr {
+  margin-top: 90px;
+}
+
 .Invite-button {
   text-align: center;
   font-family: var(--font-family);
@@ -45,7 +49,22 @@ html, .bodyfriendspage {
   border: none; 
 }
 
+.get-reward-button {
+  text-align: center;
+  font-family: var(--font-family);
+  background: #0f0f0f; 
+  color: var(--text-color);
+  padding: 10px;
+  border-radius: 15px;
+  width: 360px;
+  height: 55px;
+  border: 1px solid var(--green-color); 
+}
+
 .Container-button {
-  margin-top: 15px;
+  display: flex;
+  flex-direction: column; /* Располагаем элементы вертикально */
+  gap: 10px; /* Отступ между элементами */
+  margin-top: 15px; /* Сохраняем отступ сверху, если это необходимо */
 }
  
