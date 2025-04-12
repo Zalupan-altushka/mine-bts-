@@ -28,18 +28,30 @@ client.connect()
 app.post('/api/user', (req, res) => {
   const { userId, points } = req.body;
 
-  db.collection('users').updateOne(
-    { userId: userId },
-    { $set: { points: points }, $setOnInsert: { createdAt: new Date() } },
-    { upsert: true }
-  )
-  .then(result => {
-    res.status(200).json({ message: 'User data saved successfully', result });
-  })
-  .catch(err => {
-    console.error('Error saving user data:', err);
-    res.status(500).json({ message: 'Error saving user data' });
-  });
+  db.collection('users').findOne({ userId: userId })
+    .then(existingUser => {
+      if (existingUser) {
+        // User exists, update their points
+        return db.collection('users').updateOne(
+          { userId: userId },
+          { $set: { points: existingUser.points + points } } // Increment points
+        );
+      } else {
+        // User does not exist, create a new user
+        return db.collection('users').insertOne({
+          userId: userId,
+          points: points,
+          createdAt: new Date()
+        });
+      }
+    })
+    .then(result => {
+      res.status(200).json({ message: 'User data processed successfully', result });
+    })
+    .catch(err => {
+      console.error('Error processing user data:', err);
+      res.status(500).json({ message: 'Error processing user data' });
+    });
 });
 
 // Обработчик GET-запроса на корневом маршруте

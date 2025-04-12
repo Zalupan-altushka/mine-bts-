@@ -121,6 +121,7 @@ function HomePage() {
 
   return (
     <section className='bodyhomepage'>
+      <div className='for-margin-home'></div>
       <span className='points-count'>{points.toFixed(4)}</span>
       <DayCheck onPointsUpdate={handlePointsUpdate} />
       <BoosterContainer />
