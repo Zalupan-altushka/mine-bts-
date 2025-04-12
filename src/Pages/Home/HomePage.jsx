@@ -122,43 +122,44 @@ function HomePage() {
 
   return (
     <section className='bodyhomepage'>
-      <div className='for-margin-home'></div>
-      <span className='points-count'>{points.toFixed(4)}</span>
-      <DayCheck onPointsUpdate={handlePointsUpdate} />
-      <div className='container-game'>
-        <div className='left-section-gif-game'>
-          <GrHeart />
+      <div className='margin-div'></div>
+        <div className='for-margin-home'></div>
+        <span className='points-count'>{points.toFixed(4)}</span>
+        <DayCheck onPointsUpdate={handlePointsUpdate} />
+        <div className='container-game'>
+          <div className='left-section-gif-game'>
+            <GrHeart />
+          </div>
+          <div className='mid-section-textabout-game'>
+            <span className='first-span-game'>Mini Game</span> 
+            <span className='second-span-game'>
+              <span>Coming soon...</span>
+            </span>
+          </div>
+          <div className='right-section-button-game'>
+            <button className='Game-button'>?</button>
+          </div>
         </div>
-        <div className='mid-section-textabout-game'>
-          <span className='first-span-game'>Mini Game</span> 
-          <span className='second-span-game'>
-            <span>Coming soon...</span>
-          </span>
+        <BoosterContainer />
+        <FriendsConnt />
+        <div className='ButtonGroup'>
+          <button
+            className='FarmButton'
+            onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
+            disabled={isButtonDisabled && !isClaimButton}
+            style={{
+              backgroundColor: isClaimButton ? 'white' : (isButtonDisabled ? '#c4f85c' : ''),
+              color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {isButtonDisabled && !isClaimButton && <Timer style={{ marginRight: '8px' }} />}
+            {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
+          </button>
         </div>
-        <div className='right-section-button-game'>
-          <button className='Game-button'>?</button>
-        </div>
-      </div>
-      <BoosterContainer />
-      <FriendsConnt />
-      <div className='ButtonGroup'>
-        <button
-          className='FarmButton'
-          onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
-          disabled={isButtonDisabled && !isClaimButton}
-          style={{
-            backgroundColor: isClaimButton ? 'white' : (isButtonDisabled ? '#c4f85c' : ''),
-            color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {isButtonDisabled && !isClaimButton && <Timer style={{ marginRight: '8px' }} />}
-          {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
-        </button>
-      </div>
-      <Menu />
+        <Menu />
     </section>
   );
 }
