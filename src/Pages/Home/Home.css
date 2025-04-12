@@ -35,14 +35,11 @@
   overflow: hidden;
 }
 
-.for-margin-home {
-  margin-top: 60px;
-}
-
 .points-count {
   font-family: var(--font-family);
   font-size: 40px;
-  margin: 30px 0; 
+  margin-top: 60px;
+  margin-bottom: 20px;
   color: var(--green-color);
 }
 
