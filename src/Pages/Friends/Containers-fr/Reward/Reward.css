@@ -1,6 +1,6 @@
 .reward-section-fr {
   width: 320px;
-  margin-top: 20px;
+  margin-top: 15px;
   display: flex; /* Используем Flexbox для расположения элементов */
   justify-content: space-between; /* Размещаем элементы по краям */
   align-items: center; /* Выравниваем элементы по центру по вертикали */
