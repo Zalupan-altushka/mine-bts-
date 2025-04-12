@@ -76,6 +76,7 @@ function Wallet() {
 
   return(
     <section className='bodywalletpage'>
+      <div className='margin-div-wallet'></div>
       <div className='content-section'>
         <UserProfileWallet />
         <TonButton />
