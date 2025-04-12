@@ -16,7 +16,7 @@ html, .bodyboostpage {
   margin: 0; 
   padding: 0;
   flex-direction: column;
-  min-height: 150vh; 
+  min-height: 130vh; 
 }
 
 .bodyboostpage {
@@ -32,7 +32,7 @@ html, .bodyboostpage {
 }
 
 .margin-div-boost {
-  margin-top: 78px;
+  margin-top: 82px;
 }
 
 .Clame_Box {
