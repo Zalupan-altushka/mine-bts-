@@ -37,7 +37,7 @@ html, .bodytaskspage {
   font-family: var(--font-family);
   border-radius: 25px;
   background-color: #0f0f0f;
-  margin-top: 20px;
+  margin-top: 80px;
   display: flex; 
 }
 .button-container-tasks button {
