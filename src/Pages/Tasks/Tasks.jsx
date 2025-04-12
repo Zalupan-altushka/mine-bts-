@@ -16,6 +16,7 @@ function Tasks() {
   
   return (
       <section className='bodytaskspage'>
+        <div className='margin-div-tasks'></div>
         <article className="button-container-tasks">
           <button 
             className={activeButton === 'button1' ? 'active' : ''} 

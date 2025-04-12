@@ -31,6 +31,10 @@ html, .bodyboostpage {
   position: relative;
 }
 
+.margin-div-boost {
+  margin-top: 70px;
+}
+
 .Clame_Box {
   margin-top: 20px;
   font-family: var(--font-family);

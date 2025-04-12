@@ -13,6 +13,7 @@ function Boosters() {
 
   return (
       <section className='bodyboostpage'>
+        <div className='margin-div-boost'></div>
         <section className='Clame_Box'>
           <article className='left-section'>
             <span>Balance: <span className='Points-balance'>0.033</span></span>

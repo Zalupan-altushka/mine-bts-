@@ -29,6 +29,10 @@ html, .bodytaskspage {
   flex-direction: column;
 }
 
+.margin-div-tasks {
+  margin-top: 30px;
+}
+
 .no-scroll {
   overflow: hidden;
 }
