@@ -6,7 +6,7 @@ import Reward from './Containers-fr/Reward/Reward';
 
 function Friends() {
   const handleInviteClick = () => {
-    const message = "Join me in Mine BTS! and let's mine new gold! Use my invite link to join🎉";
+    const message = "Join me in Mine BTS! and let's mine new gold! Use my invite link to join";
     const url = "https://t.me/MineBtsBot/btsapp"; // Replace with your link
     const telegramLink = `tg://msg_url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(message)}`;
     
