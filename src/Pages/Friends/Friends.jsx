@@ -6,7 +6,7 @@ import Reward from './Containers-fr/Reward/Reward';
 
 function Friends() {
   const handleInviteClick = () => {
-    const message = "Привет! Я хочу пригласить тебя в наш проект. Вот ссылка: https://t.me/mine_bts_bot/zZ22";
+    const message = "Join me in Mine BTS! and let's mine new gold! Use my invite link to join🎉";
     const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent("https://t.me/mine_bts_bot/zZ22")}&text=${encodeURIComponent(message)}`;
     window.open(telegramUrl, '_blank');
   };
