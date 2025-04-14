@@ -10,7 +10,6 @@ import GrHeart from '../../Most Used/Image/GrHeart';
 
 const tg = window.Telegram.WebApp;
 
-
 function HomePage() {
   const [points, setPoints] = useState(() => {
     const savedPoints = localStorage.getItem('points');
