@@ -1,5 +1,5 @@
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
 import HomePage from './Pages/Home/HomePage.jsx';
 import Friends from './Pages/Friends/Friends.jsx';
 import Tasks from './Pages/Tasks/Tasks.jsx';
@@ -8,15 +8,7 @@ import PageTransition from './Pages/Transition/PageTransition.jsx';
 import Loader from './Pages/Loader/Loader.jsx'; // Импортируем Loader
 import Wallet from './Pages/Wallet/Wallet.jsx';
 
-function App() {
-  return (
-    <Router>
-      <Main />
-    </Router>
-  );
-}
-
-function Main() {
+const App = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
 
@@ -30,17 +22,26 @@ function Main() {
 
   useEffect(() => {
     // Проверяем, находится ли пользователь на одной из страниц, где нужно отключить прокрутку
-    if (location.pathname === '/' || location.pathname === '/friends' || location.pathname === '/tasks' || location.pathname === '/wallet' ) {
+    if (location.pathname === '/' || location.pathname === '/friends' || location.pathname === '/tasks' || location.pathname === '/wallet') {
       document.body.classList.add('no-scroll');
     } else {
       document.body.classList.remove('no-scroll');
     }
-    
+
     // Убираем класс no-scroll при размонтировании компонента
     return () => {
       document.body.classList.remove('no-scroll');
     };
   }, [location.pathname]);
+
+  useEffect(() => {
+    const tg = window.Telegram.WebApp;
+
+    if (tg) {
+      tg.initDataUnsafe; // Инициализация данных
+      tg.expand(); // Расширение веб-приложения
+    }
+  }, []);
 
   return (
     <>
@@ -56,6 +57,14 @@ function Main() {
       </PageTransition>
     </>
   );
-}
+};
 
-export default App;
+const Main = () => {
+  return (
+    <Router>
+      <App />
+    </Router>
+  );
+};
+
+export default Main;
