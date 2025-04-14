@@ -8,6 +8,17 @@ import PageTransition from './Pages/Transition/PageTransition.jsx';
 import Loader from './Pages/Loader/Loader.jsx'; // Импортируем Loader
 import Wallet from './Pages/Wallet/Wallet.jsx';
 
+// Assuming you have included the Telegram Web Apps library
+const tg = window.Telegram.WebApps;
+
+// Request fullscreen mode
+tg.ready();
+
+if (tg.initDataUnsafe) {
+    // Check if the app is opened in Telegram
+    tg.expand();
+}
+
 function App() {
   return (
     <Router>
