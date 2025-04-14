@@ -34,15 +34,6 @@ const App = () => {
     };
   }, [location.pathname]);
 
-  useEffect(() => {
-    const tg = window.Telegram.WebApp;
-
-    if (tg) {
-      tg.initDataUnsafe; // Инициализация данных
-      tg.expand(); // Расширение веб-приложения
-    }
-  }, []);
-
   return (
     <>
       {loading && <Loader />} {/* Показываем загрузчик, пока loading true */}
