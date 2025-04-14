@@ -6,8 +6,9 @@ import Reward from './Containers-fr/Reward/Reward';
 
 function Friends() {
   const handleInviteClick = () => {
-    const message = "Join me in Mine BTS! and let's mine new gold! Use my invite link to join: https://t.me/MineBtsBot/btsapp";
-    const telegramLink = `tg://msg?text=${encodeURIComponent(message)}`;
+    const message = "Join me in Mine BTS! and let's mine new gold! Use my invite link to join";
+    const url = "https://mine-bts.netlify.app"; // Replace with your link
+    const telegramLink = `tg://msg_url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(message)}`;
     
     window.open(telegramLink, '_blank');
   };
