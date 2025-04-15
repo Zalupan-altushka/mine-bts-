@@ -43,6 +43,48 @@ const App = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (window.Telegram && window.Telegram.WebApp) {
+      const backButton = window.Telegram.WebApp.BackButton;
+      backButton.show();
+  
+      const updateBackButtonText = () => {
+        switch (location.pathname) {
+          case '/':
+            backButton.setText("Назад");
+            break;
+          case '/friends':
+            backButton.setText("Назад к друзьям");
+            break;
+          case '/tasks':
+            backButton.setText("Назад к задачам");
+            break;
+          case '/boost':
+            backButton.setText("Назад к бустерам");
+            break;
+          case '/wallet':
+            backButton.setText("Назад к кошельку");
+            break;
+          default:
+            backButton.setText("Назад");
+        }
+      };
+  
+      updateBackButtonText();
+  
+      const handleBackButtonClick = () => {
+        console.log("Back button clicked");
+        window.history.back();
+      };
+  
+      backButton.onClick(handleBackButtonClick);
+  
+      return () => {
+        backButton.offClick(handleBackButtonClick);
+      };
+    }
+  }, [location.pathname]);
+
   return (
     <>
       {loading && <Loader />} {/* Показываем загрузчик, пока loading true */}
