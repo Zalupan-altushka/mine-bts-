@@ -38,6 +38,8 @@ const App = () => {
     // Check if the Telegram Web App is active and request full-screen mode
     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.isActive) {
       window.Telegram.WebApp.requestFullscreen();
+      // Включаем или отключаем вертикальные свайпы
+      window.Telegram.WebApp.isVerticalSwipesEnabled = false; // Установите в true или false по вашему усмотрению
     }
   }, []);
 
