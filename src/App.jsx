@@ -7,8 +7,11 @@ import Boosters from './Pages/Boosters/Boosters.jsx';
 import PageTransition from './Pages/Transition/PageTransition.jsx';
 import Loader from './Pages/Loader/Loader.jsx'; // Импортируем Loader
 import Wallet from './Pages/Wallet/Wallet.jsx';
+import useTelegramExpand from '../useTelegramExpand.js';
 
 const App = () => {
+  useTelegramExpand();
+
   const location = useLocation();
   const [loading, setLoading] = useState(true);
 
