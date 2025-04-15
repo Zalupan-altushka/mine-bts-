@@ -43,49 +43,6 @@ const App = () => {
     }
   }, []);
 
-  useEffect(() => {
-    // Убедитесь, что мини-приложение готово
-    if (window.Telegram && window.Telegram.WebApp) {
-      const backButton = window.Telegram.WebApp.BackButton;
-      backButton.show();
-
-      // Функция для изменения текста кнопки "Назад"
-      const updateBackButtonText = () => {
-        switch (location.pathname) {
-          case '/':
-            backButton.setText("Back");
-            break;
-          case '/friends':
-            backButton.setText("Back");
-            break;
-          case '/tasks':
-            backButton.setText("Back");
-            break;
-          case '/boost':
-            backButton.setText("Back");
-            break;
-          case '/wallet':
-            backButton.setText("Back");
-            break;
-          default:
-            backButton.setText("Close");
-        }
-      };
-
-      updateBackButtonText();
-
-      // Устанавливаем обработчик события нажатия на кнопку "Назад"
-      backButton.onClick(() => {
-        window.history.back(); // Возврат на предыдущую страницу
-      });
-
-      // Убираем обработчик при размонтировании
-      return () => {
-        backButton.offClick();
-      };
-    }
-  }, [location.pathname]);
-
   return (
     <>
       {loading && <Loader />} {/* Показываем загрузчик, пока loading true */}
