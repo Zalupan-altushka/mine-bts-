@@ -7,11 +7,8 @@ import Boosters from './Pages/Boosters/Boosters.jsx';
 import PageTransition from './Pages/Transition/PageTransition.jsx';
 import Loader from './Pages/Loader/Loader.jsx'; // Импортируем Loader
 import Wallet from './Pages/Wallet/Wallet.jsx';
-import useTelegramExpand from '../useTelegramExpand.js';
 
 const App = () => {
-  useTelegramExpand();
-
   const location = useLocation();
   const [loading, setLoading] = useState(true);
 
@@ -36,6 +33,13 @@ const App = () => {
       document.body.classList.remove('no-scroll');
     };
   }, [location.pathname]);
+
+  useEffect(() => {
+    // Check if the Telegram Web App is active and request full-screen mode
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.isActive) {
+      window.Telegram.WebApp.requestFullscreen();
+    }
+  }, []);
 
   return (
     <>
