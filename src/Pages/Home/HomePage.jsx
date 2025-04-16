@@ -10,23 +10,15 @@ import GrHeart from '../../Most Used/Image/GrHeart';
 
 const tg = window.Telegram.WebApp;
 
-function HomePage() {
+function HomePage({ userId }) { // Получаем userId как пропс
   const [points, setPoints] = useState(0.0333); // Начальные очки
-  const [userId, setUserId] = useState('');
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [isClaimButton, setIsClaimButton] = useState(false);
   const [timerInterval, setTimerInterval] = useState(null);
 
   useEffect(() => {
-    if (tg) {
-      const user = tg.initDataUnsafe.user;
-      if (user) {
-        const id = user.id; // Получаем ID пользователя из Telegram
-        setUserId(id);
-        fetchUserData(id); // Загружаем данные пользователя
-      }
-    }
+    fetchUserData(userId); // Загружаем данные пользователя
 
     // Восстанавливаем состояние таймера
     const endTime = localStorage.getItem('endTime');
@@ -47,7 +39,7 @@ function HomePage() {
         clearInterval(timerInterval); // Очищаем интервал при размонтировании компонента
       }
     };
-  }, []);
+  }, [userId]); // Добавляем userId в зависимости
 
   const fetchUserData = async (userId) => {
     try {
@@ -156,5 +148,3 @@ function HomePage() {
 }
 
 export default HomePage;
-
-
