@@ -65,7 +65,6 @@ function HomePage() {
       updatePoints(response.data.points); // Update points from the response
     } catch (error) {
       console.error('Error fetching user points:', error);
-      // Optionally, show an error message to the user
     }
   };
 
@@ -75,7 +74,6 @@ function HomePage() {
       await axios.post(`${process.env.REACT_APP_API_URL}/api/user`, { userId, points });
     } catch (error) {
       console.error('Error saving user data:', error);
-      // Optionally, show an error message to the user
     }
   };
 
@@ -91,6 +89,7 @@ function HomePage() {
       const claimButtonState = remainingTime <= 0;
       setIsClaimButton(claimButtonState);
       localStorage.setItem('isClaimButton', claimButtonState); // Save claim button state to local storage
+
       if (remainingTime <= 0) {
         clearInterval(interval);
         localStorage.removeItem('endTime'); // Clear end time when timer is done
@@ -112,7 +111,7 @@ function HomePage() {
 
   const handleMineFor100 = () => {
     setIsButtonDisabled(true);
-    const sixHoursInSeconds = 6 * 60 * 60;
+    const sixHoursInSeconds = 6 * 60 * 60; // 6 hours in seconds
     setTimeRemaining(sixHoursInSeconds);
     startTimer(sixHoursInSeconds);
   };
