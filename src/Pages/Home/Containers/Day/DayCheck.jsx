@@ -8,78 +8,64 @@ const tg = window.Telegram.WebApp;
 function DayCheck({ onPointsUpdate }) {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
-  const [dayCheckCount, setDayCheckCount] = useState(0); // Состояние для хранения количества day-check
+  const [dayCheckCount, setDayCheckCount] = useState(0);
 
   useEffect(() => {
-    // Загружаем количество day-check из CloudStorage
-    tg.CloudStorage.getItem('dayCheckCount', (error, storedDayCheckCount) => {
-      if (error) {
-        console.error('Ошибка при получении dayCheckCount:', error);
-        return;
-      }
+    const loadData = async () => {
+      try {
+        const storedDayCheckCount = await tg.CloudStorage.getItem('dayCheckCount');
+        const lastClaimTime = await tg.CloudStorage.getItem('lastClaimTime');
 
-      tg.CloudStorage.getItem('lastClaimTime', (error, lastClaimTime) => {
-        if (error) {
-          console.error('Ошибка при получении lastClaimTime:', error);
-          return;
-        }
-
-        // Проверяем, прошло ли 24 часа с последнего сбора
         if (lastClaimTime) {
           const timeSinceLastClaim = Date.now() - parseInt(lastClaimTime, 10);
           if (timeSinceLastClaim > 24 * 60 * 60 * 1000) {
-            // Если прошло более 24 часов, обнуляем счетчик
             setDayCheckCount(0);
-            tg.CloudStorage.setItem('dayCheckCount', 0);
+            await tg.CloudStorage.setItem('dayCheckCount', 0);
           } else if (storedDayCheckCount) {
             setDayCheckCount(parseInt(storedDayCheckCount, 10));
           }
         } else {
-          setDayCheckCount(0); // Если значение не найдено, устанавливаем его в 0
+          setDayCheckCount(0);
         }
 
-        // Загружаем время следующего запроса из CloudStorage
-        tg.CloudStorage.getItem('nextClaimTime', (error, storedTime) => {
-          if (error) {
-            console.error('Ошибка при получении nextClaimTime:', error);
-            return;
+        const storedTime = await tg.CloudStorage.getItem('nextClaimTime');
+        if (storedTime) {
+          const remainingTime = parseInt(storedTime, 10) - Date.now();
+          if (remainingTime > 0) {
+            setTimeLeft(remainingTime);
+            setIsButtonDisabled(true);
+            const interval = setInterval(() => {
+              setTimeLeft((prev) => {
+                if (prev <= 1000) {
+                  clearInterval(interval);
+                  setIsButtonDisabled(false);
+                  return 0;
+                }
+                return prev - 1000;
+              });
+            }, 1000);
+            return () => clearInterval(interval);
           }
+        }
+      } catch (error) {
+        console.error('Ошибка при загрузке данных:', error);
+      }
+    };
 
-          if (storedTime) {
-            const remainingTime = parseInt(storedTime, 10) - Date.now();
-            if (remainingTime > 0) {
-              setTimeLeft(remainingTime);
-              setIsButtonDisabled(true);
-              const interval = setInterval(() => {
-                setTimeLeft((prev) => {
-                  if (prev <= 1000) {
-                    clearInterval(interval);
-                    setIsButtonDisabled(false);
-                    return 0;
-                  }
-                  return prev - 1000;
-                });
-              }, 1000);
-              return () => clearInterval(interval);
-            }
-          }
-        });
-      });
-    });
+    loadData();
   }, []);
 
-  const handleGetButtonClick = () => {
-    onPointsUpdate(30.033); // Обновляем очки
+  const handleGetButtonClick = async () => {
+    onPointsUpdate(30.033);
     setIsButtonDisabled(true);
-    const nextClaimTime = Date.now() + 12 * 60 * 60 * 1000; // 12 часов
-    tg.CloudStorage.setItem('nextClaimTime', nextClaimTime);
-    setTimeLeft(12 * 60 * 60 * 1000); // Устанавливаем время блокировки
+    const nextClaimTime = Date.now() + 12 * 60 * 60 * 1000;
+    await tg.CloudStorage.setItem('nextClaimTime', nextClaimTime);
+    setTimeLeft(12 * 60 * 60 * 1000);
 
-    // Увеличиваем количество day-check и сохраняем в CloudStorage
     const newDayCheckCount = dayCheckCount + 1;
     setDayCheckCount(newDayCheckCount);
-    tg.CloudStorage.setItem('dayCheckCount', newDayCheckCount);
-    tg.CloudStorage.setItem('lastClaimTime', Date.now()); // Сохраняем время последнего сбора
+    await tg.CloudStorage.setItem('dayCheckCount', newDayCheckCount);
+    await tg.CloudStorage.setItem('lastClaimTime', Date.now());
   };
 
   const formatTimeLeft = (time) => {
@@ -94,9 +80,9 @@ function DayCheck({ onPointsUpdate }) {
         <Moom />
       </div>
       <div className='mid-section-textabout'>
-        <span className='first-span'>{dayCheckCount} day-check</span> {/* Обновляем количество day-check */}
+        <span className='first-span'>{dayCheckCount} day-check</span>
         <span className='second-span'>
-          {isButtonDisabled ? `Next claim in ${formatTimeLeft(timeLeft)}` : 'Сlaim available!'}
+          {isButtonDisabled ? `Next claim in ${formatTimeLeft(timeLeft)}` : 'Claim available!'}
         </span>
       </div>
       <div className='right-section-button'>
@@ -113,3 +99,4 @@ function DayCheck({ onPointsUpdate }) {
 }
 
 export default DayCheck;
+

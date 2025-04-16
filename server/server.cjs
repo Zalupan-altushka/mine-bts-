@@ -29,7 +29,7 @@ app.post('/api/user', (req, res) => {
   const { userId, firstName, lastName, username } = req.body;
 
   // Set initial points to 0.0333
-  const initialPoints = 0.0333;
+  const initialPoints = 0.033;
 
   db.collection('users').findOne({ userId: userId })
     .then(existingUser => {
