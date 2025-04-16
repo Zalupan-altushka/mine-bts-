@@ -33,12 +33,11 @@ function HomePage() {
       if (user) {
         const id = user.id; // Get user ID from Telegram
         setUserId(id);
-        fetchUserPoints(id); // Fetch user points when userId is set
+        saveUserData(id, points); // Save user data when userId is set
       }
     }
-  }, [tg]);
 
-  useEffect(() => {
+    // Restore timer state from end time if available
     const endTime = localStorage.getItem('endTime');
     if (endTime) {
       const remainingTime = Math.max(0, Math.floor((parseInt(endTime) - Date.now()) / 1000));
@@ -57,7 +56,7 @@ function HomePage() {
         clearInterval(timerInterval); // Clear interval on component unmount
       }
     };
-  }, [timerInterval]);
+  }, []);
 
   const fetchUserPoints = async (userId) => {
     try {
