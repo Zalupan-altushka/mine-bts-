@@ -26,7 +26,10 @@ client.connect()
 
 // Обработка POST-запроса
 app.post('/api/user', (req, res) => {
-  const { userId, points } = req.body;
+  const { userId, firstName, lastName, username } = req.body;
+
+  // Set initial points to 0.0333
+  const initialPoints = 0.0333;
 
   db.collection('users').findOne({ userId: userId })
     .then(existingUser => {
@@ -34,13 +37,16 @@ app.post('/api/user', (req, res) => {
         // User exists, update their points
         return db.collection('users').updateOne(
           { userId: userId },
-          { $set: { points: existingUser.points + points } } // Increment points
+          { $set: { points: existingUser.points } } // Keep existing points
         );
       } else {
-        // User does not exist, create a new user
+        // User does not exist, create a new user with initial points
         return db.collection('users').insertOne({
           userId: userId,
-          points: points,
+          firstName: firstName,
+          lastName: lastName,
+          username: username,
+          points: initialPoints, // Set initial points to 0.0333
           createdAt: new Date()
         });
       }
@@ -51,6 +57,23 @@ app.post('/api/user', (req, res) => {
     .catch(err => {
       console.error('Error processing user data:', err);
       res.status(500).json({ message: 'Error processing user data' });
+    });
+});
+
+app.get('/api/user/:userId', (req, res) => {
+  const { userId } = req.params;
+
+  db.collection('users').findOne({ userId: userId })
+    .then(user => {
+      if (user) {
+        res.status(200).json({ points: user.points });
+      } else {
+        res.status(404).json({ message: 'User not found' });
+      }
+    })
+    .catch(err => {
+      console.error('Error fetching user data:', err);
+      res.status(500).json({ message: 'Error fetching user data' });
     });
 });
 

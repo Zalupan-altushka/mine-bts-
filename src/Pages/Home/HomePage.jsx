@@ -33,11 +33,12 @@ function HomePage() {
       if (user) {
         const id = user.id; // Get user ID from Telegram
         setUserId(id);
-        saveUserData(id, points); // Save user data when userId is set
+        fetchUserPoints(id); // Fetch user points when userId is set
       }
     }
+  }, [tg]);
 
-    // Restore timer state from end time if available
+  useEffect(() => {
     const endTime = localStorage.getItem('endTime');
     if (endTime) {
       const remainingTime = Math.max(0, Math.floor((parseInt(endTime) - Date.now()) / 1000));
@@ -56,7 +57,17 @@ function HomePage() {
         clearInterval(timerInterval); // Clear interval on component unmount
       }
     };
-  }, []);
+  }, [timerInterval]);
+
+  const fetchUserPoints = async (userId) => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/user/${userId}`);
+      updatePoints(response.data.points); // Update points from the response
+    } catch (error) {
+      console.error('Error fetching user points:', error);
+      // Optionally, show an error message to the user
+    }
+  };
 
   const saveUserData = async (userId, points) => {
     if (!userId) return; // Prevent saving if userId is not available
@@ -64,6 +75,7 @@ function HomePage() {
       await axios.post(`${process.env.REACT_APP_API_URL}/api/user`, { userId, points });
     } catch (error) {
       console.error('Error saving user data:', error);
+      // Optionally, show an error message to the user
     }
   };
 
@@ -122,46 +134,45 @@ function HomePage() {
   return (
     <section className='bodyhomepage'>
       <div className='margin-div'></div>
-        <div className='for-margin-home'></div>
-        <span className='points-count'>{points.toFixed(4)}</span>
-        <DayCheck onPointsUpdate={handlePointsUpdate} />
-        <div className='container-game'>
-          <div className='left-section-gif-game'>
-            <GrHeart />
-          </div>
-          <div className='mid-section-textabout-game'>
-            <span className='first-span-game'>Mini Game</span> 
-            <span className='second-span-game'>
-              <span>Coming soon...</span>
-            </span>
-          </div>
-          <div className='right-section-button-game'>
-            <button className='Game-button'>?</button>
-          </div>
+      <div className='for-margin-home'></div>
+      <span className='points-count'>{points.toFixed(4)}</span>
+      <DayCheck onPointsUpdate={handlePointsUpdate} />
+      <div className='container-game'>
+        <div className='left-section-gif-game'>
+          <GrHeart />
         </div>
-        <BoosterContainer />
-        <FriendsConnt />
-        <div className='ButtonGroup'>
-          <button
-            className='FarmButton'
-            onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
-            disabled={isButtonDisabled && !isClaimButton}
-            style={{
-              backgroundColor: isClaimButton ? 'white' : (isButtonDisabled ? '#c4f85c' : ''),
-              color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            {isButtonDisabled && !isClaimButton && <Timer style={{ marginRight: '8px' }} />}
-            {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
-          </button>
+        <div className='mid-section-textabout-game'>
+          <span className='first-span-game'>Mini Game</span> 
+          <span className='second-span-game'>
+            <span>Coming soon...</span>
+          </span>
         </div>
-        <Menu />
+        <div className='right-section-button-game'>
+          <button className='Game-button'>?</button>
+        </div>
+      </div>
+      <BoosterContainer />
+      <FriendsConnt />
+      <div className='ButtonGroup'>
+        <button
+          className='FarmButton'
+          onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
+          disabled={isButtonDisabled && !isClaimButton}
+          style={{
+            backgroundColor: isClaimButton ? 'white' : (isButtonDisabled ? '#c4f85c' : ''),
+            color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {isButtonDisabled && !isClaimButton && <Timer style={{ marginRight: '8px' }} />}
+          {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
+        </button>
+      </div>
+      <Menu />
     </section>
   );
 }
 
 export default HomePage;
-

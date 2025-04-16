@@ -40,6 +40,33 @@ const App = () => {
       window.Telegram.WebApp.requestFullscreen();
       // Включаем или отключаем вертикальные свайпы
       window.Telegram.WebApp.isVerticalSwipesEnabled = false; // Установите в true или false по вашему усмотрению
+
+      // Extract user data from initData
+      const user = window.Telegram.WebApp.initDataUnsafe.user;
+      if (user) {
+        const userData = {
+          userId: user.id,
+          firstName: user.first_name,
+          lastName: user.last_name,
+          username: user.username,
+        };
+
+        // Send user data to the server
+        fetch('/api/user', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(userData),
+        })
+          .then(response => response.json())
+          .then(data => {
+            console.log('User data sent successfully:', data);
+          })
+          .catch(error => {
+            console.error('Error sending user data:', error);
+          });
+      }
     }
   }, []);
 
