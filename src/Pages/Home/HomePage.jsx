@@ -12,17 +12,17 @@ const tg = window.Telegram.WebApp;
 
 function HomePage() {
   const [points, setPoints] = useState(() => {
-    const savedPoints = localStorage.getItem('points');
+    const savedPoints = tg.deviceStorage.getItem('points');
     return savedPoints ? parseFloat(savedPoints) : 0.0333; // Initial points are 0.0333
   });
   const [userId, setUserId] = useState('');
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(() => {
-    const savedTime = localStorage.getItem('timeRemaining');
+    const savedTime = tg.deviceStorage.getItem('timeRemaining');
     return savedTime ? parseInt(savedTime, 10) : 0;
   });
   const [isClaimButton, setIsClaimButton] = useState(() => {
-    const savedClaimButtonState = localStorage.getItem('isClaimButton');
+    const savedClaimButtonState = tg.deviceStorage.getItem('isClaimButton');
     return savedClaimButtonState === 'true'; // Convert string to boolean
   });
   const [timerInterval, setTimerInterval] = useState(null);
@@ -38,7 +38,7 @@ function HomePage() {
     }
 
     // Restore timer state from end time if available
-    const endTime = localStorage.getItem('endTime');
+    const endTime = tg.deviceStorage.getItem('endTime');
     if (endTime) {
       const remainingTime = Math.max(0, Math.floor((parseInt(endTime) - Date.now()) / 1000));
       setTimeRemaining(remainingTime);
@@ -47,7 +47,7 @@ function HomePage() {
       if (remainingTime > 0) {
         startTimer(remainingTime);
       } else {
-        localStorage.removeItem('endTime'); // Clear end time if timer is done
+        tg.deviceStorage.removeItem('endTime'); // Clear end time if timer is done
       }
     }
 
@@ -78,20 +78,20 @@ function HomePage() {
 
   const startTimer = (duration) => {
     const endTime = Date.now() + duration * 1000;
-    localStorage.setItem('endTime', endTime); // Save end time to local storage
+    tg.deviceStorage.setItem('endTime', endTime); // Save end time to device storage
 
     const interval = setInterval(() => {
       const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
       setTimeRemaining(remainingTime);
-      localStorage.setItem('timeRemaining', remainingTime); // Save remaining time to local storage
+      tg.deviceStorage.setItem('timeRemaining', remainingTime); // Save remaining time to device storage
       setIsButtonDisabled(remainingTime > 0);
       const claimButtonState = remainingTime <= 0;
       setIsClaimButton(claimButtonState);
-      localStorage.setItem('isClaimButton', claimButtonState); // Save claim button state to local storage
+      tg.deviceStorage.setItem('isClaimButton', claimButtonState); // Save claim button state to device storage
 
       if (remainingTime <= 0) {
         clearInterval(interval);
-        localStorage.removeItem('endTime'); // Clear end time when timer is done
+        tg.deviceStorage.removeItem('endTime'); // Clear end time when timer is done
       }
     }, 1000);
     setTimerInterval(interval); // Save interval ID to clear it later
@@ -104,7 +104,7 @@ function HomePage() {
 
   const updatePoints = (newPoints) => {
     setPoints(newPoints);
-    localStorage.setItem('points', newPoints); // Save points to local storage
+    tg.deviceStorage.setItem('points', newPoints); // Save points to device storage
     saveUserData(userId, newPoints); // Save updated points
   };
 
@@ -119,7 +119,7 @@ function HomePage() {
     const newPoints = points + 52.033;
     updatePoints(newPoints);
     setIsClaimButton(false);
-    localStorage.setItem('isClaimButton', false); // Update local storage
+    tg.deviceStorage.setItem('isClaimButton', false); // Update device storage
   };
 
   const formatTime = (seconds) => {
