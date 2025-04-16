@@ -5,7 +5,7 @@ function Plant() {
 
   return(
     <div>
-      <img src={Flower} alt="Star" style={{ width: '80px', height: '80px' }}/>
+      <img src={Flower} alt="Star" style={{ width: '90px', height: '90px' }}/>
     </div>
   );
 }

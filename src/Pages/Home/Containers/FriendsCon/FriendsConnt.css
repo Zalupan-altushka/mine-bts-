@@ -41,3 +41,7 @@
   color: var(--background-color);
   box-shadow: 0 0 15px var(--text-color), 0 0 15px var(--container-color-two);
 }
+
+.span-right-fr-conn {
+  margin-right: 40px;
+}
