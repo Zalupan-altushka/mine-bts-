@@ -19,28 +19,34 @@ function HomePage({ userId }) {
 
   useEffect(() => {
     fetchUserData(userId);
-
+  
     // Восстанавливаем состояние таймера
     tg.CloudStorage.getItem('endTime', (error, endTime) => {
       if (endTime) {
         const remainingTime = Math.max(0, Math.floor((parseInt(endTime) - Date.now()) / 1000));
         setTimeRemaining(remainingTime);
+        const claimButtonState = remainingTime <= 0;
         setIsButtonDisabled(remainingTime > 0);
-        setIsClaimButton(remainingTime <= 0);
+        setIsClaimButton(claimButtonState);
         if (remainingTime > 0) {
           startTimer(remainingTime);
         } else {
           tg.CloudStorage.removeItem('endTime'); // Очищаем время окончания, если таймер завершен
         }
+      } else {
+        // Если endTime нет, устанавливаем состояние кнопки по умолчанию
+        setIsButtonDisabled(false);
+        setIsClaimButton(false);
       }
     });
-
+  
     return () => {
       if (timerInterval) {
         clearInterval(timerInterval);
       }
     };
   }, [userId]);
+  
 
   const fetchUserData = async (userId) => {
     try {
