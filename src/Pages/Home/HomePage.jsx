@@ -19,8 +19,8 @@ function HomePage({ userId }) {
 
   useEffect(() => {
     fetchUserData(userId);
-  
-    // Восстанавливаем состояние таймера
+
+    // Восстановление состояния таймера и кнопок из CloudStorage
     tg.CloudStorage.getItem('endTime', (error, endTime) => {
       if (endTime) {
         const remainingTime = Math.max(0, Math.floor((parseInt(endTime) - Date.now()) / 1000));
@@ -31,22 +31,32 @@ function HomePage({ userId }) {
         if (remainingTime > 0) {
           startTimer(remainingTime);
         } else {
-          tg.CloudStorage.removeItem('endTime'); // Очищаем время окончания, если таймер завершен
+          tg.CloudStorage.removeItem('endTime');
         }
       } else {
-        // Если endTime нет, устанавливаем состояние кнопки по умолчанию
+        // Если endTime нет, проверяем состояние кнопки
+        tg.CloudStorage.getItem('isClaimButton', (err, claimState) => {
+          if (claimState !== null) {
+            setIsClaimButton(claimState === 'true');
+          }
+        });
+        tg.CloudStorage.getItem('isButtonDisabled', (err, disabledState) => {
+          if (disabledState !== null) {
+            setIsButtonDisabled(disabledState === 'true');
+          }
+        });
+        // Можно оставить состояние по умолчанию
         setIsButtonDisabled(false);
         setIsClaimButton(false);
       }
     });
-  
+
     return () => {
       if (timerInterval) {
         clearInterval(timerInterval);
       }
     };
   }, [userId]);
-  
 
   const fetchUserData = async (userId) => {
     try {
@@ -67,20 +77,24 @@ function HomePage({ userId }) {
       }
     });
 
+    // Обновляем состояние для отображения
+    setIsButtonDisabled(true);
+    setIsClaimButton(false);
+    tg.CloudStorage.setItem('isButtonDisabled', 'true');
+    tg.CloudStorage.setItem('isClaimButton', 'false');
+
     const interval = setInterval(() => {
       const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
       setTimeRemaining(remainingTime);
-      tg.CloudStorage.setItem('timeRemaining', remainingTime, (error) => {
-        if (error) {
-          console.error('Ошибка при сохранении оставшегося времени:', error);
-        }
-      });
-      setIsButtonDisabled(remainingTime > 0);
-      const claimButtonState = remainingTime <= 0;
-      setIsClaimButton(claimButtonState);
+      tg.CloudStorage.setItem('timeRemaining', remainingTime);
       if (remainingTime <= 0) {
         clearInterval(interval);
-        tg.CloudStorage.removeItem('endTime'); // Очищаем время окончания, когда таймер завершен
+        tg.CloudStorage.removeItem('endTime');
+        // Обновляем состояние после завершения таймера
+        setIsButtonDisabled(false);
+        setIsClaimButton(true);
+        tg.CloudStorage.setItem('isButtonDisabled', 'false');
+        tg.CloudStorage.setItem('isClaimButton', 'true');
       }
     }, 1000);
     setTimerInterval(interval);
@@ -112,7 +126,7 @@ function HomePage({ userId }) {
     const newPoints = points + 52.033;
     updatePoints(newPoints);
     setIsClaimButton(false);
-    tg.CloudStorage.setItem('isClaimButton', false, (error) => {
+    tg.CloudStorage.setItem('isClaimButton', 'false', (error) => {
       if (error) {
         console.error('Ошибка при обновлении состояния кнопки:', error);
       }
@@ -162,7 +176,11 @@ function HomePage({ userId }) {
           }}
         >
           {isButtonDisabled && !isClaimButton && <Timer style={{ marginRight: '8px' }} />}
-          {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
+          {isClaimButton
+            ? 'Claim 52.033 BTS'
+            : isButtonDisabled
+            ? formatTime(timeRemaining)
+            : 'Mine 52.033 BTS'}
         </button>
       </div>
       <Menu />
