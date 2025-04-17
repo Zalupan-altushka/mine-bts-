@@ -1,10 +1,11 @@
+
+Копировать
 import React, { useEffect, useState } from 'react';
 import './DayCheck.css';
 import Moom from '../../../../Most Used/Image/Moom';
 import CheckIcon from '../../../../Most Used/Image/CheckIcon';
 
-function DayCheck({ onPointsUpdate }) {
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+function DayCheck({ onPointsUpdate, isButtonDisabled, setIsButtonDisabled }) {
   const [timeLeft, setTimeLeft] = useState(0);
   const [dayCheckCount, setDayCheckCount] = useState(0); // Состояние для хранения количества day-check
 
@@ -37,7 +38,7 @@ function DayCheck({ onPointsUpdate }) {
         return () => clearInterval(interval);
       }
     }
-  }, []);
+  }, [setIsButtonDisabled]);
 
   const handleGetButtonClick = () => {
     onPointsUpdate(30.033); // Обновляем очки

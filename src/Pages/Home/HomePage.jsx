@@ -116,7 +116,7 @@ function HomePage() {
       <div className='margin-div'></div>
       <div className='for-margin-home'></div>
       <span className='points-count'>{points.toFixed(4)}</span>
-      <DayCheck onPointsUpdate={handlePointsUpdate} />
+      <DayCheck onPointsUpdate={handlePointsUpdate} isButtonDisabled={isButtonDisabled} setIsButtonDisabled={setIsButtonDisabled} />
       <div className='container-game'>
         <div className='left-section-gif-game'>
           <GrHeart />
