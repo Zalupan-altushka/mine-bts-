@@ -19,22 +19,25 @@ function HomePage({ userId }) {
 
   useEffect(() => {
     fetchUserData(userId);
-
+  
     // Восстановление состояния таймера и кнопок из CloudStorage
     tg.CloudStorage.getItem('endTime', (error, endTime) => {
       if (endTime) {
         const remainingTime = Math.max(0, Math.floor((parseInt(endTime) - Date.now()) / 1000));
-        setTimeRemaining(remainingTime);
-        const claimButtonState = remainingTime <= 0;
-        setIsButtonDisabled(remainingTime > 0);
-        setIsClaimButton(claimButtonState);
         if (remainingTime > 0) {
+          setTimeRemaining(remainingTime);
+          setIsButtonDisabled(true);
+          setIsClaimButton(false);
           startTimer(remainingTime);
         } else {
+          // Время истекло, очищаем
           tg.CloudStorage.removeItem('endTime');
+          setIsButtonDisabled(false);
+          setIsClaimButton(true);
+          setTimeRemaining(0);
         }
       } else {
-        // Если endTime нет, проверяем состояние кнопки
+        // Нет endTime, восстанавливаем состояние кнопки
         tg.CloudStorage.getItem('isClaimButton', (err, claimState) => {
           if (claimState !== null) {
             setIsClaimButton(claimState === 'true');
@@ -50,13 +53,14 @@ function HomePage({ userId }) {
         setIsClaimButton(false);
       }
     });
-
+  
     return () => {
       if (timerInterval) {
         clearInterval(timerInterval);
       }
     };
   }, [userId]);
+  
 
   const fetchUserData = async (userId) => {
     try {
