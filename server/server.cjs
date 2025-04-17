@@ -5,7 +5,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -24,57 +24,51 @@ client.connect()
     process.exit(1); // Завершить процесс, если не удалось подключиться
   });
 
-// Обработка POST-запроса
+// Обработка POST-запроса для регистрации пользователя
 app.post('/api/user', (req, res) => {
-  const { userId, firstName, lastName, username } = req.body;
+  const { userId, points, inviterId } = req.body;
 
-  // Set initial points to 0.0333
-  const initialPoints = 0.033;
-
-  db.collection('users').findOne({ userId: userId })
-    .then(existingUser => {
-      if (existingUser) {
-        // User exists, update their points
-        return db.collection('users').updateOne(
-          { userId: userId },
-          { $set: { points: existingUser.points } } // Keep existing points
-        );
-      } else {
-        // User does not exist, create a new user with initial points
-        return db.collection('users').insertOne({
-          userId: userId,
-          firstName: firstName,
-          lastName: lastName,
-          username: username,
-          points: initialPoints, // Set initial points to 0.0333
-          createdAt: new Date()
-        });
-      }
-    })
-    .then(result => {
-      res.status(200).json({ message: 'User data processed successfully', result });
-    })
-    .catch(err => {
-      console.error('Error processing user data:', err);
-      res.status(500).json({ message: 'Error processing user data' });
-    });
+  db.collection('users').updateOne(
+    { userId: userId },
+    { 
+      $set: { points: points }, 
+      $setOnInsert: { createdAt: new Date() },
+      $inc: { inviteCount: inviterId ? 1 : 0 } // Увеличиваем счетчик приглашений, если inviterId предоставлен
+    },
+    { upsert: true }
+  )
+  .then(result => {
+    res.status(200).json({ message: 'User data saved successfully', result });
+  })
+  .catch(err => {
+    console.error('Error saving user data:', err);
+    res.status(500).json({ message: 'Error saving user data' });
+  });
 });
 
-app.get('/api/user/:userId', (req, res) => {
-  const { userId } = req.params;
+// Обработка POST-запроса для регистрации нового пользователя по приглашению
+app.post('/api/invite', async (req, res) => {
+  const { userId, inviterId } = req.body;
 
-  db.collection('users').findOne({ userId: userId })
-    .then(user => {
-      if (user) {
-        res.status(200).json({ points: user.points });
-      } else {
-        res.status(404).json({ message: 'User not found' });
+  try {
+    const user = await db.collection('users').findOne({ userId: userId });
+    if (!user) {
+      // Если пользователь не существует, создаем нового
+      await db.collection('users').insertOne({ userId: userId, createdAt: new Date(), inviteCount: 0 });
+      
+      // Увеличиваем счетчик приглашений у пригласившего пользователя, если inviterId предоставлен
+      if (inviterId) {
+        await db.collection('users').updateOne({ userId: inviterId }, { $inc: { inviteCount: 1 } });
       }
-    })
-    .catch(err => {
-      console.error('Error fetching user data:', err);
-      res.status(500).json({ message: 'Error fetching user data' });
-    });
+
+      return res.status(201).json({ message: 'User created and invite count incremented.' });
+    } else {
+      return res.status(200).json({ message: 'User already exists.' });
+    }
+  } catch (error) {
+    console.error('Error in invite handler:', error);
+    return res.status(500).json({ message: 'Server error.' });
+  }
 });
 
 // Обработчик GET-запроса на корневом маршруте

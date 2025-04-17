@@ -11,8 +11,18 @@ function DayCheck({ onPointsUpdate }) {
   useEffect(() => {
     // Загружаем количество day-check из localStorage
     const storedDayCheckCount = localStorage.getItem('dayCheckCount');
-    if (storedDayCheckCount) {
-      setDayCheckCount(parseInt(storedDayCheckCount, 10));
+    const lastClaimTime = localStorage.getItem('lastClaimTime');
+
+    // Проверяем, прошло ли 24 часа с последнего сбора
+    if (lastClaimTime) {
+      const timeSinceLastClaim = Date.now() - parseInt(lastClaimTime, 10);
+      if (timeSinceLastClaim > 24 * 60 * 60 * 1000) {
+        // Если прошло более 24 часов, обнуляем счетчик
+        setDayCheckCount(0);
+        localStorage.setItem('dayCheckCount', 0);
+      } else if (storedDayCheckCount) {
+        setDayCheckCount(parseInt(storedDayCheckCount, 10));
+      }
     } else {
       setDayCheckCount(0); // Если значение не найдено, устанавливаем его в 0
     }
@@ -50,6 +60,7 @@ function DayCheck({ onPointsUpdate }) {
     const newDayCheckCount = dayCheckCount + 1;
     setDayCheckCount(newDayCheckCount);
     localStorage.setItem('dayCheckCount', newDayCheckCount);
+    localStorage.setItem('lastClaimTime', Date.now()); // Сохраняем время последнего сбора
   };
 
   const formatTimeLeft = (time) => {
