@@ -16,6 +16,10 @@ function DayCheck({ onPointsUpdate }) {
         const storedDayCheckCount = await tg.CloudStorage.getItem('dayCheckCount');
         const lastClaimTime = await tg.CloudStorage.getItem('lastClaimTime');
 
+        // Логирование значений
+        console.log('Stored dayCheckCount:', storedDayCheckCount);
+        console.log('Last claim time:', lastClaimTime);
+
         // Убедитесь, что storedDayCheckCount - это число
         const dayCheckCountValue = storedDayCheckCount ? parseInt(storedDayCheckCount, 10) : 0;
         setDayCheckCount(dayCheckCountValue);
@@ -56,21 +60,29 @@ function DayCheck({ onPointsUpdate }) {
   }, []);
 
   const handleGetButtonClick = async () => {
-    // Обновляем очки
-    onPointsUpdate(30.033);
-    setIsButtonDisabled(true);
-    const nextClaimTime = Date.now() + 12 * 60 * 60 * 1000;
-    await tg.CloudStorage.setItem('nextClaimTime', nextClaimTime);
-    setTimeLeft(12 * 60 * 60 * 1000);
+    try {
+      // Обновляем очки
+      onPointsUpdate(30.033);
+      setIsButtonDisabled(true);
+      const nextClaimTime = Date.now() + 12 * 60 * 60 * 1000;
+      await tg.CloudStorage.setItem('nextClaimTime', nextClaimTime);
+      setTimeLeft(12 * 60 * 60 * 1000);
 
-    // Обновляем счетчик
-    const newDayCheckCount = dayCheckCount + 1;
-    setDayCheckCount(newDayCheckCount);
-    await tg.CloudStorage.setItem('dayCheckCount', newDayCheckCount);
-    await tg.CloudStorage.setItem('lastClaimTime', Date.now());
+      // Обновляем счетчик
+      setDayCheckCount((prevCount) => {
+        const newDayCheckCount = prevCount + 1;
+        tg.CloudStorage.setItem('dayCheckCount', newDayCheckCount);
+        tg.CloudStorage.setItem('lastClaimTime', Date.now());
+        console.log('Updated dayCheckCount:', newDayCheckCount);
+        return newDayCheckCount;
+      });
+    } catch (error) {
+      console.error('Ошибка при нажатии кнопки:', error);
+    }
   };
 
   const formatTimeLeft = (time) => {
+    if (isNaN(time) || time < 0) return '00:00';
     const hours = Math.floor((time / (1000 * 60 * 60)) % 24);
     const minutes = Math.floor((time / (1000 * 60)) % 60);
     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
@@ -101,4 +113,3 @@ function DayCheck({ onPointsUpdate }) {
 }
 
 export default DayCheck;
-
