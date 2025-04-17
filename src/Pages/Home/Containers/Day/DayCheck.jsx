@@ -16,16 +16,16 @@ function DayCheck({ onPointsUpdate }) {
         const storedDayCheckCount = await tg.CloudStorage.getItem('dayCheckCount');
         const lastClaimTime = await tg.CloudStorage.getItem('lastClaimTime');
 
+        // Убедитесь, что storedDayCheckCount - это число
+        const dayCheckCountValue = storedDayCheckCount ? parseInt(storedDayCheckCount, 10) : 0;
+        setDayCheckCount(dayCheckCountValue);
+
         if (lastClaimTime) {
           const timeSinceLastClaim = Date.now() - parseInt(lastClaimTime, 10);
           if (timeSinceLastClaim > 24 * 60 * 60 * 1000) {
             setDayCheckCount(0);
             await tg.CloudStorage.setItem('dayCheckCount', 0);
-          } else if (storedDayCheckCount) {
-            setDayCheckCount(parseInt(storedDayCheckCount, 10));
           }
-        } else {
-          setDayCheckCount(0);
         }
 
         const storedTime = await tg.CloudStorage.getItem('nextClaimTime');
@@ -56,12 +56,14 @@ function DayCheck({ onPointsUpdate }) {
   }, []);
 
   const handleGetButtonClick = async () => {
+    // Обновляем очки
     onPointsUpdate(30.033);
     setIsButtonDisabled(true);
     const nextClaimTime = Date.now() + 12 * 60 * 60 * 1000;
     await tg.CloudStorage.setItem('nextClaimTime', nextClaimTime);
     setTimeLeft(12 * 60 * 60 * 1000);
 
+    // Обновляем счетчик
     const newDayCheckCount = dayCheckCount + 1;
     setDayCheckCount(newDayCheckCount);
     await tg.CloudStorage.setItem('dayCheckCount', newDayCheckCount);
@@ -99,3 +101,4 @@ function DayCheck({ onPointsUpdate }) {
 }
 
 export default DayCheck;
+

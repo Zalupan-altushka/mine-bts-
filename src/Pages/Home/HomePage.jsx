@@ -70,6 +70,7 @@ function HomePage({ userId }) {
       if (remainingTime <= 0) {
         clearInterval(interval);
         tg.CloudStorage.removeItem('endTime'); // Очищаем время окончания, когда таймер завершен
+        resetButtonState(); // Сбрасываем состояние кнопки после завершения таймера
       }
     }, 1000);
     setTimerInterval(interval);
@@ -84,6 +85,7 @@ function HomePage({ userId }) {
   const resetButtonState = () => {
     setIsButtonDisabled(false);
     setIsClaimButton(false);
+    setTimeRemaining(0); // Сбрасываем оставшееся время
   };
 
   const handlePointsUpdate = (amount) => {
@@ -112,11 +114,7 @@ function HomePage({ userId }) {
     const newPoints = points + 52.033;
     updatePoints(newPoints);
     setIsClaimButton(false);
-    tg.CloudStorage.setItem('isClaimButton', false, (error) => {
-      if (error) {
-        console.error('Ошибка при обновлении состояния кнопки:', error);
-      }
-    });
+    resetButtonState(); // Сбрасываем состояние кнопки после получения очков
   };
 
   const formatTime = (seconds) => {
