@@ -1,11 +1,11 @@
 import React from 'react';
-import Flower from '../../Most Used/Image/Flower.gif'; 
+import SeedPlant from '../../Most Used/Image/SeedPlant.gif'; 
 
 function Plant() {
 
   return(
     <div>
-      <img src={Flower} alt="Star" style={{ width: '90px', height: '90px' }}/>
+      <img src={SeedPlant} alt="Star" style={{ width: '80px', height: '80px' }}/>
     </div>
   );
 }

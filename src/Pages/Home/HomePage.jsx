@@ -10,42 +10,45 @@ import GrHeart from '../../Most Used/Image/GrHeart';
 
 const tg = window.Telegram.WebApp;
 
-function HomePage({ userId }) { // Получаем userId как пропс
-  const [points, setPoints] = useState(0.033); // Начальные очки
+function HomePage({ userId }) {
+  const [points, setPoints] = useState(0.0333);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [isClaimButton, setIsClaimButton] = useState(false);
   const [timerInterval, setTimerInterval] = useState(null);
 
   useEffect(() => {
-    fetchUserData(userId); // Загружаем данные пользователя
+    fetchUserData(userId);
 
     // Восстанавливаем состояние таймера
-    const endTime = localStorage.getItem('endTime');
-    if (endTime) {
-      const remainingTime = Math.max(0, Math.floor((parseInt(endTime) - Date.now()) / 1000));
-      setTimeRemaining(remainingTime);
-      setIsButtonDisabled(remainingTime > 0);
-      setIsClaimButton(remainingTime <= 0);
-      if (remainingTime > 0) {
-        startTimer(remainingTime);
+    tg.CloudStorage.getItem('endTime', (error, endTime) => {
+      if (endTime) {
+        const remainingTime = Math.max(0, Math.floor((parseInt(endTime) - Date.now()) / 1000));
+        setTimeRemaining(remainingTime);
+        updateButtonState(remainingTime);
+        if (remainingTime > 0) {
+          startTimer(remainingTime);
+        } else {
+          tg.CloudStorage.removeItem('endTime'); // Очищаем время окончания, если таймер завершен
+        }
       } else {
-        localStorage.removeItem('endTime'); // Очищаем время окончания, если таймер завершен
+        // Если endTime нет, устанавливаем состояние кнопки по умолчанию
+        resetButtonState();
       }
-    }
+    });
 
     return () => {
       if (timerInterval) {
-        clearInterval(timerInterval); // Очищаем интервал при размонтировании компонента
+        clearInterval(timerInterval);
       }
     };
-  }, [userId]); // Добавляем userId в зависимости
+  }, [userId]);
 
   const fetchUserData = async (userId) => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/user/${userId}`);
       if (response.data.points) {
-        setPoints(response.data.points); // Устанавливаем очки пользователя
+        setPoints(response.data.points);
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -54,21 +57,33 @@ function HomePage({ userId }) { // Получаем userId как пропс
 
   const startTimer = (duration) => {
     const endTime = Date.now() + duration * 1000;
-    localStorage.setItem('endTime', endTime); // Сохраняем время окончания в локальное хранилище
+    tg.CloudStorage.setItem('endTime', endTime, (error) => {
+      if (error) {
+        console.error('Ошибка при сохранении времени окончания:', error);
+      }
+    });
 
     const interval = setInterval(() => {
       const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
       setTimeRemaining(remainingTime);
-      localStorage.setItem('timeRemaining', remainingTime); // Сохраняем оставшееся время в локальное хранилище
-      setIsButtonDisabled(remainingTime > 0);
-      const claimButtonState = remainingTime <= 0;
-      setIsClaimButton(claimButtonState); // Обновляем состояние кнопки
+      updateButtonState(remainingTime);
       if (remainingTime <= 0) {
         clearInterval(interval);
-        localStorage.removeItem('endTime'); // Очищаем время окончания, когда таймер завершен
+        tg.CloudStorage.removeItem('endTime'); // Очищаем время окончания, когда таймер завершен
       }
     }, 1000);
-    setTimerInterval(interval); // Сохраняем ID интервала для его очистки позже
+    setTimerInterval(interval);
+  };
+
+  const updateButtonState = (remainingTime) => {
+    const claimButtonState = remainingTime <= 0;
+    setIsButtonDisabled(remainingTime > 0);
+    setIsClaimButton(claimButtonState);
+  };
+
+  const resetButtonState = () => {
+    setIsButtonDisabled(false);
+    setIsClaimButton(false);
   };
 
   const handlePointsUpdate = (amount) => {
@@ -78,8 +93,12 @@ function HomePage({ userId }) { // Получаем userId как пропс
 
   const updatePoints = (newPoints) => {
     setPoints(newPoints);
-    localStorage.setItem('points', newPoints); // Сохраняем очки в локальное хранилище
-    saveUserData(userId, newPoints); // Сохраняем обновленные очки
+    tg.CloudStorage.setItem('points', newPoints, (error) => {
+      if (error) {
+        console.error('Ошибка при сохранении очков:', error);
+      }
+    });
+    saveUserData(userId, newPoints);
   };
 
   const handleMineFor100 = () => {
@@ -93,7 +112,11 @@ function HomePage({ userId }) { // Получаем userId как пропс
     const newPoints = points + 52.033;
     updatePoints(newPoints);
     setIsClaimButton(false);
-    localStorage.setItem('isClaimButton', false); // Обновляем локальное хранилище
+    tg.CloudStorage.setItem('isClaimButton', false, (error) => {
+      if (error) {
+        console.error('Ошибка при обновлении состояния кнопки:', error);
+      }
+    });
   };
 
   const formatTime = (seconds) => {
@@ -148,4 +171,3 @@ function HomePage({ userId }) { // Получаем userId как пропс
 }
 
 export default HomePage;
-
