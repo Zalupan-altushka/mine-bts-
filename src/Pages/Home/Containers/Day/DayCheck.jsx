@@ -12,21 +12,19 @@ function DayCheck({ onPointsUpdate }) {
     // Загружаем количество day-check из localStorage
     const storedDayCheckCount = localStorage.getItem('dayCheckCount');
     const lastClaimTime = localStorage.getItem('lastClaimTime');
-    
-    if (storedDayCheckCount) {
-      setDayCheckCount(parseInt(storedDayCheckCount, 10));
-    } else {
-      setDayCheckCount(0); // Если значение не найдено, устанавливаем его в 0
-    }
 
-    // Проверяем, прошло ли 24 часа с последнего нажатия
+    // Проверяем, прошло ли 24 часа с последнего сбора
     if (lastClaimTime) {
       const timeSinceLastClaim = Date.now() - parseInt(lastClaimTime, 10);
-      if (timeSinceLastClaim >= 24 * 60 * 60 * 1000) {
-        // Если прошло 24 часа, сбрасываем счетчик
+      if (timeSinceLastClaim > 24 * 60 * 60 * 1000) {
+        // Если прошло более 24 часов, обнуляем счетчик
         setDayCheckCount(0);
         localStorage.setItem('dayCheckCount', 0);
+      } else if (storedDayCheckCount) {
+        setDayCheckCount(parseInt(storedDayCheckCount, 10));
       }
+    } else {
+      setDayCheckCount(0); // Если значение не найдено, устанавливаем его в 0
     }
 
     // Загружаем время следующего запроса из localStorage
@@ -62,9 +60,7 @@ function DayCheck({ onPointsUpdate }) {
     const newDayCheckCount = dayCheckCount + 1;
     setDayCheckCount(newDayCheckCount);
     localStorage.setItem('dayCheckCount', newDayCheckCount);
-    
-    // Сохраняем время последнего нажатия
-    localStorage.setItem('lastClaimTime', Date.now());
+    localStorage.setItem('lastClaimTime', Date.now()); // Сохраняем время последнего сбора
   };
 
   const formatTimeLeft = (time) => {
