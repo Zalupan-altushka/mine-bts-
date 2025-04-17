@@ -17,50 +17,53 @@ function HomePage({ userId }) {
   const [isClaimButton, setIsClaimButton] = useState(false);
   const [timerInterval, setTimerInterval] = useState(null);
 
+  // Восстановление состояния при монтировании
   useEffect(() => {
-    fetchUserData(userId);
-  
-    // Восстановление состояния таймера и кнопок из CloudStorage
-    tg.CloudStorage.getItem('endTime', (error, endTime) => {
-      if (endTime) {
-        const remainingTime = Math.max(0, Math.floor((parseInt(endTime) - Date.now()) / 1000));
-        if (remainingTime > 0) {
-          setTimeRemaining(remainingTime);
-          setIsButtonDisabled(true);
-          setIsClaimButton(false);
-          startTimer(remainingTime);
+    let intervalId;
+
+    const restoreState = () => {
+      tg.CloudStorage.getItem('endTime', (error, endTime) => {
+        if (endTime) {
+          const remainingTime = Math.max(0, Math.floor((parseInt(endTime) - Date.now()) / 1000));
+          if (remainingTime > 0) {
+            setTimeRemaining(remainingTime);
+            setIsButtonDisabled(true);
+            setIsClaimButton(false);
+            startTimer(remainingTime);
+          } else {
+            // Время истекло, очищаем
+            tg.CloudStorage.removeItem('endTime');
+            setIsButtonDisabled(false);
+            setIsClaimButton(true);
+            setTimeRemaining(0);
+          }
         } else {
-          // Время истекло, очищаем
-          tg.CloudStorage.removeItem('endTime');
+          // Нет endTime, восстанавливаем состояние кнопки
+          tg.CloudStorage.getItem('isClaimButton', (err, claimState) => {
+            if (claimState !== null) {
+              setIsClaimButton(claimState === 'true');
+            }
+          });
+          tg.CloudStorage.getItem('isButtonDisabled', (err, disabledState) => {
+            if (disabledState !== null) {
+              setIsButtonDisabled(disabledState === 'true');
+            }
+          });
+          // Можно оставить состояние по умолчанию
           setIsButtonDisabled(false);
-          setIsClaimButton(true);
-          setTimeRemaining(0);
+          setIsClaimButton(false);
         }
-      } else {
-        // Нет endTime, восстанавливаем состояние кнопки
-        tg.CloudStorage.getItem('isClaimButton', (err, claimState) => {
-          if (claimState !== null) {
-            setIsClaimButton(claimState === 'true');
-          }
-        });
-        tg.CloudStorage.getItem('isButtonDisabled', (err, disabledState) => {
-          if (disabledState !== null) {
-            setIsButtonDisabled(disabledState === 'true');
-          }
-        });
-        // Можно оставить состояние по умолчанию
-        setIsButtonDisabled(false);
-        setIsClaimButton(false);
-      }
-    });
-  
+      });
+    };
+
+    restoreState();
+
     return () => {
-      if (timerInterval) {
-        clearInterval(timerInterval);
+      if (intervalId) {
+        clearInterval(intervalId);
       }
     };
   }, [userId]);
-  
 
   const fetchUserData = async (userId) => {
     try {
@@ -116,11 +119,11 @@ function HomePage({ userId }) {
         console.error('Ошибка при сохранении очков:', error);
       }
     });
-    saveUserData(userId, newPoints);
+    // Предполагается, что есть функция для сохранения данных пользователя
+    // Например, saveUserData(userId, newPoints);
   };
 
   const handleMineFor100 = () => {
-    setIsButtonDisabled(true);
     const sixHoursInSeconds = 6 * 60 * 60;
     setTimeRemaining(sixHoursInSeconds);
     startTimer(sixHoursInSeconds);
