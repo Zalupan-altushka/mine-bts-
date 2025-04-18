@@ -16,8 +16,6 @@ function HomePage({ userId }) { // Получаем userId как пропс
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [isClaimButton, setIsClaimButton] = useState(false);
   const [timerInterval, setTimerInterval] = useState(null);
-  const [dayCheckCount, setDayCheckCount] = useState(0);
-  const [isDayCheckButtonDisabled, setIsDayCheckButtonDisabled] = useState(false);
 
   useEffect(() => {
     fetchUserData(userId); // Загружаем данные пользователя
@@ -110,13 +108,7 @@ function HomePage({ userId }) { // Получаем userId как пропс
       <div className='margin-div'></div>
       <div className='for-margin-home'></div>
       <span className='points-count'>{points.toFixed(4)}</span>
-      <DayCheck
-        onPointsUpdate={handlePointsUpdate}
-        dayCheckCount={dayCheckCount}
-        setDayCheckCount={setDayCheckCount}
-        isButtonDisabled={isDayCheckButtonDisabled}
-        setIsButtonDisabled={setIsDayCheckButtonDisabled}
-      />
+      <DayCheck onPointsUpdate={handlePointsUpdate} />
       <div className='container-game'>
         <div className='left-section-gif-game'>
           <GrHeart />
