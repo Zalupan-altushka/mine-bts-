@@ -26,11 +26,17 @@ function HomePage() {
       if (user) {
         const id = user.id;
         setUserId(id);
-        fetchUserPoints(id);
+        // Попытка получить очки из localStorage
+        const storedPoints = localStorage.getItem(`points_${id}`);
+        if (storedPoints !== null) {
+          setPoints(parseFloat(storedPoints));
+        } else {
+          fetchUserPoints(id);
+        }
       }
     }
-
-    // Восстановление таймера из localStorage (можно оставить или убрать)
+  
+    // Восстановление таймера (оставьте как есть)
     const endTimeStr = localStorage.getItem('endTime');
     if (endTimeStr) {
       const endTime = parseInt(endTimeStr, 10);
@@ -51,6 +57,7 @@ function HomePage() {
       const response = await axios.get(`${API_URL}/api/user/${userId}`);
       if (response.data && response.data.points !== undefined) {
         setPoints(response.data.points);
+        localStorage.setItem(`points_${userId}`, response.data.points.toString());
       }
     } catch (error) {
       console.error('Ошибка при получении очков:', error);
@@ -84,7 +91,10 @@ function HomePage() {
   const handlePointsUpdate = (amount) => {
     const newPoints = points + amount;
     setPoints(newPoints);
-    updatePointsInDB(newPoints);
+    if (userId) {
+      localStorage.setItem(`points_${userId}`, newPoints.toString());
+      updatePointsInDB(newPoints);
+    }
   };
 
   const handleMineFor100 = () => {
@@ -97,7 +107,10 @@ function HomePage() {
   const handleClaimPoints = () => {
     const newPoints = points + 52.033;
     setPoints(newPoints);
-    updatePointsInDB(newPoints);
+    if (userId) {
+      localStorage.setItem(`points_${userId}`, newPoints.toString());
+      updatePointsInDB(newPoints);
+    }
     setIsClaimButton(false);
   };
 
@@ -153,3 +166,4 @@ function HomePage() {
 }
 
 export default HomePage;
+
