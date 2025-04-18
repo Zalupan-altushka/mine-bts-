@@ -3,10 +3,7 @@ import './DayCheck.css';
 import Moom from '../../../../Most Used/Image/Moom';
 import CheckIcon from '../../../../Most Used/Image/CheckIcon';
 
-function DayCheck({ onPointsUpdate }) {
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(0);
-  const [dayCheckCount, setDayCheckCount] = useState(0); // Состояние для хранения количества day-check
+function DayCheck({ onPointsUpdate, dayCheckCount, setDayCheckCount, isButtonDisabled, setIsButtonDisabled }) {
 
   useEffect(() => {
     // Загружаем количество day-check из localStorage
@@ -50,18 +47,19 @@ function DayCheck({ onPointsUpdate }) {
   }, []);
 
   const handleGetButtonClick = () => {
-    onPointsUpdate(30.033); // Обновляем очки
+    onPointsUpdate(30.033);
     setIsButtonDisabled(true);
-    const nextClaimTime = Date.now() + 12 * 60 * 60 * 1000; // 12 часов
+    const nextClaimTime = Date.now() + 12 * 60 * 60 * 1000;
     localStorage.setItem('nextClaimTime', nextClaimTime);
-    setTimeLeft(12 * 60 * 60 * 1000); // Устанавливаем время блокировки
-
-    // Увеличиваем количество day-check и сохраняем в localStorage
-    const newDayCheckCount = dayCheckCount + 1;
-    setDayCheckCount(newDayCheckCount);
-    localStorage.setItem('dayCheckCount', newDayCheckCount);
-    localStorage.setItem('lastClaimTime', Date.now()); // Сохраняем время последнего сбора
+    // Обновляем счетчик и сохраняем
+    const newCount = dayCheckCount + 1;
+    setDayCheckCount(newCount);
+    localStorage.setItem('dayCheckCount', newCount);
+    localStorage.setItem('lastClaimTime', Date.now());
+    // Устанавливаем время блокировки
+    // Можно также передать setTimeLeft, если нужно
   };
+  
 
   const formatTimeLeft = (time) => {
     const hours = Math.floor((time / (1000 * 60 * 60)) % 24);
