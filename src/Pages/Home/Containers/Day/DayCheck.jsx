@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './DayCheck.css';
 import Moom from '../../../../Most Used/Image/Moom';
 import CheckIcon from '../../../../Most Used/Image/CheckIcon';
@@ -9,47 +9,64 @@ function DayCheck({ onPointsUpdate }) {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
   const [dayCheckCount, setDayCheckCount] = useState(0);
-  const [intervalId, setIntervalId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true); // Для отслеживания загрузки данных
+
+  const intervalRef = useRef(null);
+  const timeoutRef = useRef(null);
 
   // Загрузка данных при монтировании
   useEffect(() => {
-    // Получаем текущий счетчик дней
-    tg.CloudStorage.getItem('dayCheckCount', (error, storedCount) => {
-      if (!error && storedCount !== null) {
-        setDayCheckCount(parseInt(storedCount, 10));
-      }
-    });
+    let isMounted = true;
 
-    // Получаем время следующего запроса
-    tg.CloudStorage.getItem('nextClaimTime', (error, storedTime) => {
-      if (!error && storedTime) {
-        const remainingTime = parseInt(storedTime, 10) - Date.now();
-        if (remainingTime > 0) {
-          setTimeLeft(remainingTime);
-          setIsButtonDisabled(true);
-          // Запускаем таймер
-          const interval = setInterval(() => {
-            setTimeLeft((prev) => {
-              if (prev <= 1000) {
-                clearInterval(interval);
-                setIsButtonDisabled(false);
-                return 0;
-              }
-              return prev - 1000;
-            });
-          }, 1000);
-          setIntervalId(interval);
+    const loadData = async () => {
+      // Получаем текущий счетчик дней
+      tg.CloudStorage.getItem('dayCheckCount', (error, storedCount) => {
+        if (!error && storedCount !== null && isMounted) {
+          setDayCheckCount(parseInt(storedCount, 10));
         }
-      }
-    });
+      });
 
-    // Очистка интервала при размонтировании
+      // Получаем время следующего запроса
+      tg.CloudStorage.getItem('nextClaimTime', (error, storedTime) => {
+        if (!error && storedTime && isMounted) {
+          const remainingTime = parseInt(storedTime, 10) - Date.now();
+          if (remainingTime > 0) {
+            setTimeLeft(remainingTime);
+            setIsButtonDisabled(true);
+            startTimer(remainingTime);
+          }
+        }
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      });
+    };
+
+    loadData();
+
     return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
+      isMounted = false;
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);
+
+  // Функция для запуска таймера
+  const startTimer = (duration) => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    const endTime = Date.now() + duration;
+    setTimeLeft(duration);
+    setIsButtonDisabled(true);
+
+    intervalRef.current = setInterval(() => {
+      const remaining = Math.max(0, endTime - Date.now());
+      setTimeLeft(remaining);
+      if (remaining <= 0) {
+        clearInterval(intervalRef.current);
+        setIsButtonDisabled(false);
+      }
+    }, 1000);
+  };
 
   const handleGetButtonClick = () => {
     // Обновляем очки
@@ -71,17 +88,7 @@ function DayCheck({ onPointsUpdate }) {
     tg.CloudStorage.setItem('lastClaimTime', Date.now());
 
     // Запускаем таймер
-    const endTime = Date.now() + 12 * 60 * 60 * 1000;
-    const interval = setInterval(() => {
-      const remaining = Math.max(0, endTime - Date.now());
-      setTimeLeft(remaining);
-      if (remaining <= 0) {
-        clearInterval(interval);
-        setIsButtonDisabled(false);
-      }
-    }, 1000);
-    setIntervalId(interval);
-    setTimeLeft(12 * 60 * 60 * 1000);
+    startTimer(12 * 60 * 60 * 1000);
   };
 
   const formatTimeLeft = (time) => {
@@ -90,6 +97,11 @@ function DayCheck({ onPointsUpdate }) {
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
   };
+
+  if (isLoading) {
+    // Можно показывать загрузку или ничего не отображать
+    return null;
+  }
 
   return (
     <div className='container-check-day'>
@@ -116,4 +128,5 @@ function DayCheck({ onPointsUpdate }) {
 }
 
 export default DayCheck;
+
 
