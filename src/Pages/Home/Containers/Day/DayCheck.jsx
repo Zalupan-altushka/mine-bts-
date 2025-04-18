@@ -20,37 +20,39 @@ function DayCheck({ onPointsUpdate }) {
   // Загрузка данных при монтировании
   useEffect(() => {
     let isMounted = true;
-
-    const loadData = async () => {
-      // Получаем счетчик дней
-      tg.CloudStorage.getItem('dayCheckCount', (error, storedCount) => {
-        if (!error && storedCount !== null && isMounted) {
-          const count = parseInt(storedCount, 10);
-          dayCheckCountRef.current = count;
-          setDisplayCount(count);
+  
+    // Загружаем счетчик дней
+    tg.CloudStorage.getItem('dayCheckCount', (error, storedCount) => {
+      if (!error && storedCount !== null && isMounted) {
+        const count = parseInt(storedCount, 10);
+        dayCheckCountRef.current = count;
+        setDisplayCount(count);
+      }
+    });
+  
+    // Загружаем время следующего сбора
+    tg.CloudStorage.getItem('nextClaimTime', (error, storedTime) => {
+      if (!error && storedTime && isMounted) {
+        const storedTimestamp = parseInt(storedTime, 10);
+        const remainingTime = storedTimestamp - Date.now();
+        if (remainingTime > 0) {
+          // Восстанавливаем таймер
+          startTimer(remainingTime);
+          isButtonDisabledRef.current = true;
+          setIsButtonDisabled(true);
+          setDisplayTimeLeft(remainingTime);
+        } else {
+          // Таймер истек, сбрасываем состояние
+          tg.CloudStorage.removeItem('nextClaimTime');
+          isButtonDisabledRef.current = false;
+          setIsButtonDisabled(false);
         }
-      });
-
-      // Получаем время следующего сбора
-      tg.CloudStorage.getItem('nextClaimTime', (error, storedTime) => {
-        if (!error && storedTime && isMounted) {
-          const remainingTime = parseInt(storedTime, 10) - Date.now();
-          if (remainingTime > 0) {
-            timeLeftRef.current = remainingTime;
-            setDisplayTimeLeft(remainingTime);
-            isButtonDisabledRef.current = true;
-            setIsButtonDisabled(true);
-            startTimer(remainingTime);
-          }
-        }
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      });
-    };
-
-    loadData();
-
+      }
+      if (isMounted) {
+        setIsLoading(false);
+      }
+    });
+  
     return () => {
       isMounted = false;
       if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
