@@ -82,24 +82,26 @@ function DayCheck({ onPointsUpdate }) {
   const handleGetButtonClick = () => {
     // Обновляем очки
     onPointsUpdate(30.033);
-
+  
     // Блокируем кнопку
     setIsButtonDisabled(true);
     isButtonDisabledRef.current = true;
-
+  
     // Устанавливаем время следующего сбора
     const nextClaimTime = Date.now() + 12 * 60 * 60 * 1000;
     tg.CloudStorage.setItem('nextClaimTime', nextClaimTime);
-
+    localStorage.setItem('nextClaimTime', nextClaimTime.toString());
+  
     // Обновляем счетчик дней
     const newCount = dayCheckCountRef.current + 1;
     dayCheckCountRef.current = newCount;
     setDisplayCount(newCount);
-    tg.CloudStorage.setItem('dayCheckCount', newCount);
-
+    localStorage.setItem('dayCheckCount', newCount.toString());
+  
     // Устанавливаем время последнего сбора
     tg.CloudStorage.setItem('lastClaimTime', Date.now());
-
+    localStorage.setItem('lastClaimTime', Date.now().toString());
+  
     // Запускаем таймер
     startTimer(12 * 60 * 60 * 1000);
   };
