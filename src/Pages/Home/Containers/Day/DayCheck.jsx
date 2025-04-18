@@ -6,32 +6,39 @@ import CheckIcon from '../../../../Most Used/Image/CheckIcon';
 const tg = window.Telegram.WebApp;
 
 function DayCheck({ onPointsUpdate }) {
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(0);
-  const [dayCheckCount, setDayCheckCount] = useState(0);
-  const [isLoading, setIsLoading] = useState(true); // Для отслеживания загрузки данных
+  // Используем useRef для хранения состояния, чтобы оно сохранялось между рендерами
+  const dayCheckCountRef = useRef(0);
+  const timeLeftRef = useRef(0);
+  const isButtonDisabledRef = useRef(false);
+  const timerIntervalRef = useRef(null);
 
-  const intervalRef = useRef(null);
-  const timeoutRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(true); // Для отображения загрузки
+  const [displayCount, setDisplayCount] = useState(0);
+  const [displayTimeLeft, setDisplayTimeLeft] = useState(0);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   // Загрузка данных при монтировании
   useEffect(() => {
     let isMounted = true;
 
     const loadData = async () => {
-      // Получаем текущий счетчик дней
+      // Получаем счетчик дней
       tg.CloudStorage.getItem('dayCheckCount', (error, storedCount) => {
         if (!error && storedCount !== null && isMounted) {
-          setDayCheckCount(parseInt(storedCount, 10));
+          const count = parseInt(storedCount, 10);
+          dayCheckCountRef.current = count;
+          setDisplayCount(count);
         }
       });
 
-      // Получаем время следующего запроса
+      // Получаем время следующего сбора
       tg.CloudStorage.getItem('nextClaimTime', (error, storedTime) => {
         if (!error && storedTime && isMounted) {
           const remainingTime = parseInt(storedTime, 10) - Date.now();
           if (remainingTime > 0) {
-            setTimeLeft(remainingTime);
+            timeLeftRef.current = remainingTime;
+            setDisplayTimeLeft(remainingTime);
+            isButtonDisabledRef.current = true;
             setIsButtonDisabled(true);
             startTimer(remainingTime);
           }
@@ -46,23 +53,25 @@ function DayCheck({ onPointsUpdate }) {
 
     return () => {
       isMounted = false;
-      if (intervalRef.current) clearInterval(intervalRef.current);
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
     };
   }, []);
 
-  // Функция для запуска таймера
   const startTimer = (duration) => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
+    if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
     const endTime = Date.now() + duration;
-    setTimeLeft(duration);
+    timeLeftRef.current = duration;
+    setDisplayTimeLeft(duration);
+    isButtonDisabledRef.current = true;
     setIsButtonDisabled(true);
 
-    intervalRef.current = setInterval(() => {
+    timerIntervalRef.current = setInterval(() => {
       const remaining = Math.max(0, endTime - Date.now());
-      setTimeLeft(remaining);
+      timeLeftRef.current = remaining;
+      setDisplayTimeLeft(remaining);
       if (remaining <= 0) {
-        clearInterval(intervalRef.current);
+        clearInterval(timerIntervalRef.current);
+        isButtonDisabledRef.current = false;
         setIsButtonDisabled(false);
       }
     }, 1000);
@@ -74,14 +83,16 @@ function DayCheck({ onPointsUpdate }) {
 
     // Блокируем кнопку
     setIsButtonDisabled(true);
+    isButtonDisabledRef.current = true;
 
-    // Устанавливаем время следующего сбора (12 часов)
+    // Устанавливаем время следующего сбора
     const nextClaimTime = Date.now() + 12 * 60 * 60 * 1000;
     tg.CloudStorage.setItem('nextClaimTime', nextClaimTime);
 
     // Обновляем счетчик дней
-    const newCount = dayCheckCount + 1;
-    setDayCheckCount(newCount);
+    const newCount = dayCheckCountRef.current + 1;
+    dayCheckCountRef.current = newCount;
+    setDisplayCount(newCount);
     tg.CloudStorage.setItem('dayCheckCount', newCount);
 
     // Устанавливаем время последнего сбора
@@ -99,8 +110,7 @@ function DayCheck({ onPointsUpdate }) {
   };
 
   if (isLoading) {
-    // Можно показывать загрузку или ничего не отображать
-    return null;
+    return null; // или индикатор загрузки
   }
 
   return (
@@ -109,9 +119,9 @@ function DayCheck({ onPointsUpdate }) {
         <Moom />
       </div>
       <div className='mid-section-textabout'>
-        <span className='first-span'>{dayCheckCount} day-check</span>
+        <span className='first-span'>{displayCount} day-check</span>
         <span className='second-span'>
-          {isButtonDisabled ? `Next claim in ${formatTimeLeft(timeLeft)}` : 'Claim available!'}
+          {isButtonDisabled ? `Next claim in ${formatTimeLeft(displayTimeLeft)}` : 'Claim available!'}
         </span>
       </div>
       <div className='right-section-button'>
@@ -128,5 +138,3 @@ function DayCheck({ onPointsUpdate }) {
 }
 
 export default DayCheck;
-
-
