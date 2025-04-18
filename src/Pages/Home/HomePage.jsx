@@ -27,17 +27,22 @@ function HomePage() {
   });
   const [timerInterval, setTimerInterval] = useState(null);
 
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
   useEffect(() => {
     if (tg) {
-      const user = tg.initDataUnsafe.user;
+      const user = tg.initDataUnsafe?.user;
       if (user) {
-        const id = user.id; // Get user ID from Telegram
+        const id = user.id;
         setUserId(id);
-        saveUserData(id, points); // Save user data when userId is set
+        // Отправляем данные о пользователе на сервер
+        sendUserData(id);
+        // Получаем текущие очки пользователя
+        fetchUserPoints(id);
       }
     }
 
-    // Restore timer state from end time if available
+    // Восстановление таймера из localStorage
     const endTime = localStorage.getItem('endTime');
     if (endTime) {
       const remainingTime = Math.max(0, Math.floor((parseInt(endTime) - Date.now()) / 1000));
@@ -47,44 +52,54 @@ function HomePage() {
       if (remainingTime > 0) {
         startTimer(remainingTime);
       } else {
-        localStorage.removeItem('endTime'); // Clear end time if timer is done
+        localStorage.removeItem('endTime');
       }
     }
 
     return () => {
       if (timerInterval) {
-        clearInterval(timerInterval); // Clear interval on component unmount
+        clearInterval(timerInterval);
       }
     };
   }, []);
 
-  const saveUserData = async (userId, points) => {
-    if (!userId) return; // Prevent saving if userId is not available
+  const sendUserData = async (userId) => {
     try {
-      await axios.post(`${process.env.REACT_APP_API_URL}/api/user`, { userId, points });
+      await axios.post(`${API_URL}/api/user`, { userId, points: 0.0333 });
     } catch (error) {
-      console.error('Error saving user data:', error);
+      console.error('Ошибка при отправке данных пользователя:', error);
+    }
+  };
+
+  const fetchUserPoints = async (userId) => {
+    try {
+      const response = await axios.get(`${API_URL}/api/user/${userId}`);
+      if (response.data && response.data.points !== undefined) {
+        setPoints(response.data.points);
+        localStorage.setItem('points', response.data.points);
+      }
+    } catch (error) {
+      console.error('Ошибка при получении очков:', error);
     }
   };
 
   const startTimer = (duration) => {
     const endTime = Date.now() + duration * 1000;
-    localStorage.setItem('endTime', endTime); // Save end time to local storage
-
+    localStorage.setItem('endTime', endTime);
     const interval = setInterval(() => {
       const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
       setTimeRemaining(remainingTime);
-      localStorage.setItem('timeRemaining', remainingTime); // Save remaining time to local storage
+      localStorage.setItem('timeRemaining', remainingTime);
       setIsButtonDisabled(remainingTime > 0);
       const claimButtonState = remainingTime <= 0;
       setIsClaimButton(claimButtonState);
-      localStorage.setItem('isClaimButton', claimButtonState); // Save claim button state to local storage
+      localStorage.setItem('isClaimButton', claimButtonState);
       if (remainingTime <= 0) {
         clearInterval(interval);
-        localStorage.removeItem('endTime'); // Clear end time when timer is done
+        localStorage.removeItem('endTime');
       }
     }, 1000);
-    setTimerInterval(interval); // Save interval ID to clear it later
+    setTimerInterval(interval);
   };
 
   const handlePointsUpdate = (amount) => {
@@ -94,8 +109,10 @@ function HomePage() {
 
   const updatePoints = (newPoints) => {
     setPoints(newPoints);
-    localStorage.setItem('points', newPoints); // Save points to local storage
-    saveUserData(userId, newPoints); // Save updated points
+    localStorage.setItem('points', newPoints);
+    if (userId) {
+      saveUserData(userId, newPoints);
+    }
   };
 
   const handleMineFor100 = () => {
@@ -109,7 +126,7 @@ function HomePage() {
     const newPoints = points + 52.033;
     updatePoints(newPoints);
     setIsClaimButton(false);
-    localStorage.setItem('isClaimButton', false); // Update local storage
+    localStorage.setItem('isClaimButton', false);
   };
 
   const formatTime = (seconds) => {
@@ -122,43 +139,43 @@ function HomePage() {
   return (
     <section className='bodyhomepage'>
       <div className='margin-div'></div>
-        <div className='for-margin-home'></div>
-        <span className='points-count'>{points.toFixed(4)}</span>
-        <DayCheck onPointsUpdate={handlePointsUpdate} />
-        <div className='container-game'>
-          <div className='left-section-gif-game'>
-            <GrHeart />
-          </div>
-          <div className='mid-section-textabout-game'>
-            <span className='first-span-game'>Mini Game</span> 
-            <span className='second-span-game'>
-              <span>Coming soon...</span>
-            </span>
-          </div>
-          <div className='right-section-button-game'>
-            <button className='Game-button'>?</button>
-          </div>
+      <div className='for-margin-home'></div>
+      <span className='points-count'>{points.toFixed(4)}</span>
+      <DayCheck onPointsUpdate={handlePointsUpdate} />
+      <div className='container-game'>
+        <div className='left-section-gif-game'>
+          <GrHeart />
         </div>
-        <BoosterContainer />
-        <FriendsConnt />
-        <div className='ButtonGroup'>
-          <button
-            className='FarmButton'
-            onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
-            disabled={isButtonDisabled && !isClaimButton}
-            style={{
-              backgroundColor: isClaimButton ? 'white' : (isButtonDisabled ? '#c4f85c' : ''),
-              color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            {isButtonDisabled && !isClaimButton && <Timer style={{ marginRight: '8px' }} />}
-            {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
-          </button>
+        <div className='mid-section-textabout-game'>
+          <span className='first-span-game'>Mini Game</span> 
+          <span className='second-span-game'>
+            <span>Coming soon...</span>
+          </span>
         </div>
-        <Menu />
+        <div className='right-section-button-game'>
+          <button className='Game-button'>?</button>
+        </div>
+      </div>
+      <BoosterContainer />
+      <FriendsConnt />
+      <div className='ButtonGroup'>
+        <button
+          className='FarmButton'
+          onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
+          disabled={isButtonDisabled && !isClaimButton}
+          style={{
+            backgroundColor: isClaimButton ? 'white' : (isButtonDisabled ? '#c4f85c' : ''),
+            color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {isButtonDisabled && !isClaimButton && <Timer style={{ marginRight: '8px' }} />}
+          {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
+        </button>
+      </div>
+      <Menu />
     </section>
   );
 }

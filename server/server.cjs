@@ -25,32 +25,21 @@ client.connect()
   });
 
 // Обработка POST-запроса
-app.post('/api/user', (req, res) => {
-  const { userId, points } = req.body;
+app.get('/api/user/:userId', (req, res) => {
+  const userId = req.params.userId;
 
   db.collection('users').findOne({ userId: userId })
-    .then(existingUser => {
-      if (existingUser) {
-        // User exists, update their points
-        return db.collection('users').updateOne(
-          { userId: userId },
-          { $set: { points: existingUser.points + points } } // Increment points
-        );
+    .then(user => {
+      if (user) {
+        res.json({ userId: user.userId, points: user.points });
       } else {
-        // User does not exist, create a new user
-        return db.collection('users').insertOne({
-          userId: userId,
-          points: points,
-          createdAt: new Date()
-        });
+        // Если пользователь не найден, можно вернуть points = 0.0333 или ошибку
+        res.json({ userId: userId, points: 0.0333 });
       }
     })
-    .then(result => {
-      res.status(200).json({ message: 'User data processed successfully', result });
-    })
     .catch(err => {
-      console.error('Error processing user data:', err);
-      res.status(500).json({ message: 'Error processing user data' });
+      console.error('Ошибка при получении пользователя:', err);
+      res.status(500).json({ message: 'Ошибка сервера' });
     });
 });
 
