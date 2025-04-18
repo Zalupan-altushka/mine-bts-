@@ -11,20 +11,11 @@ import GrHeart from '../../Most Used/Image/GrHeart';
 const tg = window.Telegram.WebApp;
 
 function HomePage() {
-  const [points, setPoints] = useState(() => {
-    const savedPoints = localStorage.getItem('points');
-    return savedPoints ? parseFloat(savedPoints) : 0.0333; // Initial points are 0.0333
-  });
+  const [points, setPoints] = useState(0);
   const [userId, setUserId] = useState('');
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState(() => {
-    const savedTime = localStorage.getItem('timeRemaining');
-    return savedTime ? parseInt(savedTime, 10) : 0;
-  });
-  const [isClaimButton, setIsClaimButton] = useState(() => {
-    const savedClaimButtonState = localStorage.getItem('isClaimButton');
-    return savedClaimButtonState === 'true'; // Convert string to boolean
-  });
+  const [timeRemaining, setTimeRemaining] = useState(0);
+  const [isClaimButton, setIsClaimButton] = useState(true);
   const [timerInterval, setTimerInterval] = useState(null);
 
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
@@ -35,51 +26,42 @@ function HomePage() {
       if (user) {
         const id = user.id;
         setUserId(id);
-        // Отправляем данные о пользователе на сервер
-        sendUserData(id);
-        // Получаем текущие очки пользователя
         fetchUserPoints(id);
       }
     }
 
-    // Восстановление таймера из localStorage
-    const endTime = localStorage.getItem('endTime');
-    if (endTime) {
-      const remainingTime = Math.max(0, Math.floor((parseInt(endTime) - Date.now()) / 1000));
-      setTimeRemaining(remainingTime);
-      setIsButtonDisabled(remainingTime > 0);
-      setIsClaimButton(remainingTime <= 0);
-      if (remainingTime > 0) {
-        startTimer(remainingTime);
+    // Восстановление таймера из localStorage (можно оставить или убрать)
+    const endTimeStr = localStorage.getItem('endTime');
+    if (endTimeStr) {
+      const endTime = parseInt(endTimeStr, 10);
+      const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+      setTimeRemaining(remaining);
+      setIsButtonDisabled(remaining > 0);
+      setIsClaimButton(remaining <= 0);
+      if (remaining > 0) {
+        startTimer(remaining);
       } else {
         localStorage.removeItem('endTime');
       }
     }
-
-    return () => {
-      if (timerInterval) {
-        clearInterval(timerInterval);
-      }
-    };
   }, []);
-
-  const sendUserData = async (userId) => {
-    try {
-      await axios.post(`${API_URL}/api/user`, { userId, points: 0.0333 });
-    } catch (error) {
-      console.error('Ошибка при отправке данных пользователя:', error);
-    }
-  };
 
   const fetchUserPoints = async (userId) => {
     try {
       const response = await axios.get(`${API_URL}/api/user/${userId}`);
       if (response.data && response.data.points !== undefined) {
         setPoints(response.data.points);
-        localStorage.setItem('points', response.data.points);
       }
     } catch (error) {
       console.error('Ошибка при получении очков:', error);
+    }
+  };
+
+  const updatePointsInDB = async (newPoints) => {
+    try {
+      await axios.post(`${API_URL}/api/user/${userId}`, { points: newPoints });
+    } catch (error) {
+      console.error('Ошибка при обновлении очков:', error);
     }
   };
 
@@ -89,14 +71,11 @@ function HomePage() {
     const interval = setInterval(() => {
       const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
       setTimeRemaining(remainingTime);
-      localStorage.setItem('timeRemaining', remainingTime);
-      setIsButtonDisabled(remainingTime > 0);
-      const claimButtonState = remainingTime <= 0;
-      setIsClaimButton(claimButtonState);
-      localStorage.setItem('isClaimButton', claimButtonState);
-      if (remainingTime <= 0) {
+      if (remainingTime === 0) {
         clearInterval(interval);
         localStorage.removeItem('endTime');
+        setIsButtonDisabled(false);
+        setIsClaimButton(true);
       }
     }, 1000);
     setTimerInterval(interval);
@@ -104,15 +83,8 @@ function HomePage() {
 
   const handlePointsUpdate = (amount) => {
     const newPoints = points + amount;
-    updatePoints(newPoints);
-  };
-
-  const updatePoints = (newPoints) => {
     setPoints(newPoints);
-    localStorage.setItem('points', newPoints);
-    if (userId) {
-      saveUserData(userId, newPoints);
-    }
+    updatePointsInDB(newPoints);
   };
 
   const handleMineFor100 = () => {
@@ -124,9 +96,9 @@ function HomePage() {
 
   const handleClaimPoints = () => {
     const newPoints = points + 52.033;
-    updatePoints(newPoints);
+    setPoints(newPoints);
+    updatePointsInDB(newPoints);
     setIsClaimButton(false);
-    localStorage.setItem('isClaimButton', false);
   };
 
   const formatTime = (seconds) => {
@@ -181,5 +153,3 @@ function HomePage() {
 }
 
 export default HomePage;
-
-

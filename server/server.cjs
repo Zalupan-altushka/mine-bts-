@@ -24,7 +24,7 @@ client.connect()
     process.exit(1); // Завершить процесс, если не удалось подключиться
   });
 
-// Обработка POST-запроса
+// Обработка GET-запроса для получения данных пользователя
 app.get('/api/user/:userId', (req, res) => {
   const userId = req.params.userId;
 
@@ -33,14 +33,47 @@ app.get('/api/user/:userId', (req, res) => {
       if (user) {
         res.json({ userId: user.userId, points: user.points });
       } else {
-        // Если пользователь не найден, можно вернуть points = 0.0333 или ошибку
-        res.json({ userId: userId, points: 0.0333 });
+        // Если пользователь не найден, создаем его с начальными очками
+        const initialPoints = 0.0333;
+        db.collection('users').updateOne(
+          { userId: userId },
+          { $setOnInsert: { userId: userId, points: initialPoints } },
+          { upsert: true }
+        ).then(() => {
+          res.json({ userId: userId, points: initialPoints });
+        }).catch(err => {
+          console.error('Ошибка при создании пользователя:', err);
+          res.status(500).json({ message: 'Ошибка сервера' });
+        });
       }
     })
     .catch(err => {
       console.error('Ошибка при получении пользователя:', err);
       res.status(500).json({ message: 'Ошибка сервера' });
     });
+});
+
+// Новый маршрут для обновления очков пользователя
+app.post('/api/user/:userId', (req, res) => {
+  const userId = req.params.userId;
+  const { points } = req.body;
+
+  if (typeof points !== 'number') {
+    return res.status(400).json({ message: 'Очки должны быть числом' });
+  }
+
+  db.collection('users').updateOne(
+    { userId: userId },
+    { $set: { points: points } },
+    { upsert: true }
+  )
+  .then(() => {
+    res.json({ message: 'Очки успешно обновлены' });
+  })
+  .catch(err => {
+    console.error('Ошибка при обновлении очков:', err);
+    res.status(500).json({ message: 'Ошибка сервера' });
+  });
 });
 
 // Обработчик GET-запроса на корневом маршруте
