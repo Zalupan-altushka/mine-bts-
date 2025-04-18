@@ -17,22 +17,33 @@ function HomePage({ userId }) {
   const [isClaimButton, setIsClaimButton] = useState(false);
   const [timerInterval, setTimerInterval] = useState(null);
 
+  // Восстановление состояния при загрузке
   useEffect(() => {
     fetchUserData(userId);
 
-    // Восстанавливаем состояние таймера
-    tg.CloudStorage.getItem('endTime', (error, endTime) => {
-      if (endTime) {
-        const remainingTime = Math.max(0, Math.floor((parseInt(endTime) - Date.now()) / 1000));
-        setTimeRemaining(remainingTime);
-        updateButtonState(remainingTime);
+    // Проверяем состояние claim и таймера из CloudStorage
+    tg.CloudStorage.getItem('isClaimButton', (error, storedClaim) => {
+      if (!error && storedClaim !== null) {
+        setIsClaimButton(storedClaim === 'true');
+      } else {
+        setIsClaimButton(false);
+      }
+    });
+
+    tg.CloudStorage.getItem('endTime', (error, endTimeStr) => {
+      if (!error && endTimeStr) {
+        const endTime = parseInt(endTimeStr, 10);
+        const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
         if (remainingTime > 0) {
-          startTimer(remainingTime);
+          setIsButtonDisabled(true);
+          setTimeRemaining(remainingTime);
+          startTimer(remainingTime, endTime);
         } else {
-          tg.CloudStorage.removeItem('endTime'); // Очищаем время окончания, если таймер завершен
+          // Таймер завершен
+          tg.CloudStorage.removeItem('endTime');
+          resetButtonState();
         }
       } else {
-        // Если endTime нет, устанавливаем состояние кнопки по умолчанию
         resetButtonState();
       }
     });
@@ -55,30 +66,35 @@ function HomePage({ userId }) {
     }
   };
 
-  const startTimer = (duration) => {
-    const endTime = Date.now() + duration * 1000;
-    tg.CloudStorage.setItem('endTime', endTime, (error) => {
+  const startTimer = (durationInSeconds, endTime) => {
+    const endTimestamp = endTime || Date.now() + durationInSeconds * 1000;
+    tg.CloudStorage.setItem('endTime', endTimestamp, (error) => {
       if (error) {
         console.error('Ошибка при сохранении времени окончания:', error);
       }
     });
 
     const interval = setInterval(() => {
-      const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-      setTimeRemaining(remainingTime);
-      updateButtonState(remainingTime);
-      if (remainingTime <= 0) {
+      const remaining = Math.max(0, Math.floor((endTimestamp - Date.now()) / 1000));
+      setTimeRemaining(remaining);
+      updateButtonState(remaining);
+      if (remaining <= 0) {
         clearInterval(interval);
-        tg.CloudStorage.removeItem('endTime'); // Очищаем время окончания, когда таймер завершен
+        tg.CloudStorage.removeItem('endTime');
+        resetButtonState();
       }
     }, 1000);
     setTimerInterval(interval);
   };
 
   const updateButtonState = (remainingTime) => {
-    const claimButtonState = remainingTime <= 0;
-    setIsButtonDisabled(remainingTime > 0);
-    setIsClaimButton(claimButtonState);
+    if (remainingTime > 0) {
+      setIsButtonDisabled(true);
+      setIsClaimButton(false);
+    } else {
+      setIsButtonDisabled(false);
+      // Можно оставить isClaimButton как есть или сбросить
+    }
   };
 
   const resetButtonState = () => {
@@ -98,25 +114,25 @@ function HomePage({ userId }) {
         console.error('Ошибка при сохранении очков:', error);
       }
     });
-    saveUserData(userId, newPoints);
+    // Можно добавить вызов API для сохранения у сервера
   };
 
   const handleMineFor100 = () => {
     setIsButtonDisabled(true);
     const sixHoursInSeconds = 6 * 60 * 60;
-    setTimeRemaining(sixHoursInSeconds);
-    startTimer(sixHoursInSeconds);
+    const endTime = Date.now() + sixHoursInSeconds * 1000;
+    startTimer(sixHoursInSeconds, endTime);
+    // Обновляем состояние claim
+    setIsClaimButton(true);
+    tg.CloudStorage.setItem('isClaimButton', 'true');
   };
 
   const handleClaimPoints = () => {
     const newPoints = points + 52.033;
     updatePoints(newPoints);
     setIsClaimButton(false);
-    tg.CloudStorage.setItem('isClaimButton', false, (error) => {
-      if (error) {
-        console.error('Ошибка при обновлении состояния кнопки:', error);
-      }
-    });
+    tg.CloudStorage.setItem('isClaimButton', 'false');
+    tg.CloudStorage.removeItem('endTime'); // сбрасываем таймер
   };
 
   const formatTime = (seconds) => {
@@ -128,6 +144,7 @@ function HomePage({ userId }) {
 
   return (
     <section className='bodyhomepage'>
+      {/* остальной JSX без изменений */}
       <div className='margin-div'></div>
       <div className='for-margin-home'></div>
       <span className='points-count'>{points.toFixed(4)}</span>
