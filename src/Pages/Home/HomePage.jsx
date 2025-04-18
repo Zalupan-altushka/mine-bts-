@@ -10,96 +10,73 @@ import GrHeart from '../../Most Used/Image/GrHeart';
 
 const tg = window.Telegram.WebApp;
 
-function HomePage({ userId }) {
-  const [points, setPoints] = useState(0.0333);
+function HomePage() {
+  const [points, setPoints] = useState(0.0333); // Начальные очки
+  const [userId, setUserId] = useState('');
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [isClaimButton, setIsClaimButton] = useState(false);
   const [timerInterval, setTimerInterval] = useState(null);
 
-  // Восстановление состояния при загрузке
   useEffect(() => {
-    fetchUserData(userId);
-
-    // Проверяем состояние claim и таймера из CloudStorage
-    tg.CloudStorage.getItem('isClaimButton', (error, storedClaim) => {
-      if (!error && storedClaim !== null) {
-        setIsClaimButton(storedClaim === 'true');
-      } else {
-        setIsClaimButton(false);
+    if (tg) {
+      const user = tg.initDataUnsafe.user;
+      if (user) {
+        const id = user.id; // Получаем ID пользователя из Telegram
+        setUserId(id);
+        fetchUserData(id); // Загружаем данные пользователя
       }
-    });
+    }
 
-    tg.CloudStorage.getItem('endTime', (error, endTimeStr) => {
-      if (!error && endTimeStr) {
-        const endTime = parseInt(endTimeStr, 10);
-        const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-        if (remainingTime > 0) {
-          setIsButtonDisabled(true);
-          setTimeRemaining(remainingTime);
-          startTimer(remainingTime, endTime);
-        } else {
-          // Таймер завершен
-          tg.CloudStorage.removeItem('endTime');
-          resetButtonState();
-        }
+    // Восстанавливаем состояние таймера
+    const endTime = localStorage.getItem('endTime');
+    if (endTime) {
+      const remainingTime = Math.max(0, Math.floor((parseInt(endTime) - Date.now()) / 1000));
+      setTimeRemaining(remainingTime);
+      setIsButtonDisabled(remainingTime > 0);
+      setIsClaimButton(remainingTime <= 0);
+      if (remainingTime > 0) {
+        startTimer(remainingTime);
       } else {
-        resetButtonState();
+        localStorage.removeItem('endTime'); // Очищаем время окончания, если таймер завершен
       }
-    });
+    }
 
     return () => {
       if (timerInterval) {
-        clearInterval(timerInterval);
+        clearInterval(timerInterval); // Очищаем интервал при размонтировании компонента
       }
     };
-  }, [userId]);
+  }, []);
 
   const fetchUserData = async (userId) => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/user/${userId}`);
       if (response.data.points) {
-        setPoints(response.data.points);
+        setPoints(response.data.points); // Устанавливаем очки пользователя
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
   };
 
-  const startTimer = (durationInSeconds, endTime) => {
-    const endTimestamp = endTime || Date.now() + durationInSeconds * 1000;
-    tg.CloudStorage.setItem('endTime', endTimestamp, (error) => {
-      if (error) {
-        console.error('Ошибка при сохранении времени окончания:', error);
-      }
-    });
+  const startTimer = (duration) => {
+    const endTime = Date.now() + duration * 1000;
+    localStorage.setItem('endTime', endTime); // Сохраняем время окончания в локальное хранилище
 
     const interval = setInterval(() => {
-      const remaining = Math.max(0, Math.floor((endTimestamp - Date.now()) / 1000));
-      setTimeRemaining(remaining);
-      updateButtonState(remaining);
-      if (remaining <= 0) {
+      const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+      setTimeRemaining(remainingTime);
+      localStorage.setItem('timeRemaining', remainingTime); // Сохраняем оставшееся время в локальное хранилище
+      setIsButtonDisabled(remainingTime > 0);
+      const claimButtonState = remainingTime <= 0;
+      setIsClaimButton(claimButtonState); // Обновляем состояние кнопки
+      if (remainingTime <= 0) {
         clearInterval(interval);
-        tg.CloudStorage.removeItem('endTime');
-        resetButtonState();
+        localStorage.removeItem('endTime'); // Очищаем время окончания, когда таймер завершен
       }
     }, 1000);
-    setTimerInterval(interval);
-  };
-
-  const updateButtonState = (remainingTime) => {
-    if (remainingTime > 0) {
-      setIsButtonDisabled(true);
-      setIsClaimButton(false);
-    } else {
-      setIsButtonDisabled(false);
-      // Можно оставить isClaimButton как есть или сбросить
-    }
-  };
-
-  const resetButtonState = () => {
-    setIsButtonDisabled(false);
-    setIsClaimButton(false);
+    setTimerInterval(interval); // Сохраняем ID интервала для его очистки позже
   };
 
   const handlePointsUpdate = (amount) => {
@@ -109,30 +86,22 @@ function HomePage({ userId }) {
 
   const updatePoints = (newPoints) => {
     setPoints(newPoints);
-    tg.CloudStorage.setItem('points', newPoints, (error) => {
-      if (error) {
-        console.error('Ошибка при сохранении очков:', error);
-      }
-    });
-    // Можно добавить вызов API для сохранения у сервера
+    localStorage.setItem('points', newPoints); // Сохраняем очки в локальное хранилище
+    saveUserData(userId, newPoints); // Сохраняем обновленные очки
   };
 
   const handleMineFor100 = () => {
     setIsButtonDisabled(true);
     const sixHoursInSeconds = 6 * 60 * 60;
-    const endTime = Date.now() + sixHoursInSeconds * 1000;
-    startTimer(sixHoursInSeconds, endTime);
-    // Обновляем состояние claim
-    setIsClaimButton(true);
-    tg.CloudStorage.setItem('isClaimButton', 'true');
+    setTimeRemaining(sixHoursInSeconds);
+    startTimer(sixHoursInSeconds);
   };
 
   const handleClaimPoints = () => {
     const newPoints = points + 52.033;
     updatePoints(newPoints);
     setIsClaimButton(false);
-    tg.CloudStorage.setItem('isClaimButton', 'false');
-    tg.CloudStorage.removeItem('endTime'); // сбрасываем таймер
+    localStorage.setItem('isClaimButton', false); // Обновляем локальное хранилище
   };
 
   const formatTime = (seconds) => {
@@ -144,7 +113,6 @@ function HomePage({ userId }) {
 
   return (
     <section className='bodyhomepage'>
-      {/* остальной JSX без изменений */}
       <div className='margin-div'></div>
       <div className='for-margin-home'></div>
       <span className='points-count'>{points.toFixed(4)}</span>
@@ -188,3 +156,5 @@ function HomePage({ userId }) {
 }
 
 export default HomePage;
+
+

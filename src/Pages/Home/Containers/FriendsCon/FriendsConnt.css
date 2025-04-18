@@ -37,11 +37,7 @@
   width: 230px;
   margin-top: 10px;
   border-radius: 15px;
-  background-color: var(--text-color);
+  background-color: var(--green-color);
   color: var(--background-color);
-  box-shadow: 0 0 15px var(--text-color), 0 0 15px var(--container-color-two);
-}
-
-.span-right-fr-conn {
-  margin-right: 40px;
+  box-shadow: 0 0 15px var(--green-color), 0 0 15px var(--container-color-two);
 }

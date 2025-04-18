@@ -1,121 +1,73 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import './DayCheck.css';
 import Moom from '../../../../Most Used/Image/Moom';
 import CheckIcon from '../../../../Most Used/Image/CheckIcon';
 
-const tg = window.Telegram.WebApp;
-
 function DayCheck({ onPointsUpdate }) {
-  // Используем useRef для хранения состояния, чтобы оно сохранялось между рендерами
-  const dayCheckCountRef = useRef(0);
-  const timeLeftRef = useRef(0);
-  const isButtonDisabledRef = useRef(false);
-  const timerIntervalRef = useRef(null);
-
-  const [isLoading, setIsLoading] = useState(true); // Для отображения загрузки
-  const [displayCount, setDisplayCount] = useState(0);
-  const [displayTimeLeft, setDisplayTimeLeft] = useState(0);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [dayCheckCount, setDayCheckCount] = useState(0); // Состояние для хранения количества day-check
 
-  // Загрузка данных при монтировании
   useEffect(() => {
-    let isMounted = true;
-  
-    // Загружаем счетчик дней
-    tg.CloudStorage.getItem('dayCheckCount', (error, storedCount) => {
-      if (!error && storedCount !== null && isMounted) {
-        const count = parseInt(storedCount, 10);
-        dayCheckCountRef.current = count;
-        setDisplayCount(count);
+    // Загружаем количество day-check из localStorage
+    const storedDayCheckCount = localStorage.getItem('dayCheckCount');
+    const lastClaimTime = localStorage.getItem('lastClaimTime');
+
+    // Проверяем, прошло ли 24 часа с последнего сбора
+    if (lastClaimTime) {
+      const timeSinceLastClaim = Date.now() - parseInt(lastClaimTime, 10);
+      if (timeSinceLastClaim > 24 * 60 * 60 * 1000) {
+        // Если прошло более 24 часов, обнуляем счетчик
+        setDayCheckCount(0);
+        localStorage.setItem('dayCheckCount', 0);
+      } else if (storedDayCheckCount) {
+        setDayCheckCount(parseInt(storedDayCheckCount, 10));
       }
-    });
-  
-    // Загружаем время следующего сбора
-    tg.CloudStorage.getItem('nextClaimTime', (error, storedTime) => {
-      if (!error && storedTime && isMounted) {
-        const storedTimestamp = parseInt(storedTime, 10);
-        const remainingTime = storedTimestamp - Date.now();
-        if (remainingTime > 0) {
-          // Восстанавливаем таймер
-          startTimer(remainingTime);
-          isButtonDisabledRef.current = true;
-          setIsButtonDisabled(true);
-          setDisplayTimeLeft(remainingTime);
-        } else {
-          // Таймер истек, сбрасываем состояние
-          tg.CloudStorage.removeItem('nextClaimTime');
-          isButtonDisabledRef.current = false;
-          setIsButtonDisabled(false);
-        }
+    } else {
+      setDayCheckCount(0); // Если значение не найдено, устанавливаем его в 0
+    }
+
+    // Загружаем время следующего запроса из localStorage
+    const storedTime = localStorage.getItem('nextClaimTime');
+    if (storedTime) {
+      const remainingTime = parseInt(storedTime, 10) - Date.now();
+      if (remainingTime > 0) {
+        setTimeLeft(remainingTime);
+        setIsButtonDisabled(true);
+        const interval = setInterval(() => {
+          setTimeLeft((prev) => {
+            if (prev <= 1000) {
+              clearInterval(interval);
+              setIsButtonDisabled(false);
+              return 0;
+            }
+            return prev - 1000;
+          });
+        }, 1000);
+        return () => clearInterval(interval);
       }
-      if (isMounted) {
-        setIsLoading(false);
-      }
-    });
-  
-    return () => {
-      isMounted = false;
-      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-    };
+    }
   }, []);
 
-  const startTimer = (duration) => {
-    if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-    const endTime = Date.now() + duration;
-    timeLeftRef.current = duration;
-    setDisplayTimeLeft(duration);
-    isButtonDisabledRef.current = true;
-    setIsButtonDisabled(true);
-
-    timerIntervalRef.current = setInterval(() => {
-      const remaining = Math.max(0, endTime - Date.now());
-      timeLeftRef.current = remaining;
-      setDisplayTimeLeft(remaining);
-      if (remaining <= 0) {
-        clearInterval(timerIntervalRef.current);
-        isButtonDisabledRef.current = false;
-        setIsButtonDisabled(false);
-      }
-    }, 1000);
-  };
-
   const handleGetButtonClick = () => {
-    // Обновляем очки
-    onPointsUpdate(30.033);
-  
-    // Блокируем кнопку
+    onPointsUpdate(30.033); // Обновляем очки
     setIsButtonDisabled(true);
-    isButtonDisabledRef.current = true;
-  
-    // Устанавливаем время следующего сбора
-    const nextClaimTime = Date.now() + 12 * 60 * 60 * 1000;
-    tg.CloudStorage.setItem('nextClaimTime', nextClaimTime);
-    localStorage.setItem('nextClaimTime', nextClaimTime.toString());
-  
-    // Обновляем счетчик дней
-    const newCount = dayCheckCountRef.current + 1;
-    dayCheckCountRef.current = newCount;
-    setDisplayCount(newCount);
-    localStorage.setItem('dayCheckCount', newCount.toString());
-  
-    // Устанавливаем время последнего сбора
-    tg.CloudStorage.setItem('lastClaimTime', Date.now());
-    localStorage.setItem('lastClaimTime', Date.now().toString());
-  
-    // Запускаем таймер
-    startTimer(12 * 60 * 60 * 1000);
+    const nextClaimTime = Date.now() + 12 * 60 * 60 * 1000; // 12 часов
+    localStorage.setItem('nextClaimTime', nextClaimTime);
+    setTimeLeft(12 * 60 * 60 * 1000); // Устанавливаем время блокировки
+
+    // Увеличиваем количество day-check и сохраняем в localStorage
+    const newDayCheckCount = dayCheckCount + 1;
+    setDayCheckCount(newDayCheckCount);
+    localStorage.setItem('dayCheckCount', newDayCheckCount);
+    localStorage.setItem('lastClaimTime', Date.now()); // Сохраняем время последнего сбора
   };
 
   const formatTimeLeft = (time) => {
-    const totalSeconds = Math.ceil(time / 1000);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const hours = Math.floor((time / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((time / (1000 * 60)) % 60);
     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
   };
-
-  if (isLoading) {
-    return null; // или индикатор загрузки
-  }
 
   return (
     <div className='container-check-day'>
@@ -123,9 +75,9 @@ function DayCheck({ onPointsUpdate }) {
         <Moom />
       </div>
       <div className='mid-section-textabout'>
-        <span className='first-span'>{displayCount} day-check</span>
+        <span className='first-span'>{dayCheckCount} day-check</span> {/* Обновляем количество day-check */}
         <span className='second-span'>
-          {isButtonDisabled ? `Next claim in ${formatTimeLeft(displayTimeLeft)}` : 'Claim available!'}
+          {isButtonDisabled ? `Next claim in ${formatTimeLeft(timeLeft)}` : 'Сlaim available!'}
         </span>
       </div>
       <div className='right-section-button'>
