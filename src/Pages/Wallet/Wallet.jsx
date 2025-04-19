@@ -92,7 +92,7 @@ function Wallet() {
           </article>
           <article className='middle-section-points-wl'>
             <span>BTS</span>
-            <span className='points-kolvo'>54.321</span>
+            <span className='points-kolvo'>54.321 $BTS</span>
           </article>
           <article className='right-section-button-wl'>
             <button className='button-wl'>Farm</button>
