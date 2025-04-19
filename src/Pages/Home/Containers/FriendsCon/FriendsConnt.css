@@ -37,6 +37,7 @@
   width: 230px;
   margin-top: 10px;
   border-radius: 15px;
-  background-color: var(--container-color-two);
-  color: var(--background-color);
+  color: var(--text-color);
+  background-color: var(--container-color);
+  box-shadow: 0 0 15px var(--text-color), 0 0 25px var(--container-color);
 }
