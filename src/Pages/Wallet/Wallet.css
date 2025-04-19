@@ -54,9 +54,8 @@ html, .bodywalletpage {
   margin-top: 20px;
 }
 
-
 .info-user {
-  width: 380px;
+  width: 370px;
   margin-top: 20px; /* space below content-section */
   display: flex;
   flex-direction: column;
@@ -70,14 +69,15 @@ html, .bodywalletpage {
   align-items: center;
   margin-top: 10px; /* space below the "Points" label */
   padding-left: 0; /* align to the left edge of info-user */
+  justify-content: space-between; /* distribute space between left and right sections */
+  width: 100%; /* ensure it takes full width of parent */
 }
 
 .left-section-points-wl {
-  /* align to the left within points-container */
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  margin-right: 10px; /* space between coin and the text */
+  margin-left: 10px; /* space between coin and the text */
 }
 
 .middle-section-points-wl {
@@ -85,15 +85,28 @@ html, .bodywalletpage {
   flex-direction: column; /* stack spans vertically */
   justify-content: center;
   align-items: flex-start; /* align text to the left */
+  margin-right: 170px;
 }
 
-.points-kolvo{
+.points-kolvo {
   color: var(--container-color-two);
 }
 
-.bold-text{
+.bold-text {
   font-weight: bold;
   font-size: 20px;
+}
+
+/* Новые стили для right-section-button-wl */
+.right-section-button-wl {
+  margin-right: 10px; /* небольшой отступ справа */
+}
+
+.button-wl {
+  color: var(--text-color);
+  background-color: var(--container-color);
+  border-radius: 25px;
+  font-size: 14px;
 }
 
 .info-user-boosters {

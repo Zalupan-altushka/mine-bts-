@@ -94,6 +94,9 @@ function Wallet() {
             <span>BTS</span>
             <span className='points-kolvo'>54.321</span>
           </article>
+          <article className='right-section-button-wl'>
+            <button className='button-wl'>Farm</button>
+          </article>
         </section>
       </div>
       <div className='info-user-boosters'>
