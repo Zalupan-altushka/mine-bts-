@@ -1,4 +1,5 @@
-import './Game.css'
+import GrHeart from '../../../../Most Used/Image/GrHeart';
+import './Game.css';
 
 function Game() {
 

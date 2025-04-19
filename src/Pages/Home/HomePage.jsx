@@ -6,7 +6,6 @@ import Timer from '../../Most Used/Image/Timer';
 import DayCheck from './Containers/Day/DayCheck';
 import BoosterContainer from './Containers/BoostersCon/BoosterContainer';
 import FriendsConnt from './Containers/FriendsCon/FriendsConnt';
-import GrHeart from '../../Most Used/Image/GrHeart';
 import Game from './Containers/MiniGame/Game';
 
 const tg = window.Telegram.WebApp;
