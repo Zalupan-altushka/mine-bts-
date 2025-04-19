@@ -2,6 +2,8 @@ import './Wallet.css'
 import { useState, useEffect } from 'react';
 import TonButton from './Ton-connect-button/TonButton';
 import Menu from '../../Most Used/Menu/Menu';
+import Coin from '../../Most Used/Image/Coin';
+
 
 const tg = window.Telegram.WebApp;
 
