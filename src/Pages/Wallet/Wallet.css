@@ -85,7 +85,7 @@ html, .bodywalletpage {
   flex-direction: column; /* stack spans vertically */
   justify-content: center;
   align-items: flex-start; /* align text to the left */
-  margin-right: 120px;
+  margin-right: 140px;
   margin-bottom: 5px;
 }
 

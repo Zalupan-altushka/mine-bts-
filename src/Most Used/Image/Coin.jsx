@@ -5,7 +5,7 @@ function Coin() {
 
   return(
     <div>
-      <img src={currency} alt="Star" style={{ width: '30px', height: '30px' }}/>
+      <img src={currency} alt="Star" style={{ width: '40px', height: '40px' }}/>
     </div>
   );
 }
