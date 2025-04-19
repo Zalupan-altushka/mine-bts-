@@ -9,7 +9,7 @@ function Game() {
           <GrHeart />
         </div>
         <div className='mid-section-textabout-game'>
-          <span className='first-span-game'>Mini Game</span> 
+          <span className='first-span-game'>Mini Game!</span> 
           <span className='second-span-game'>
             <span>Coming soon...</span>
           </span>
