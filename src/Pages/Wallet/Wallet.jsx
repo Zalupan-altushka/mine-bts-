@@ -99,9 +99,6 @@ function Wallet() {
           </article>
         </section>
       </div>
-      <div className='info-user-boosters'>
-        <span className='bold-text'>Your Collection</span>
-      </div>
       <Menu />
     </section>
   );

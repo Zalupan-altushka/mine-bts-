@@ -7,6 +7,7 @@ import DayCheck from './Containers/Day/DayCheck';
 import BoosterContainer from './Containers/BoostersCon/BoosterContainer';
 import FriendsConnt from './Containers/FriendsCon/FriendsConnt';
 import GrHeart from '../../Most Used/Image/GrHeart';
+import Game from './Containers/MiniGame/Game';
 
 const tg = window.Telegram.WebApp;
 
@@ -127,20 +128,7 @@ function HomePage() {
       <div className='for-margin-home'></div>
       <span className='points-count'>{points.toFixed(4)}</span>
       <DayCheck onPointsUpdate={handlePointsUpdate} />
-      <div className='container-game'>
-        <div className='left-section-gif-game'>
-          <GrHeart />
-        </div>
-        <div className='mid-section-textabout-game'>
-          <span className='first-span-game'>Mini Game</span> 
-          <span className='second-span-game'>
-            <span>Coming soon...</span>
-          </span>
-        </div>
-        <div className='right-section-button-game'>
-          <button className='Game-button'>?</button>
-        </div>
-      </div>
+      <Game />
       <BoosterContainer />
       <FriendsConnt />
       <div className='ButtonGroup'>

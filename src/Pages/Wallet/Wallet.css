@@ -43,7 +43,7 @@ html, .bodywalletpage {
   border-radius: 0 0 50px 50px; /* Rounded corners at the bottom */
   padding: 20px; /* Add padding as desired */
   width: 340px;
-  height: 350px;
+  height: 200px;
   display: flex; /* Enable flexbox */
   flex-direction: column; /* Stack children vertically */
   align-items: center; /* Center children horizontally */
