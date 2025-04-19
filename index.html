@@ -12,26 +12,5 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-    <script>
-      // Проверяем, доступен ли Telegram Web App API
-      if (window.TelegramWebApp) {
-        // Получаем текущую высоту видимой области
-        const viewportHeight = window.TelegramWebApp.viewportHeight;
-        const viewportStableHeight = window.TelegramWebApp.viewportStableHeight;
-
-        console.log('Текущая высота видимой области:', viewportHeight);
-        console.log('Стабильная высота видимой области:', viewportStableHeight);
-
-        // Обработчик события изменения высоты видимой области
-        window.TelegramWebApp.onEvent('viewportChanged', (data) => {
-          if (data.isStateStable) {
-            console.log('Стабильное состояние высоты видимой области изменилось');
-            // Здесь можно обновить интерфейс или выполнить другие действия
-          }
-        });
-      } else {
-        console.error('Telegram Web App API не доступен');
-      }
-    </script>
   </body>
 </html>

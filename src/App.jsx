@@ -16,7 +16,7 @@ const App = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false); // Убираем загрузку через 4 секунды
-    }, 4000); // Установите время загрузки в миллисекундах
+    }, 4000); // Время загрузки в миллисекундах
 
     return () => clearTimeout(timer);
   }, []);
@@ -44,8 +44,31 @@ const App = () => {
       if (window.Telegram.WebApp.isActive) {
         window.Telegram.WebApp.requestFullscreen();
         // Включаем или отключаем вертикальные свайпы
-        window.Telegram.WebApp.isVerticalSwipesEnabled = false; // Установите в true или false по вашему усмотрению
+        window.Telegram.WebApp.isVerticalSwipesEnabled = false; // или true по необходимости
       }
+    }
+  }, []);
+
+  // Интеграция с Telegram WebApp для установки размеров контейнера
+  useEffect(() => {
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      const setContainerSize = () => {
+        const { width, height } = tg.initDataUnsafe;
+        const root = document.getElementById('root');
+        if (root) {
+          root.style.width = `${width}px`;
+          root.style.height = `${height}px`;
+        }
+      };
+
+      // Изначально устанавливаем размеры
+      setContainerSize();
+
+      // Обработчик resize
+      tg.onEvent('resize', () => {
+        setContainerSize();
+      });
     }
   }, []);
 
