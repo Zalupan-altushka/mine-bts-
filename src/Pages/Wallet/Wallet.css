@@ -67,7 +67,7 @@ html, .bodywalletpage {
   display: flex;
   flex-direction: row; /* default, but explicitly for clarity */
   align-items: center;
-  margin-top: 10px; /* space below the "Points" label */
+  margin-top: 20px; /* space below the "Points" label */
   padding-left: 0; /* align to the left edge of info-user */
   justify-content: space-between; /* distribute space between left and right sections */
   width: 100%; /* ensure it takes full width of parent */

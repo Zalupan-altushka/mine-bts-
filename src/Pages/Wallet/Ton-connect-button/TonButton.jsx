@@ -6,7 +6,7 @@ function TonButton() {
   
   return(
     <TonConnectUIProvider manifestUrl="https://tonconnect-manifest.json">
-      <TonConnectButton className="my-button-class" />
+      <TonConnectButton style={{marginBottom: '20px'}} />
     </TonConnectUIProvider>
   );
 }
