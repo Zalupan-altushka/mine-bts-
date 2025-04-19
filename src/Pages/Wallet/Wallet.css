@@ -85,7 +85,7 @@ html, .bodywalletpage {
   flex-direction: column; /* stack spans vertically */
   justify-content: center;
   align-items: flex-start; /* align text to the left */
-  margin-right: 140px;
+  margin-right: 5px;
   margin-bottom: 5px;
 }
 
@@ -98,6 +98,10 @@ html, .bodywalletpage {
 .bold-text {
   font-weight: bold;
   font-size: 20px;
+}
+
+.points-name {
+  font-weight: bold;
 }
 
 /* Новые стили для right-section-button-wl */

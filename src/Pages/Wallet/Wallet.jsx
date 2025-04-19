@@ -91,7 +91,7 @@ function Wallet() {
             <Coin />
           </article>
           <article className='middle-section-points-wl'>
-            <span>BTS</span>
+            <span className='points-name'>BTS</span>
             <span className='points-kolvo'>54.321 $BTS</span>
           </article>
           <article className='right-section-button-wl'>
