@@ -53,3 +53,54 @@ html, .bodywalletpage {
 .balanc-margin {
   margin-top: 20px;
 }
+
+
+.info-user {
+  width: 380px;
+  margin-top: 20px; /* space below content-section */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* align to the left */
+  padding-left: 0; /* ensure it's aligned to the left edge */
+}
+
+.points-container {
+  display: flex;
+  flex-direction: row; /* default, but explicitly for clarity */
+  align-items: center;
+  margin-top: 10px; /* space below the "Points" label */
+  padding-left: 0; /* align to the left edge of info-user */
+}
+
+.left-section-points-wl {
+  /* align to the left within points-container */
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-right: 10px; /* space between coin and the text */
+}
+
+.middle-section-points-wl {
+  display: flex;
+  flex-direction: column; /* stack spans vertically */
+  justify-content: center;
+  align-items: flex-start; /* align text to the left */
+}
+
+.points-kolvo{
+  color: var(--container-color-two);
+}
+
+.bold-text{
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.info-user-boosters {
+  width: 380px;
+  margin-top: 20px; /* space below content-section */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* align to the left */
+  padding-left: 0; /* ensure it's aligned to the left edge */
+}

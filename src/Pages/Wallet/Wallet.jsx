@@ -72,6 +72,7 @@ const UserProfileWallet = () => {
 };
 
 
+
 function Wallet() {
 
   return(
@@ -80,6 +81,21 @@ function Wallet() {
       <div className='content-section'>
         <UserProfileWallet />
         <TonButton />
+      </div>
+      <div className='info-user'>
+        <span className='bold-text'>Points</span>
+        <section className='points-container'>
+          <article className='left-section-points-wl'>
+            <Coin />
+          </article>
+          <article className='middle-section-points-wl'>
+            <span>BTS</span>
+            <span className='points-kolvo'>54.321</span>
+          </article>
+        </section>
+      </div>
+      <div className='info-user-boosters'>
+        <span className='bold-text'>Your Collection</span>
       </div>
       <Menu />
     </section>
