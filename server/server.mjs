@@ -26,7 +26,7 @@ async function ensureUserExists(userId) {
   if (!data) {
     // Пользователь не найден, добавляем
     const { error: insertError } = await supabase
-      .from('telegram_scores')
+      .from('telegram_scores_tg')
       .insert({ id: userId, points: 0.0333 });
     if (insertError) {
       throw insertError;
