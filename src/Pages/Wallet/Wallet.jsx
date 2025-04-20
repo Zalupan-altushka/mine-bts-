@@ -2,7 +2,6 @@ import './Wallet.css'
 import { useState, useEffect } from 'react'
 import TonButton from './Ton-connect-button/TonButton'
 import Menu from '../../Most Used/Menu/Menu'
-import Coin from '../../Most Used/Image/Coin'
 
 const tg = window.Telegram.WebApp
 
@@ -70,55 +69,12 @@ const UserProfileWallet = () => {
 }
 
 function Wallet() {
-  const [points, setPoints] = useState(0.0333)
-  const [userId, setUserId] = useState('')
-
-  useEffect(() => {
-    if (tg) {
-      const user = tg.initDataUnsafe.user
-      if (user) {
-        const id = user.id
-        setUserId(id)
-
-        // Получение актуальных очков из базы данных
-        fetch(`${process.env.REACT_APP_API_URL}/api/user/${id}`)
-          .then(res => res.json())
-          .then(data => {
-            if (data && data.points !== undefined) {
-              setPoints(data.points)
-            }
-          })
-          .catch(err => {
-            console.error('Error fetching user points:', err)
-          })
-      }
-    }
-  }, [])
 
   return (
     <section className='bodywalletpage'>
       <div className='content-section'>
         <UserProfileWallet />
         <TonButton />
-      </div>
-      <div className='info-user'>
-        <span className='bold-text'>Points</span>
-        <section className='points-container'>
-          <article className='left-section-points-wl'>
-            <Coin />
-          </article>
-          <article className='middle-section-points-wl'>
-            <span className='name-points'>BTS</span>
-            {/* Отображение общего количества очков */}
-            <span className='points-kolvo'>{points.toFixed(4)}</span>
-          </article>
-          <article className='right-section-button-wl'>
-            <button className='button-wl'>Farm</button>
-          </article>
-        </section>
-      </div>
-      <div className='info-user-boosters'>
-        <span className='bold-text'>Your Collection</span>
       </div>
       <Menu />
     </section>
