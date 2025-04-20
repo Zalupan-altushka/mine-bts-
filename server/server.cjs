@@ -24,36 +24,26 @@ client.connect()
     process.exit(1); // Завершить процесс, если не удалось подключиться
   });
 
-// Обработка GET-запроса для получения данных пользователя
+// API-эндпоинт для получения данных пользователя по userId
 app.get('/api/user/:userId', (req, res) => {
-  const userId = req.params.userId;
+  const { userId } = req.params;
 
   db.collection('users').findOne({ userId: userId })
     .then(user => {
       if (user) {
-        res.json({ userId: user.userId, points: user.points });
+        res.json({ points: user.points });
       } else {
-        // Если пользователь не найден, создаем его с начальными очками
-        const initialPoints = 0.0333;
-        db.collection('users').updateOne(
-          { userId: userId },
-          { $setOnInsert: { userId: userId, points: initialPoints } },
-          { upsert: true }
-        ).then(() => {
-          res.json({ userId: userId, points: initialPoints });
-        }).catch(err => {
-          console.error('Ошибка при создании пользователя:', err);
-          res.status(500).json({ message: 'Ошибка сервера' });
-        });
+        // Если пользователь не найден, возвращаем значение по умолчанию
+        res.json({ points: 0.0333 });
       }
     })
     .catch(err => {
-      console.error('Ошибка при получении пользователя:', err);
-      res.status(500).json({ message: 'Ошибка сервера' });
+      console.error('Error fetching user data:', err);
+      res.status(500).json({ message: 'Error fetching user data' });
     });
 });
 
-// Новый маршрут для обновления очков пользователя
+// API-эндпоинт для обновления очков пользователя (опционально)
 app.post('/api/user/:userId', (req, res) => {
   const userId = req.params.userId;
   const { points } = req.body;
@@ -76,12 +66,12 @@ app.post('/api/user/:userId', (req, res) => {
   });
 });
 
-// Обработчик GET-запроса на корневом маршруте
+// Остальные маршруты...
 app.get('/', (req, res) => {
   res.send('Welcome to the API!');
 });
 
-// Закрытие подключения к MongoDB при завершении работы сервера
+// Обработка завершения работы сервера
 process.on('SIGINT', () => {
   client.close()
     .then(() => {
@@ -98,3 +88,4 @@ process.on('SIGINT', () => {
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
