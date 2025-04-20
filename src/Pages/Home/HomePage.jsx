@@ -26,13 +26,8 @@ function HomePage() {
       if (user) {
         const id = user.id;
         setUserId(id);
-        // Попытка получить очки из localStorage
-        const storedPoints = localStorage.getItem(`points_${id}`);
-        if (storedPoints !== null) {
-          setPoints(parseFloat(storedPoints));
-        } else {
-          fetchUserPoints(id);
-        }
+        // Получение очков из базы данных
+        fetchUserPoints(id);
       }
     }
   
@@ -57,7 +52,6 @@ function HomePage() {
       const response = await axios.get(`${API_URL}/api/user/${userId}`);
       if (response.data && response.data.points !== undefined) {
         setPoints(response.data.points);
-        localStorage.setItem(`points_${userId}`, response.data.points.toString());
       }
     } catch (error) {
       console.error('Ошибка при получении очков:', error);
@@ -92,7 +86,6 @@ function HomePage() {
     const newPoints = points + amount;
     setPoints(newPoints);
     if (userId) {
-      localStorage.setItem(`points_${userId}`, newPoints.toString());
       updatePointsInDB(newPoints);
     }
   };
@@ -108,7 +101,6 @@ function HomePage() {
     const newPoints = points + 52.033;
     setPoints(newPoints);
     if (userId) {
-      localStorage.setItem(`points_${userId}`, newPoints.toString());
       updatePointsInDB(newPoints);
     }
     setIsClaimButton(false);

@@ -50,25 +50,24 @@ const App = () => {
   }, []);
 
   // Интеграция с Telegram WebApp для установки размеров контейнера
+  
   useEffect(() => {
-    const tg = window.Telegram?.WebApp;
-    if (tg) {
-      const setContainerSize = () => {
-        const { width, height } = tg.initDataUnsafe;
-        const root = document.getElementById('root');
-        if (root) {
-          root.style.width = `${width}px`;
-          root.style.height = `${height}px`;
-        }
-      };
-
-      // Изначально устанавливаем размеры
-      setContainerSize();
-
-      // Обработчик resize
-      tg.onEvent('resize', () => {
-        setContainerSize();
-      });
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
+      const userId = window.Telegram.WebApp.initDataUnsafe.user?.id;
+      if (userId) {
+        // Вызов API для автоматического добавления пользователя
+        fetch('/api/ensure-user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId }),
+        }).then(res => {
+          if (!res.ok) {
+            console.error('Ошибка при добавлении пользователя');
+          }
+        }).catch(err => {
+          console.error('Ошибка сети:', err);
+        });
+      }
     }
   }, []);
 
