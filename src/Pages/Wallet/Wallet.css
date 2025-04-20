@@ -43,15 +43,11 @@ html, .bodywalletpage {
   border-radius: 0 0 50px 50px; /* Rounded corners at the bottom */
   padding: 20px; /* Add padding as desired */
   width: 340px;
-  height: 250px;
+  height: 500px;
   display: flex; /* Enable flexbox */
   flex-direction: column; /* Stack children vertically */
   align-items: center; /* Center children horizontally */
   justify-content: center; /* Center children vertically (optional) */
-}
-
-.balanc-margin {
-  margin-top: 20px;
 }
 
 .info-user {
