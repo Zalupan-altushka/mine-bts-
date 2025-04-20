@@ -9,6 +9,8 @@ import FriendsConnt from './Containers/FriendsCon/FriendsConnt';
 import Game from './Containers/MiniGame/Game';
 
 const tg = window.Telegram.WebApp;
+// Укажите URL вашего API
+const API_URL = 'http://localhost:5000';// Замените на ваш реальный URL
 
 function HomePage() {
   const [points, setPoints] = useState(0);
@@ -18,20 +20,18 @@ function HomePage() {
   const [isClaimButton, setIsClaimButton] = useState(true);
   const [timerInterval, setTimerInterval] = useState(null);
 
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-
+  // Получение данных при загрузке
   useEffect(() => {
     if (tg) {
       const user = tg.initDataUnsafe?.user;
       if (user) {
         const id = user.id;
         setUserId(id);
-        // Получение очков из базы данных
         fetchUserPoints(id);
       }
     }
-  
-    // Восстановление таймера (оставьте как есть)
+
+    // Восстановление таймера из localStorage
     const endTimeStr = localStorage.getItem('endTime');
     if (endTimeStr) {
       const endTime = parseInt(endTimeStr, 10);
@@ -47,6 +47,7 @@ function HomePage() {
     }
   }, []);
 
+  // Функция для получения очков из API
   const fetchUserPoints = async (userId) => {
     try {
       const response = await axios.get(`${API_URL}/api/user/${userId}`);
@@ -58,14 +59,15 @@ function HomePage() {
     }
   };
 
-  const updatePointsInDB = async (newPoints) => {
-    try {
-      await axios.post(`${API_URL}/api/user/${userId}`, { points: newPoints });
-    } catch (error) {
-      console.error('Ошибка при обновлении очков:', error);
+  // Обновление очков в базе при их изменении
+  useEffect(() => {
+    if (userId) {
+      axios.post(`${API_URL}/api/user/${userId}/update-points`, { points })
+        .catch(error => console.error('Ошибка при сохранении очков:', error));
     }
-  };
+  }, [points, userId]);
 
+  // Таймер
   const startTimer = (duration) => {
     const endTime = Date.now() + duration * 1000;
     localStorage.setItem('endTime', endTime);
@@ -82,14 +84,7 @@ function HomePage() {
     setTimerInterval(interval);
   };
 
-  const handlePointsUpdate = (amount) => {
-    const newPoints = points + amount;
-    setPoints(newPoints);
-    if (userId) {
-      updatePointsInDB(newPoints);
-    }
-  };
-
+  // Обработчик для "Mine"
   const handleMineFor100 = () => {
     setIsButtonDisabled(true);
     const sixHoursInSeconds = 6 * 60 * 60;
@@ -97,15 +92,14 @@ function HomePage() {
     startTimer(sixHoursInSeconds);
   };
 
+  // Обработчик для "Claim"
   const handleClaimPoints = () => {
     const newPoints = points + 52.033;
     setPoints(newPoints);
-    if (userId) {
-      updatePointsInDB(newPoints);
-    }
     setIsClaimButton(false);
   };
 
+  // Форматирование времени
   const formatTime = (seconds) => {
     const hours = String(Math.floor(seconds / 3600)).padStart(2, '0');
     const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
@@ -118,10 +112,14 @@ function HomePage() {
       <div className='margin-div'></div>
       <div className='for-margin-home'></div>
       <span className='points-count'>{points.toFixed(4)}</span>
-      <DayCheck onPointsUpdate={handlePointsUpdate} />
+      
+      {/* Другие компоненты */}
+      <DayCheck onPointsUpdate={(amount) => setPoints(prev => prev + amount)} />
       <Game />
       <BoosterContainer />
       <FriendsConnt />
+
+      {/* Кнопка */}
       <div className='ButtonGroup'>
         <button
           className='FarmButton'
@@ -139,10 +137,10 @@ function HomePage() {
           {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
         </button>
       </div>
+      
       <Menu />
     </section>
   );
 }
 
 export default HomePage;
-

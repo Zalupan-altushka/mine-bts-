@@ -5,7 +5,7 @@ const app = express();
 app.use(express.json());
 
 const supabaseUrl = 'postgresql://postgres:NXoLbLTGAamZM5c9@db.dzirculfhkoafjraqaih.supabase.co:5432/postgres'; // замените на ваш URL
-const supabaseKey = 'NXoLbLTGAamZM5c9'; // замените на ваш ключ
+const supabaseKey = 'NXoLbLTGAamZM5c9';// замените на ваш ключ
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 /**
@@ -13,24 +13,38 @@ const supabase = createClient(supabaseUrl, supabaseKey);
  * Если нет — добавляет с начальным количеством очков.
  */
 async function ensureUserExists(userId) {
-  const { data, error } = await supabase
-    .from('telegram_scores')
-    .select('id')
-    .eq('id', userId)
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from('telegram_scores_tg_webApp') // название таблицы
+      .select('id')
+      .eq('id', userId)
+      .single();
 
-  if (error && error.code !== 'PGRST116') { // ошибка не "не найдено"
-    throw error;
-  }
-
-  if (!data) {
-    // Пользователь не найден, добавляем
-    const { error: insertError } = await supabase
-      .from('telegram_scores_tg')
-      .insert({ id: userId, points: 0.0333 });
-    if (insertError) {
-      throw insertError;
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // Запись не найдена — вставляем
+        const { error: insertError } = await supabase
+          .from('telegram_scores_tg_webApp')
+          .insert({ id: userId, points: 0.0333 });
+        if (insertError) {
+          throw insertError;
+        }
+      } else {
+        // Другие ошибки
+        throw error;
+      }
+    } else if (!data) {
+      // Нет данных — вставляем
+      const { error: insertError } = await supabase
+        .from('telegram_scores_tg_webApp')
+        .insert({ id: userId, points: 0.0333 });
+      if (insertError) {
+        throw insertError;
+      }
     }
+  } catch (err) {
+    console.error('Ошибка при проверке/создании пользователя:', err);
+    throw err;
   }
 }
 
@@ -43,7 +57,6 @@ app.post('/api/ensure-user', async (req, res) => {
     await ensureUserExists(userId);
     res.json({ message: 'Пользователь проверен или добавлен' });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: 'Ошибка сервера' });
   }
 });
