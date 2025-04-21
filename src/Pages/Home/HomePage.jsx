@@ -9,11 +9,10 @@ import FriendsConnt from './Containers/FriendsCon/FriendsConnt';
 import Game from './Containers/MiniGame/Game';
 
 const tg = window.Telegram.WebApp;
-// Укажите URL вашего API
-const API_URL = 'http://localhost:5000';// Замените на ваш реальный URL
+const API_URL = 'http://localhost:5000'; // Замените на ваш реальный URL
 
 function HomePage() {
-  const [points, setPoints] = useState(0);
+  const [points, setPoints] = useState(0.0333);
   const [userId, setUserId] = useState('');
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
@@ -25,7 +24,7 @@ function HomePage() {
     if (tg) {
       const user = tg.initDataUnsafe?.user;
       if (user) {
-        const id = user.id;
+        const id = user.id.toString(); // убедитесь, что id строка
         setUserId(id);
         fetchUserPoints(id);
       }
@@ -47,12 +46,14 @@ function HomePage() {
     }
   }, []);
 
-  // Функция для получения очков из API
+  // Получение очков и их автоматическая запись
   const fetchUserPoints = async (userId) => {
     try {
       const response = await axios.get(`${API_URL}/api/user/${userId}`);
       if (response.data && response.data.points !== undefined) {
         setPoints(response.data.points);
+        // Записываем эти очки в базу (если нужно)
+        await axios.post(`${API_URL}/api/user/${userId}/update-points`, { points: response.data.points });
       }
     } catch (error) {
       console.error('Ошибка при получении очков:', error);
@@ -93,10 +94,14 @@ function HomePage() {
   };
 
   // Обработчик для "Claim"
-  const handleClaimPoints = () => {
+  const handleClaimPoints = async () => {
     const newPoints = points + 52.033;
     setPoints(newPoints);
     setIsClaimButton(false);
+    // Обновляем в базе
+    if (userId) {
+      await axios.post(`${API_URL}/api/user/${userId}/update-points`, { points: newPoints });
+    }
   };
 
   // Форматирование времени
@@ -109,17 +114,14 @@ function HomePage() {
 
   return (
     <section className='bodyhomepage'>
+      {/* Ваши компоненты и разметка */}
       <div className='margin-div'></div>
       <div className='for-margin-home'></div>
       <span className='points-count'>{points.toFixed(4)}</span>
-      
-      {/* Другие компоненты */}
       <DayCheck onPointsUpdate={(amount) => setPoints(prev => prev + amount)} />
       <Game />
       <BoosterContainer />
       <FriendsConnt />
-
-      {/* Кнопка */}
       <div className='ButtonGroup'>
         <button
           className='FarmButton'
