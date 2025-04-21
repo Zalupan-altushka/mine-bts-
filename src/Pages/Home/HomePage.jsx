@@ -1,7 +1,6 @@
 import './Home.css';
 import Menu from '../../Most Used/Menu/Menu';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import Timer from '../../Most Used/Image/Timer';
 import DayCheck from './Containers/Day/DayCheck';
 import BoosterContainer from './Containers/BoostersCon/BoosterContainer';
@@ -9,7 +8,6 @@ import FriendsConnt from './Containers/FriendsCon/FriendsConnt';
 import Game from './Containers/MiniGame/Game';
 
 const tg = window.Telegram.WebApp;
-const API_URL = 'http://localhost:5000'; // Замените на ваш реальный URL
 
 function HomePage() {
   const [points, setPoints] = useState(0.0333);
@@ -26,8 +24,13 @@ function HomePage() {
       if (user) {
         const id = user.id.toString(); // убедитесь, что id строка
         setUserId(id);
-        fetchUserPoints(id);
       }
+    }
+
+    // Восстановление очков из localStorage
+    const storedPoints = localStorage.getItem('points');
+    if (storedPoints !== null) {
+      setPoints(parseFloat(storedPoints));
     }
 
     // Восстановление таймера из localStorage
@@ -46,27 +49,10 @@ function HomePage() {
     }
   }, []);
 
-  // Получение очков и их автоматическая запись
-  const fetchUserPoints = async (userId) => {
-    try {
-      const response = await axios.get(`${API_URL}/api/user/${userId}`);
-      if (response.data && response.data.points !== undefined) {
-        setPoints(response.data.points);
-        // Записываем эти очки в базу (если нужно)
-        await axios.post(`${API_URL}/api/user/${userId}/update-points`, { points: response.data.points });
-      }
-    } catch (error) {
-      console.error('Ошибка при получении очков:', error);
-    }
-  };
-
-  // Обновление очков в базе при их изменении
+  // Обновление очков в localStorage при их изменении
   useEffect(() => {
-    if (userId) {
-      axios.post(`${API_URL}/api/user/${userId}/update-points`, { points })
-        .catch(error => console.error('Ошибка при сохранении очков:', error));
-    }
-  }, [points, userId]);
+    localStorage.setItem('points', points.toString());
+  }, [points]);
 
   // Таймер
   const startTimer = (duration) => {
@@ -94,14 +80,10 @@ function HomePage() {
   };
 
   // Обработчик для "Claim"
-  const handleClaimPoints = async () => {
+  const handleClaimPoints = () => {
     const newPoints = points + 52.033;
     setPoints(newPoints);
     setIsClaimButton(false);
-    // Обновляем в базе
-    if (userId) {
-      await axios.post(`${API_URL}/api/user/${userId}/update-points`, { points: newPoints });
-    }
   };
 
   // Форматирование времени
