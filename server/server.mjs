@@ -4,8 +4,8 @@ import { createClient } from '@supabase/supabase-js';
 const app = express();
 app.use(express.json());
 
-const supabaseUrl = 'https://<your-supabase-project>.supabase.co'; // замените на ваш URL
-const supabaseKey = '<your-anon-key>'; // замените на ваш ключ
+const supabaseUrl = 'postgresql://postgres:NXoLbLTGAamZM5c9@db.dzirculfhkoafjraqaih.supabase.co:5432/postgres'; // замените на ваш URL
+const supabaseKey = 'NXoLbLTGAamZM5c9'; // замените на ваш ключ
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // API для автоматического добавления пользователя (при первом обращении)
