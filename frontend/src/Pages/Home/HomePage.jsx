@@ -86,7 +86,6 @@ function HomePage() {
 
   return (
     <section className='bodyhomepage'>
-      {/* Ваши компоненты и разметка */}
       <div className='margin-div'></div>
       <div className='for-margin-home'></div>
       <span className='points-count'>{points.toFixed(4)}</span>

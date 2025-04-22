@@ -51,26 +51,6 @@ const App = () => {
 
   // Интеграция с Telegram WebApp для установки размеров контейнера
   
-  useEffect(() => {
-    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
-      const userId = window.Telegram.WebApp.initDataUnsafe.user?.id;
-      if (userId) {
-        // Вызов API для автоматического добавления пользователя
-        fetch('/api/ensure-user', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId }),
-        }).then(res => {
-          if (!res.ok) {
-            console.error('Ошибка при добавлении пользователя');
-          }
-        }).catch(err => {
-          console.error('Ошибка сети:', err);
-        });
-      }
-    }
-  }, []);
-
   return (
     <>
       {loading && <Loader />} {/* Показываем загрузчик, пока loading true */}
