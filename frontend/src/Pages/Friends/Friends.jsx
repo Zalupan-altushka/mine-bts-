@@ -19,7 +19,7 @@ function Friends() {
       <Reward />
       <section className='Container-button'>
         <button className='get-reward-button'>Claim Reward</button>
-        <button className='Invite-button' onClick={handleInviteClick}>Let's Invite Friends</button>
+        <button className='Invite-button' onClick={handleInviteClick}>Let's Invite Friends!</button>
       </section>
       <Menu />
     </section>
