@@ -5,7 +5,7 @@ import Friends from './Pages/Friends/Friends.jsx';
 import Tasks from './Pages/Tasks/Tasks.jsx';
 import Boosters from './Pages/Boosters/Boosters.jsx';
 import PageTransition from './Pages/Transition/PageTransition.jsx';
-import Loader from './Pages/Loader/Loader.jsx'; // Импортируем Loader
+import Loader from './Pages/Loader/Loader.jsx';// Импортируем Loader
 import Wallet from './Pages/Wallet/Wallet.jsx';
 
 const App = () => {
