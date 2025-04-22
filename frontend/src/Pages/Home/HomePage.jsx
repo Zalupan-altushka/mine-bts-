@@ -19,15 +19,6 @@ function HomePage() {
 
   // Получение данных при загрузке
   useEffect(() => {
-    if (tg) {
-      const user = tg.initDataUnsafe?.user;
-      if (user) {
-        const id = user.id.toString(); // убедитесь, что id строка
-        setUserId(id);
-        fetchUserPoints(id);
-      }
-    }
-
     // Восстановление таймера из localStorage
     const endTimeStr = localStorage.getItem('endTime');
     if (endTimeStr) {
