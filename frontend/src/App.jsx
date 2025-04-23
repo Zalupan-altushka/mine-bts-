@@ -128,6 +128,20 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    // Проверяем, находится ли пользователь на одной из страниц, где нужно отключить прокрутку
+    if (location.pathname === '/' || location.pathname === '/friends' || location.pathname === '/tasks' || location.pathname === '/wallet') {
+      document.body.classList.add('no-scroll');
+    } else {
+      document.body.classList.remove('no-scroll');
+    }
+
+    // Убираем класс no-scroll при размонтировании компонента
+    return () => {
+      document.body.classList.remove('no-scroll');
+    };
+  }, [location.pathname]);
+
+  useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false); // Убираем загрузку через 4 секунды
     }, 4000); // Время загрузки в миллисекундах
