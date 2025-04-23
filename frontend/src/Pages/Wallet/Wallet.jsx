@@ -1,7 +1,8 @@
 import './Wallet.css'
 import { useState, useEffect } from 'react';
-import TonButton from './Ton-connect-button/TonButton';
 import Menu from '../../Most Used/Menu/Menu';
+import { TonConnectUIProvider } from '@tonconnect/ui-react';
+import { TonConnectButton } from '@tonconnect/ui-react';
 
 const tg = window.Telegram.WebApp;
 
@@ -72,16 +73,17 @@ const UserProfileWallet = () => {
 };
 
 function Wallet() {
-
   return (
     <section className='bodywalletpage'>
-      <div className='content-section'>
-        <UserProfileWallet />
-        <TonButton />
-      </div>
+      <TonConnectUIProvider manifestUrl="https://tonconnect-manifest.json">
+        <div className='content-section'>
+          <UserProfileWallet />
+          <TonConnectButton style={{marginBottom: '5px'}} />
+        </div>
+      </TonConnectUIProvider>
       <Menu />
     </section>
-  )
+  );
 }
 
 export default Wallet;
