@@ -159,18 +159,13 @@ const App = () => {
     }
   }, [location]);
 
-  const handleLogout = () => {
-    deleteCookie('auth_token');
-    setIsAuthenticated(false);
-  };
-
   return (
     <>
       {loading && <Loader />}
       {/* Ваша кнопка выхода убрана, так как обработчик реализован через событие */}
       <PageTransition location={location}>
         <Routes>
-          <Route path="/" element={<HomePage isActive={isActive} isAuth={isAuthenticated} />} />
+          <Route path="/" element={<HomePage isActive={isActive} />} />
           <Route path="/friends" element={<Friends isActive={isActive} />} />
           <Route path="/tasks" element={<Tasks isActive={isActive} />} />
           <Route path="/boost" element={<Boosters isActive={isActive} />} />

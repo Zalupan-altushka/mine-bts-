@@ -40,10 +40,10 @@ html, .bodywalletpage {
 
 .content-section {
   background: linear-gradient(to top, #326381 -200%, var(--background-color) 100%); /* Gradient from bottom to top */
-  border-radius: 0 0 50px 50px; /* Rounded corners at the bottom */
+  border-radius: 0 0 35px 35px; /* Rounded corners at the bottom */
   padding: 20px; /* Add padding as desired */
   width: 340px;
-  height: 550px;
+  height: 350px;
   display: flex; /* Enable flexbox */
   flex-direction: column; /* Stack children vertically */
   align-items: center; /* Center children horizontally */
