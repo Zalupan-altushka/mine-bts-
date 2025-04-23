@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-
-// Импорт страниц
 import HomePage from './Pages/Home/HomePage.jsx';
 import Friends from './Pages/Friends/Friends.jsx';
 import Tasks from './Pages/Tasks/Tasks.jsx';
@@ -127,7 +125,13 @@ const App = () => {
       checkAuthStatus();
     }
 
-    const timer = setTimeout(() => setLoading(false), 4000);
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false); // Убираем загрузку через 4 секунды
+    }, 4000); // Время загрузки в миллисекундах
+
     return () => clearTimeout(timer);
   }, []);
 
