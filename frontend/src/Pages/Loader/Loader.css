@@ -36,20 +36,3 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-
-.message-box {
-  position: absolute;
-  top: 20px;
-  width: 100%;
-  text-align: center;
-  font-family: var(--font-family);
-  font-size: 20px;
-  color: var(--text-color);
-  z-index: 10000;
-}
-
-.success-text {
-  margin-top: 10px;
-  font-weight: bold;
-  color: var(--green-color);
-}
