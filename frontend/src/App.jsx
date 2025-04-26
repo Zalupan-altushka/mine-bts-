@@ -5,17 +5,18 @@ import Friends from './Pages/Friends/Friends.jsx';
 import Tasks from './Pages/Tasks/Tasks.jsx';
 import Boosters from './Pages/Boosters/Boosters.jsx';
 import PageTransition from './Pages/Transition/PageTransition.jsx';
-import Loader from './Pages/Loader/Loader.jsx'; // Импортируем Loader
+import Loader from './Pages/Loader/Loader.jsx';// Импортируем Loader
 import Wallet from './Pages/Wallet/Wallet.jsx';
 
 const App = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
+  const [isActive, setIsActive] = useState(false); // Состояние для активности мини-приложения
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false); // Убираем загрузку через 4 секунды
-    }, 4000); // Установите время загрузки в миллисекундах
+    }, 4000); // Время загрузки в миллисекундах
 
     return () => clearTimeout(timer);
   }, []);
@@ -35,22 +36,31 @@ const App = () => {
   }, [location.pathname]);
 
   useEffect(() => {
-    // Check if the Telegram Web App is active and request full-screen mode
-    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.isActive) {
-      window.Telegram.WebApp.requestFullscreen();
+    // Проверяем, активно ли мини-приложение
+    if (window.Telegram && window.Telegram.WebApp) {
+      setIsActive(window.Telegram.WebApp.isActive); // Устанавливаем состояние активности
+
+      // Запрашиваем полноэкранный режим, если мини-приложение активно
+      if (window.Telegram.WebApp.isActive) {
+        window.Telegram.WebApp.requestFullscreen();
+        // Включаем или отключаем вертикальные свайпы
+        window.Telegram.WebApp.isVerticalSwipesEnabled = false; // или true по необходимости
+      }
     }
   }, []);
 
+  // Интеграция с Telegram WebApp для установки размеров контейнера
+  
   return (
     <>
       {loading && <Loader />} {/* Показываем загрузчик, пока loading true */}
       <PageTransition location={location}>
         <Routes location={location}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/friends" element={<Friends />} />
-          <Route path="/tasks" element={<Tasks />} />
-          <Route path="/boost" element={<Boosters />} />
-          <Route path="/wallet" element={<Wallet />} />
+          <Route path="/" element={<HomePage isActive={isActive} />} />
+          <Route path="/friends" element={<Friends isActive={isActive} />} />
+          <Route path="/tasks" element={<Tasks isActive={isActive} />} />
+          <Route path="/boost" element={<Boosters isActive={isActive} />} />
+          <Route path="/wallet" element={<Wallet isActive={isActive} />} />
         </Routes>
       </PageTransition>
     </>

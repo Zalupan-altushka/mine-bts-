@@ -57,12 +57,12 @@
 .FarmButton {
   text-align: center;
   font-family: var(--font-family);
-  background: var(--green-color); 
-  color: var(--background-color);
+  background: linear-gradient(45deg, #2D83EC, #1AC9FF);  
+  color: var(--text-color);
   padding: 10px;
   border-radius: 15px;
   width: 360px;
   height: 55px;
   font-size: 16px;
-  border: none;
+  border: none; 
 }
