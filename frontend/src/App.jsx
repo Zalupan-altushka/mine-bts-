@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { retrieveRawInitData } from '@telegram-apps/sdk-react'; // Импортируем функцию
 import HomePage from './Pages/Home/HomePage.jsx';
 import Friends from './Pages/Friends/Friends.jsx';
 import Tasks from './Pages/Tasks/Tasks.jsx';
@@ -14,6 +15,24 @@ const App = () => {
   const [isActive, setIsActive] = useState(false); // Состояние для активности мини-приложения
 
   useEffect(() => {
+    // Получаем raw-данные инициализации Telegram
+    const initDataRaw = retrieveRawInitData();
+
+    // Отправляем их на сервер
+    fetch('https://example.com/api', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json', // Можно добавить, если нужно
+        Authorization: `tma ${initDataRaw}`,
+      },
+    }).then((response) => {
+      // Можно обработать ответ, если нужно
+      // Например, проверить статус или получить данные
+    }).catch((error) => {
+      console.error('Ошибка при отправке init-данных:', error);
+    });
+
+    // Остальной код useEffect
     const timer = setTimeout(() => {
       setLoading(false); // Убираем загрузку через 4 секунды
     }, 4000); // Время загрузки в миллисекундах
