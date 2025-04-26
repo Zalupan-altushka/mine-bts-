@@ -1,9 +1,13 @@
 import React from 'react';
-import './Loader.css'; // Импортируем стили для анимации
+import './Loader.css';
 
-const Loader = () => {
+const Loader = ({ message, showSuccess }) => {
   return (
     <div className="loader">
+      <div className="message-box">
+        {message}
+        {showSuccess && <div className="success-text">успешно!</div>}
+      </div>
       <div className="spinner"></div>
     </div>
   );

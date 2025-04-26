@@ -37,6 +37,9 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [isActive, setIsActive] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authMessage, setAuthMessage] = useState('авторизация...');
+  const [authSuccess, setAuthSuccess] = useState(false);
+
 
   // Авторизация через Telegram WebApp
   const authenticateWithTelegram = async () => {
@@ -56,14 +59,17 @@ const App = () => {
             if (token) {
               setCookie('auth_token', token, { expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), sameSite: 'Strict' });
               setIsAuthenticated(true);
+              setAuthMessage('успешно!');
+              setAuthSuccess(true);
             }
-            console.log('Авторизация прошла успешно');
           } else {
-            setIsAuthenticated(false);
-            console.log('Ошибка авторизации');
+            setAuthMessage('Ошибка авторизации');
+            setAuthSuccess(false);
           }
         } catch (err) {
           console.error('Ошибка при авторизации:', err);
+          setAuthMessage('Ошибка авторизации');
+          setAuthSuccess(false);
         }
       }
     } else {
@@ -144,7 +150,7 @@ const App = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false); // Убираем загрузку через 4 секунды
-    }, 4000); // Время загрузки в миллисекундах
+    }, 9000); // Время загрузки в миллисекундах
 
     return () => clearTimeout(timer);
   }, []);
@@ -161,8 +167,7 @@ const App = () => {
 
   return (
     <>
-      {loading && <Loader />}
-      {/* Ваша кнопка выхода убрана, так как обработчик реализован через событие */}
+      {loading && <Loader message={authMessage} showSuccess={authSuccess} />}
       <PageTransition location={location}>
         <Routes>
           <Route path="/" element={<HomePage isActive={isActive} />} />
