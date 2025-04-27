@@ -10,6 +10,22 @@ import ModalTwo from '../../Most Used/Modal/ModalTwo/ModalTwo';
 function Boosters() {
   const [isModalOneVisible, setModalOneVisible] = useState(false);
   const [isModalTwoVisible, setModalTwoVisible] = useState(false);
+  const [isMenuFixed, setMenuFixed] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      // Например, фиксировать меню после прокрутки 100px
+      if (scrollY > 600) {
+        setMenuFixed(true);
+      } else {
+        setMenuFixed(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
       <section className='bodyboostpage'>
@@ -23,13 +39,12 @@ function Boosters() {
             <button className='right-buttons' onClick={() => setModalOneVisible(true)}>Unlimited Storage</button>
             <button className='right-buttons' onClick={() => setModalTwoVisible(true)}>Unlimited Time Claim</button>
           </article>
-          <button className='Boost_clame_button'>Claim $BTS</button>
-          
+          <button className='Boost_clame_button'>Claim $BTS</button> 
         </section>
         <ListsContainerFirst />
         <ListsContainerSecond />
         <ListContainerThree />
-        <Menu />
+        <Menu className={isMenuFixed ? 'menu-fixed' : ''} />
         <ModalOne isVisible={isModalOneVisible} onClose={() => setModalOneVisible(false)} />
         <ModalTwo isVisible={isModalTwoVisible} onClose={() => setModalTwoVisible(false)} />
       </section>
