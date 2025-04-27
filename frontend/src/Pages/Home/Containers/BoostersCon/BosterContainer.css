@@ -18,9 +18,7 @@
   display: flex; 
   justify-content: space-between; 
   align-items: center;
-  background-image: url('80499.jpg');
-  background-size: cover;
-  background-position: center;
+  background-color: #0f0f0f;
   padding: 20px; 
 }
 
