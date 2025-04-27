@@ -41,11 +41,7 @@ html, .bodywalletpage {
 }
 
 .content-section {
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(10px); /* Размытие фона под меню (опционально) */
   padding: 20px; /* Add padding as desired */
-  width: 340px;
-  height: 350px;
   display: flex; /* Enable flexbox */
   flex-direction: column; /* Stack children vertically */
   align-items: center; /* Center children horizontally */
