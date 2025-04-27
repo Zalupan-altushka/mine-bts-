@@ -24,7 +24,9 @@ html, .bodywalletpage {
   margin: 0;
   height: 100vh;
   width: 100vw;
-  background: var(--background-color); 
+  background-image: url('222.jpg');
+  background-size: cover;
+  background-position: center;
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -39,8 +41,6 @@ html, .bodywalletpage {
 }
 
 .content-section {
-  background: linear-gradient(to top, #326381 -200%, var(--background-color) 100%); /* Gradient from bottom to top */
-  border-radius: 0 0 35px 35px; /* Rounded corners at the bottom */
   padding: 20px; /* Add padding as desired */
   width: 340px;
   height: 350px;
