@@ -20,16 +20,15 @@ html, .bodyboostpage {
 }
 
 .bodyboostpage {
-  margin: 0;
-  flex: 1;
-  height: 100%;
-  width: 100vw;
-  background-image: url('6155203.jpg');
-  background-size: cover;
-  background-position: center;
   display: flex;
   justify-content: flex-start;
-  align-items: center;
+  align-items: center; 
+  width: 100vw;
+  height: 100%;
+  margin: 0;
+  background: var(--background-color);  
+  box-sizing: border-box;
+  position: relative;
 }
 
 .margin-div-boost {
