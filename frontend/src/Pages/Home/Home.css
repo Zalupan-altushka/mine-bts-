@@ -31,7 +31,12 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  /* Поворот фона */
+  transform: rotate(90deg);
+  /* Важно: чтобы изображение не искажалось, можно добавить transform-origin */
+  transform-origin: center;
 }
+
 
 .no-scroll {
   overflow: hidden;
