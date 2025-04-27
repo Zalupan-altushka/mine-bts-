@@ -18,7 +18,9 @@
   display: flex; 
   justify-content: space-between; 
   align-items: center;
-  background-color: #0f0f0f;
+  background-image: url('frontend/src/Pages/Home/Containers/BoostersCon/80499.jpg');
+  background-size: cover;
+  background-position: center;
   padding: 20px; 
 }
 

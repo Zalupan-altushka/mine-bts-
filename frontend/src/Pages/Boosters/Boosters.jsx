@@ -10,22 +10,7 @@ import ModalTwo from '../../Most Used/Modal/ModalTwo/ModalTwo';
 function Boosters() {
   const [isModalOneVisible, setModalOneVisible] = useState(false);
   const [isModalTwoVisible, setModalTwoVisible] = useState(false);
-  const [isMenuFixed, setMenuFixed] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      // Например, фиксировать меню после прокрутки 100px
-      if (scrollY > 100) {
-        setMenuFixed(true);
-      } else {
-        setMenuFixed(false);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
   return (
       <section className='bodyboostpage'>
         <div className='margin-div-boost'></div>
@@ -43,7 +28,7 @@ function Boosters() {
         <ListsContainerFirst />
         <ListsContainerSecond />
         <ListContainerThree />
-        <Menu className={isMenuFixed ? 'menu-fixed' : ''} />
+        <Menu />
         <ModalOne isVisible={isModalOneVisible} onClose={() => setModalOneVisible(false)} />
         <ModalTwo isVisible={isModalTwoVisible} onClose={() => setModalTwoVisible(false)} />
       </section>
