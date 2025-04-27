@@ -19,16 +19,17 @@ html, .bodyboostpage {
   min-height: 140vh; 
 }
 
-.bodyboostpage {
+.bodyhomepage {
+  margin: 0;
+  flex: 1;
+  height: 100vh;
+  width: 100vw;
+  background-image: url('6155203.jpg');
+  background-size: cover;
+  background-position: center;
   display: flex;
   justify-content: flex-start;
-  align-items: center; 
-  width: 100vw;
-  height: 100%;
-  margin: 0;
-  background: var(--background-color);  
-  box-sizing: border-box;
-  position: relative;
+  align-items: center;
 }
 
 .margin-div-boost {

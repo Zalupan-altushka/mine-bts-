@@ -15,7 +15,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(0, 0, 0, 0.8); /* Полупрозрачный фон */
+  background: rgba(0, 0, 0, 0.2); /* Сделано более прозрачным */
   display: flex;
   justify-content: space-around;
   padding: 10px 0;
@@ -23,6 +23,7 @@
   border-top: 1px solid var(--container-color-two);
   backdrop-filter: blur(10px); /* Размытие фона под меню (опционально) */
 }
+
 
 .menu-item {
   display: flex; /* Use flexbox to align items */
