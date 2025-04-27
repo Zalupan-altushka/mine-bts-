@@ -21,7 +21,6 @@
   padding: 10px 0;
   z-index: 1000; /* Убедитесь, что z-index достаточно высок */
   backdrop-filter: blur(10px); /* Размытие фона под меню (опционально) */
-  border-radius: 20px 20px 0 0;
 }
 
 

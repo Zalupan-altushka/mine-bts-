@@ -41,6 +41,7 @@ html, .bodywalletpage {
 }
 
 .content-section {
+  margin-top: 50px;
   padding: 20px; /* Add padding as desired */
   display: flex; /* Enable flexbox */
   flex-direction: column; /* Stack children vertically */
