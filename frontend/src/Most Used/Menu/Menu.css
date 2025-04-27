@@ -20,7 +20,6 @@
   justify-content: space-around;
   padding: 10px 0;
   z-index: 1000; /* Убедитесь, что z-index достаточно высок */
-  border-top: 1px solid var(--container-color-two);
   backdrop-filter: blur(10px); /* Размытие фона под меню (опционально) */
 }
 
