@@ -21,31 +21,16 @@
 }
 
 .bodyhomepage {
-  position: relative;
   margin: 0;
   flex: 1;
   height: 100vh;
   width: 100vw;
+  background-image: url('6155203.jpg');
+  background-size: cover;
+  background-position: center;
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  overflow: hidden; /* чтобы фон не выходил за границы */
-}
-
-/* Создаем псевдоэлемент для фона */
-.bodyhomepage::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  background-image: url('80499.jpg');
-  background-size: cover;
-  background-position: center;
-  transform: translate(-50%, -50%) rotate(90deg);
-  transform-origin: center;
-  z-index: -1; /* чтобы фон был позади содержимого */
 }
 
 .no-scroll {
