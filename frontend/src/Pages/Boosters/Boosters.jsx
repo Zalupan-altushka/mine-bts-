@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import { useState, useEffect } from 'react';
 import './Boosters.css'
 import Menu from '../../Most Used/Menu/Menu';
 import ListContainerThree from '../Boosters-list/ListContainetThree';
@@ -16,7 +16,7 @@ function Boosters() {
     const handleScroll = () => {
       const scrollY = window.scrollY;
       // Например, фиксировать меню после прокрутки 100px
-      if (scrollY > 600) {
+      if (scrollY > 100) {
         setMenuFixed(true);
       } else {
         setMenuFixed(false);
@@ -26,7 +26,6 @@ function Boosters() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
   return (
       <section className='bodyboostpage'>
         <div className='margin-div-boost'></div>
