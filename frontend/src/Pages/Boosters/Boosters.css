@@ -111,8 +111,10 @@ html, .bodyboostpage {
 }
 
 .center-content {
-  display: flex;
-  flex-direction: column; /* Измените это на 'row', если нужно располагать элементы в ряд */
-  align-items: center; /* Центрирование элементов внутри контейнера */
+  display: flex; 
+  flex-direction: column; /* Stacks items in a column order */
+  align-items: stretch; /* Stretches items to full width, ensures they align properly */
+  height: auto; /* Allow the height to adjust based on content */
+  width: 100%; /* Ensure full width */
   height: 100%;
 }
