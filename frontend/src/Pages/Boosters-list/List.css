@@ -11,7 +11,6 @@
 }
 
 .lists-container {
-  margin-top: 20px;
   display: flex; 
   gap: 20px; 
 }
@@ -19,7 +18,7 @@
 .boosters-list-ton {
   font-family: var(--font-family);
   background: linear-gradient(45deg, var(--blue-another-color), var(--container-color));
-  width: 315px; 
+  width: 310px; 
   height: 215px; 
   display: flex;
   flex-direction: column;
@@ -29,6 +28,7 @@
 }
 
 .boosters-list-prm {
+  margin-top: 20px;
   font-family: var(--font-family);
   background: linear-gradient(45deg, var(--container-color), var(--purple-color)); 
   width: 130px; 
@@ -41,6 +41,7 @@
 }
 
 .boosters-list-center {
+  margin-top: 20px;
   font-family: var(--font-family);
   background: linear-gradient(45deg, var(--container-color), var(--blue-another-color)); 
   width: 130px; 
@@ -53,6 +54,7 @@
 }
 
 .boosters-list-ETH {
+  margin-top: 20px;
   font-family: var(--font-family);
   background: linear-gradient(45deg, var(--container-color), var(--container-color-two)); 
   width: 130px; 
@@ -65,6 +67,7 @@
 }
 
 .boosters-list-BTS {
+  margin-top: 20px;
   font-family: var(--font-family);
   background: linear-gradient(45deg, var(--container-color) , gold); 
   width: 130px; 
