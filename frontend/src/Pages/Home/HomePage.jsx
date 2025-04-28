@@ -90,7 +90,7 @@ function HomePage() {
           onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
           disabled={isButtonDisabled && !isClaimButton}
           style={{
-            backgroundColor: isClaimButton ? 'white' : (isButtonDisabled ? '#c4f85c' : ''),
+            backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
             color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
             display: 'flex',
             alignItems: 'center',
