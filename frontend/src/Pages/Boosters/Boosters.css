@@ -10,7 +10,6 @@
   --blue-another-color: #1d71d1;
 }
 
-
 html, .bodyboostpage {
   width: 100%; 
   margin: 0; 
@@ -99,8 +98,8 @@ html, .bodyboostpage {
 
 .containers-scroll-wrapper {
   margin-top: 20px;
-  background-color: var(--background-color);
-  width: 340px;
+  background: rgba(0, 0, 0, 0.8); 
+  width: 325px;
   max-height: 400px; /* или нужная вам высота */
   overflow-y: auto; /* Позволяет прокрутку */
   overflow-x: hidden;

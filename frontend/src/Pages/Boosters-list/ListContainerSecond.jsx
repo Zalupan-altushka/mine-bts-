@@ -25,7 +25,7 @@ function ListContainerSecond() {
       <article className='boosters-list-prm'>
         <div className='list'>
           <div className='hight-section-list'>
-            <span>Premuim</span>
+            <span>Prem</span>
             <button className='ListButtonPrm'>2.7k</button>
           </div>
           <section className='mid-section-list'>

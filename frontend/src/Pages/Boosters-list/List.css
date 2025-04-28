@@ -18,7 +18,7 @@
 .boosters-list-ton {
   font-family: var(--font-family);
   background: linear-gradient(45deg, var(--blue-another-color), var(--container-color));
-  width: 310px; 
+  width: 290px; 
   height: 215px; 
   display: flex;
   flex-direction: column;
@@ -31,7 +31,7 @@
   margin-top: 20px;
   font-family: var(--font-family);
   background: linear-gradient(45deg, var(--container-color), var(--purple-color)); 
-  width: 130px; 
+  width: 120px; 
   height: 215px; 
   display: flex;
   flex-direction: column;
@@ -44,7 +44,7 @@
   margin-top: 20px;
   font-family: var(--font-family);
   background: linear-gradient(45deg, var(--container-color), var(--blue-another-color)); 
-  width: 130px; 
+  width: 120px; 
   height: 215px; 
   display: flex;
   flex-direction: column;
@@ -57,7 +57,7 @@
   margin-top: 20px;
   font-family: var(--font-family);
   background: linear-gradient(45deg, var(--container-color), var(--container-color-two)); 
-  width: 130px; 
+  width: 120px; 
   height: 215px; 
   display: flex;
   flex-direction: column;
@@ -70,7 +70,7 @@
   margin-top: 20px;
   font-family: var(--font-family);
   background: linear-gradient(45deg, var(--container-color) , gold); 
-  width: 130px; 
+  width: 120px; 
   height: 215px; 
   display: flex;
   flex-direction: column;
