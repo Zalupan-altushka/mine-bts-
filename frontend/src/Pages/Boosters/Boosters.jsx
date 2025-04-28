@@ -25,9 +25,11 @@ function Boosters() {
           </article>
           <button className='Boost_clame_button'>Claim $BTS</button> 
         </section>
-        <ListsContainerFirst />
-        <ListsContainerSecond />
-        <ListContainerThree />
+        <div className='containers-scroll-wrapper'>
+          <ListsContainerFirst />
+          <ListsContainerSecond />
+          <ListContainerThree />
+        </div>
         <Menu />
         <ModalOne isVisible={isModalOneVisible} onClose={() => setModalOneVisible(false)} />
         <ModalTwo isVisible={isModalTwoVisible} onClose={() => setModalTwoVisible(false)} />

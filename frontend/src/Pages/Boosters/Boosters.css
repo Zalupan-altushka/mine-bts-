@@ -93,3 +93,10 @@ html, .bodyboostpage {
   border-radius: 25px;
   border: none;
 }
+
+.containers-scroll-wrapper {
+  max-height: 400px; /* или нужная вам высота */
+  overflow-y: auto;
+  padding: 10px; /* по желанию */
+  border: 1px solid #ccc; /* по желанию, для визуальной границы */
+}
