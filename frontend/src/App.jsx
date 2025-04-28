@@ -42,7 +42,7 @@ const App = () => {
 
   useEffect(() => {
     // Проверяем, находится ли пользователь на одной из страниц, где нужно отключить прокрутку
-    if (location.pathname === '/' || location.pathname === '/friends' || location.pathname === '/tasks' || location.pathname === '/wallet') {
+    if (location.pathname === '/' || location.pathname === '/friends' || location.pathname === '/tasks' || location.pathname === '/wallet' || location.pathname === '/boost') {
       document.body.classList.add('no-scroll');
     } else {
       document.body.classList.remove('no-scroll');
