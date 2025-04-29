@@ -42,15 +42,9 @@ html, .bodywalletpage {
 
 .content-section {
   margin-top: 50px;
+  padding: 20px; /* Add padding as desired */
   display: flex; /* Enable flexbox */
   flex-direction: column; /* Stack children vertically */
   align-items: center; /* Center children horizontally */
   justify-content: center; /* Center children vertically (optional) */
-  background-image: url('../../Most Used/Image/black.jpg');
-  background-size: cover;
-  background-position: center;
-  box-sizing: border-box;
-  padding: 20px; /* Add padding as desired */
-  width: 340px;
-  height: 200px;
 }

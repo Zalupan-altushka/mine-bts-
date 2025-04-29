@@ -10,6 +10,7 @@
   --blue-another-color: #1d71d1;
 }
 
+
 .container-check-day {
   border-radius: 15px;
   width: 340px;
@@ -34,6 +35,10 @@
 
 .second-span{
   color: var(--container-color-two);
+}
+
+.first-span{
+  color: var(--text-color);
 }
 
 .right-section-button {
