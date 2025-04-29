@@ -64,6 +64,7 @@ html, .bodyboostpage {
 }
 
 .boosters-box {
+  margin-top: 20px;
   background-color: rgba(0, 0, 0, 0.6); /* Задайте нужный цвет фона */
   width: 365px;
   padding: 20px; /* Можно настроить отступы по желанию */
@@ -95,7 +96,7 @@ html, .bodyboostpage {
 /* Сделать span вертикально */
 .left-section-box span {
   flex-direction: column;
-  margin-bottom: 3px; /* Расстояние между двумя span */
+  margin-bottom: 1px; /* Расстояние между двумя span */
 }
 
 /* right-section-box у правого края внутри height-section-box */
@@ -124,8 +125,9 @@ html, .bodyboostpage {
 
 /* Кнопка занимает 100% ширины и расположена у нижнего края */
 .middle-section-box button {
-  background-color: var(--text-color);
-  color: var(--background-color);
+  background-color: var(--background-color);
+  color: var(--text-color);
+  border: 1px solid gold;
   border-radius: 15px;
   width: 100%;
   align-self: stretch;
