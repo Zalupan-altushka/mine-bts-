@@ -8,7 +8,7 @@ function BoostersBox() {
         <section className='boosters-box'>
           <article className='height-section-box'>
             <div className='left-section-box'>
-              <span className='first-span'>Boosters Market</span>
+              <span className='first-span-box'>Boosters Market</span>
               <span className='two-span'>Please buy boosters with TG Stars</span>
             </div>
             <div className='right-section-box'>
