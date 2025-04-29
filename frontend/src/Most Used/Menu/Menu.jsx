@@ -9,9 +9,6 @@ import TasksIconOne from '../Image/TasksIcon';
 import TasksIconTwo from '../Image/TasksIconTwo';
 import BoostIconOne from '../Image/ZapIcon';
 import BoostIconTwo from '../Image/ZapIconTwo';
-import WalletIconOne from '../Image/WalletIconOne';
-import WalletIconTwo from '../Image/WalletIcomTwo';
-
 
 const Menu = () => {
   const location = useLocation();
