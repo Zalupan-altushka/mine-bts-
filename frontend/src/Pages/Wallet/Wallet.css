@@ -37,11 +37,11 @@ html, .bodywalletpage {
 }
 
 .margin-div-wallet {
-  margin-top: 90px;
+  margin-top: 160px;
 }
 
 .content-section {
-  margin-top: 50px;
+  margin-top: 20px;
   padding: 20px; /* Add padding as desired */
   display: flex; /* Enable flexbox */
   flex-direction: column; /* Stack children vertically */

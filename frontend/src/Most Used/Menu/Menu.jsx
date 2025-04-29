@@ -57,6 +57,14 @@ const Menu = () => {
             </span>
           </Link>
         </div>
+        <div className="menu-item">
+          <Link to="/wallet" onClick={handleClick('/wallet')}>
+            {currentPath === '/wallet' ? <WalletIconTwo /> : <WalletIconOne />}
+            <span className="Name" style={{ color: currentPath === '/wallet' ? '#c4f85c' : 'var(--container-color-two)' }}>
+              Wallet
+            </span>
+          </Link>
+        </div>
       </div>
   );
 };

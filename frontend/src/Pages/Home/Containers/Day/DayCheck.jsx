@@ -94,3 +94,4 @@ function DayCheck({ onPointsUpdate }) {
 }
 
 export default DayCheck;
+
