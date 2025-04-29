@@ -1,29 +1,32 @@
-import { useState, useEffect } from 'react';
 import './Boosters.css'
 import Menu from '../../Most Used/Menu/Menu';
 import ListContainerThree from '../Boosters-list/ListContainetThree';
 import ListsContainerFirst from '../Boosters-list/ListContainerFirst';
 import ListsContainerSecond from '../Boosters-list/ListContainerSecond';
-import ModalOne from '../../Most Used/Modal/ModalOne/ModalOne';
-import ModalTwo from '../../Most Used/Modal/ModalTwo/ModalTwo';
+import Star from '../../Most Used/Image/Star';
 
 function Boosters() {
-  const [isModalOneVisible, setModalOneVisible] = useState(false);
-  const [isModalTwoVisible, setModalTwoVisible] = useState(false);
 
   return (
       <section className='bodyboostpage'>
         <div className='margin-div-boost'></div>
-        <section className='Clame_Box'>
-          <article className='left-section'>
-            <span>Balance: <span className='Points-balance'>0.033</span></span>
-            <span>Storage: <span className='Points-balance'>0%</span></span>
+        <section className='boosters-box'>
+          <article className='height-section-box'>
+            <div className='left-section-box'>
+              <span className='first-span'>Boosters Market</span>
+              <span className='two-span'>Please buy boosters with TG Stars</span>
+            </div>
+            <div className='right-section-box'>
+              <Star />
+            </div>
           </article>
-          <article className='right-section'>
-            <button className='right-buttons' onClick={() => setModalOneVisible(true)}>Unlimited Storage</button>
-            <button className='right-buttons' onClick={() => setModalTwoVisible(true)}>Unlimited Time Claim</button>
+          <div className='polosa' />
+          <article className='middle-section-box'>
+            <div className='center-section-middle'>
+              <span>Balance: 0.0333</span>
+            </div>
+            <button>Claim</button>
           </article>
-          <button className='Boost_clame_button'>Claim $BTS</button> 
         </section>
         <div className='containers-scroll-wrapper'>
           <div className='center-content'>
@@ -33,8 +36,6 @@ function Boosters() {
           </div>
         </div>
         <Menu />
-        <ModalOne isVisible={isModalOneVisible} onClose={() => setModalOneVisible(false)} />
-        <ModalTwo isVisible={isModalTwoVisible} onClose={() => setModalTwoVisible(false)} />
       </section>
   );
 }

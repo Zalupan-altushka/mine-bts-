@@ -10,6 +10,7 @@
   --blue-another-color: #1d71d1;
 }
 
+
 html, .bodyboostpage {
   width: 100%; 
   margin: 0; 
@@ -40,81 +41,116 @@ html, .bodyboostpage {
   overflow: hidden;
 }
 
-.Clame_Box {
-  margin-top: 20px;
-  font-family: var(--font-family);
-  border-radius: 25px;
-  background: linear-gradient(90deg, var(--background-color), var(--container-color));
-  padding: 10px; 
-  display: flex;
-  flex-direction: column; 
-  align-items: center; 
-  position: relative; 
-  height: 150px; 
-  width: 340px;
-  border: 1px solid var(--green-color);
-}
-
-.Points-balance {
-  color: var(--green-color);
-}
-
-.left-section {
-  position: absolute; 
-  left: 20px; 
-  top: 20px; 
-  gap: 20px;
-  display: flex;
-  flex-direction: column; 
-}
-
-.right-section {
-  position: absolute; 
-  right: 20px; 
-  display: flex;
-  flex-direction: column; 
-}
-
-.right-buttons {
-  background: linear-gradient(45deg, var(--background-color), var(--container-color-two));
-  color: var(--text-color);
-  margin-top: 10px; 
-  font-size: 12px;
-  border-radius: 25px;
-  border: none;
-}
-
-.Boost_clame_button {
-  background: var(--green-color);
-  color: var(--background-color);
-  position: absolute; 
-  bottom: 20px;
-  left: 50%; 
-  transform: translateX(-50%); 
-  width: 320px;
-  border-radius: 25px;
-  border: none;
-}
-
 .containers-scroll-wrapper {
   margin-top: 20px;
-  background: rgba(0, 0, 0, 0.8); 
+  background: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
   width: 325px;
-  max-height: 400px; /* или нужная вам высота */
-  overflow-y: auto; /* Позволяет прокрутку */
+  max-height: 400px; /* or needed height */
+  overflow-y: auto; /* Allows scrolling */
   overflow-x: hidden;
-  padding: 20px; /* Отступы вокруг содержимого */
+  padding: 20px; /* Убираем внутренние отступы, чтобы содержимое было вплотную */
   border: 1px solid var(--container-color-two); /* Визуальная граница */
-  display: flex; /* Используем flex для центрирования */
-  justify-content: center; /* Центрируем содержимое по горизонтали */
+  display: flex; /* Используем flex для центровки контента */
+  flex-direction: column; /* Обеспечивает вертикальное расположение содержимого */
   border-radius: 25px;
 }
 
 .center-content {
   display: flex; 
-  flex-direction: column; /* Stacks items in a column order */
-  align-items: stretch; /* Stretches items to full width, ensures they align properly */
-  height: auto; /* Allow the height to adjust based on content */
-  width: 100%; /* Ensure full width */
-  height: 100%;
+  flex-direction: column; /* Вертикальные элементы */
+  align-items: stretch; /* Расширяет элементы на всю ширину */
+  height: auto; /* Высота по содержимому */
+  width: 100%; /* Полная ширина */
+}
+
+.boosters-box {
+  background-color: rgba(0, 0, 0, 0.6); /* Задайте нужный цвет фона */
+  width: 365px;
+  padding: 20px; /* Можно настроить отступы по желанию */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border: 1px solid var(--container-color-two);
+  border-radius: 25px;
+  position: relative;
+}
+
+/* Расположение height-section-box у верхней части */
+.height-section-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  padding-bottom: 10px; /* Отступ снизу от height-section-box */
+}
+
+/* left-section-box у левого края внутри height-section-box */
+.left-section-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Сделать span вертикально */
+.left-section-box span {
+  flex-direction: column;
+  margin-bottom: 3px; /* Расстояние между двумя span */
+}
+
+/* right-section-box у правого края внутри height-section-box */
+.right-section-box {
+  align-self: flex-start;
+  /* Можно дополнительно задать размер или отступы, если нужно */
+}
+
+/* Расположение middle-section-box под height-section-box */
+.middle-section-box {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* center-section-middle по центру в middle-section-box */
+.center-section-middle {
+  font-size: 15px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 10px; /* Немного отступа перед кнопкой */
+}
+
+/* Кнопка занимает 100% ширины и расположена у нижнего края */
+.middle-section-box button {
+  background-color: var(--text-color);
+  color: var(--background-color);
+  border-radius: 15px;
+  width: 100%;
+  align-self: stretch;
+  padding: 10px;
+  margin-top: auto; /* Выровнять кнопку внизу */
+  box-sizing: border-box;
+}
+
+.two-span{
+  color: #b9bbbc;
+  font-size: 12px;
+}
+
+.first-span{
+  font-size: 16px;
+  color: gold;
+  font-weight: bold;
+}
+
+.polosa {
+  position: relative; /* Или relative, если контейнер с позиционированием */
+  top: 0; /* или нужное расположение */
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% + 40px); /* увеличиваем ширину на 40px (по 20px с каждой стороны) */
+  height: 1px; /* толщина полосы */
+  background-color: var(--container-color-two);
 }
