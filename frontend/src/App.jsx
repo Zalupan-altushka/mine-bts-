@@ -7,7 +7,6 @@ import Tasks from './Pages/Tasks/Tasks.jsx';
 import Boosters from './Pages/Boosters/Boosters.jsx';
 import PageTransition from './Pages/Transition/PageTransition.jsx';
 import Loader from './Pages/Loader/Loader.jsx';// Импортируем Loader
-import Wallet from './Pages/Wallet/Wallet.jsx';
 
 const App = () => {
   const location = useLocation();
@@ -42,7 +41,7 @@ const App = () => {
 
   useEffect(() => {
     // Проверяем, находится ли пользователь на одной из страниц, где нужно отключить прокрутку
-    if (location.pathname === '/' || location.pathname === '/friends' || location.pathname === '/tasks' || location.pathname === '/wallet' || location.pathname === '/boost') {
+    if (location.pathname === '/' || location.pathname === '/friends' || location.pathname === '/tasks' || location.pathname === '/boost') {
       document.body.classList.add('no-scroll');
     } else {
       document.body.classList.remove('no-scroll');
@@ -79,7 +78,6 @@ const App = () => {
           <Route path="/friends" element={<Friends isActive={isActive} />} />
           <Route path="/tasks" element={<Tasks isActive={isActive} />} />
           <Route path="/boost" element={<Boosters isActive={isActive} />} />
-          <Route path="/wallet" element={<Wallet isActive={isActive} />} />
         </Routes>
       </PageTransition>
     </>
