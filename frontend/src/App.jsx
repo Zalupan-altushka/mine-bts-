@@ -6,7 +6,7 @@ import Friends from './Pages/Friends/Friends.jsx';
 import Tasks from './Pages/Tasks/Tasks.jsx';
 import Boosters from './Pages/Boosters/Boosters.jsx';
 import PageTransition from './Pages/Transition/PageTransition.jsx';
-import Loader from './Pages/Loader/Loader.jsx';// Импортируем Loader
+import Loader from './Pages/Loader/Loader.jsx';
 
 const App = () => {
   const location = useLocation();
@@ -21,57 +21,61 @@ const App = () => {
     fetch('https://example.com/api', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json', // Можно добавить, если нужно
+        'Content-Type': 'application/json',
         Authorization: `tma ${initDataRaw}`,
       },
     }).then((response) => {
-      // Можно обработать ответ, если нужно
-      // Например, проверить статус или получить данные
+      // Обработка ответа, если нужно
     }).catch((error) => {
       console.error('Ошибка при отправке init-данных:', error);
     });
 
-    // Остальной код useEffect
-    const timer = setTimeout(() => {
-      setLoading(false); // Убираем загрузку через 4 секунды
-    }, 4000); // Время загрузки в миллисекундах
+    // Установка подтверждения закрытия
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.enableClosingConfirmation();
+    }
 
-    return () => clearTimeout(timer);
+    // Таймаут для загрузки
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 4000);
+
+    return () => {
+      clearTimeout(timer);
+      // Отключаем подтверждение закрытия при размонтировании
+      if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.disableClosingConfirmation();
+      }
+    };
   }, []);
 
   useEffect(() => {
-    // Проверяем, находится ли пользователь на одной из страниц, где нужно отключить прокрутку
+    // Проверка текущего маршрута
     if (location.pathname === '/' || location.pathname === '/friends' || location.pathname === '/tasks' || location.pathname === '/boost') {
       document.body.classList.add('no-scroll');
     } else {
       document.body.classList.remove('no-scroll');
     }
 
-    // Убираем класс no-scroll при размонтировании компонента
     return () => {
       document.body.classList.remove('no-scroll');
     };
   }, [location.pathname]);
 
   useEffect(() => {
-    // Проверяем, активно ли мини-приложение
+    // Проверка активности мини-приложения
     if (window.Telegram && window.Telegram.WebApp) {
-      setIsActive(window.Telegram.WebApp.isActive); // Устанавливаем состояние активности
-
-      // Запрашиваем полноэкранный режим, если мини-приложение активно
+      setIsActive(window.Telegram.WebApp.isActive);
       if (window.Telegram.WebApp.isActive) {
         window.Telegram.WebApp.requestFullscreen();
-        // Включаем или отключаем вертикальные свайпы
         window.Telegram.WebApp.isVerticalSwipesEnabled = false; // или true по необходимости
       }
     }
   }, []);
 
-  // Интеграция с Telegram WebApp для установки размеров контейнера
-  
   return (
     <>
-      {loading && <Loader />} {/* Показываем загрузчик, пока loading true */}
+      {loading && <Loader />}
       <PageTransition location={location}>
         <Routes location={location}>
           <Route path="/" element={<HomePage isActive={isActive} />} />

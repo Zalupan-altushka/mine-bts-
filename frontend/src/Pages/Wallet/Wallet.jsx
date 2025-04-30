@@ -1,6 +1,5 @@
 import './Wallet.css'
 import { useState, useEffect } from 'react';
-import TonButton from './Ton-connect-button/TonButton';
 import Menu from '../../Most Used/Menu/Menu';
 
 const tg = window.Telegram.WebApp;
@@ -77,7 +76,6 @@ function Wallet() {
     <section className='bodywalletpage'>
       <div className='content-section'>
         <UserProfileWallet />
-        <TonButton />
       </div>
       <Menu />
     </section>
