@@ -13,6 +13,20 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [isActive, setIsActive] = useState(false); // Состояние для активности мини-приложения
 
+  const handleReturnToWebApp = () => {
+    if (window.Telegram && window.Telegram.WebApp) {
+      // Если WebApp уже активен
+      if (window.Telegram.WebApp.isActive) {
+        // Можно вызвать expand() или просто активировать
+        window.Telegram.WebApp.expand(); // Расширяет WebApp, если свернуто
+        // Или, если нужно, можно вызвать другие методы
+      } else {
+        // Если WebApp не активен, можно активировать его
+        window.Telegram.WebApp.ready(); // Говорим, что приложение готово
+      }
+    }
+  };
+
   useEffect(() => {
     // Получаем raw-данные инициализации Telegram
     const initDataRaw = retrieveRawInitData();
@@ -33,6 +47,14 @@ const App = () => {
     // Установка подтверждения закрытия
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.enableClosingConfirmation();
+
+      // Проверка активности
+      setIsActive(window.Telegram.WebApp.isActive);
+
+      // Если WebApp уже активен, сразу расширяем или возвращаемся
+      if (window.Telegram.WebApp.isActive) {
+        handleReturnToWebApp();
+      }
     }
 
     // Таймаут для загрузки
