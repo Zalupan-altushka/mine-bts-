@@ -11,44 +11,48 @@ import Loader from './Pages/Loader/Loader.jsx';
 const App = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
-  const [isActive, setIsActive] = useState(false); // Состояние для активности мини-приложения
 
   // Функция для возврата на передний план
   const returnToWebApp = () => {
-    if (window.Telegram && window.Telegram.WebApp) {
-      // Проверяем, свернуто ли приложение
+    if (window.Telegram?.WebApp) {
+      // Если WebApp свернут или не расширен — расширяем
       if (!window.Telegram.WebApp.isExpanded) {
-        // Расширяем WebApp, чтобы вернуть его на передний план
         window.Telegram.WebApp.expand();
       }
     }
   };
 
   useEffect(() => {
-    // Получаем raw-данные инициализации Telegram
+    // Получение initData
     const initDataRaw = retrieveRawInitData();
 
-    // Отправляем их на сервер
+    // Отправка данных на сервер
     fetch('https://example.com/api', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `tma ${initDataRaw}`,
       },
-    }).then((response) => {
-      // Обработка ответа, если нужно
     }).catch((error) => {
       console.error('Ошибка при отправке init-данных:', error);
     });
 
-    // Установка подтверждения закрытия
-    if (window.Telegram && window.Telegram.WebApp) {
+    // Включение подтверждения закрытия
+    if (window.Telegram?.WebApp) {
       window.Telegram.WebApp.enableClosingConfirmation();
 
-      // Проверка активности
-      setIsActive(window.Telegram.WebApp.isActive);
+      // Обработка события закрытия или свертывания
+      const handleWebAppEvent = () => {
+        returnToWebApp();
+      };
 
-      // Если WebApp уже активен, сразу расширяем или возвращаемся
+      // Подписка на события
+      window.Telegram.WebApp.onEvent('webappClose', handleWebAppEvent);
+      window.Telegram.WebApp.onEvent('webappSwitch', handleWebAppEvent);
+      window.Telegram.WebApp.onEvent('webappPinned', handleWebAppEvent);
+      window.Telegram.WebApp.onEvent('webappUnpinned', handleWebAppEvent);
+
+      // Если WebApp уже активен, расширяем его
       if (window.Telegram.WebApp.isActive) {
         returnToWebApp();
       }
@@ -61,15 +65,18 @@ const App = () => {
 
     return () => {
       clearTimeout(timer);
-      // Отключаем подтверждение закрытия при размонтировании
-      if (window.Telegram && window.Telegram.WebApp) {
+      if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.offEvent('webappClose', handleWebAppEvent);
+        window.Telegram.WebApp.offEvent('webappSwitch', handleWebAppEvent);
+        window.Telegram.WebApp.offEvent('webappPinned', handleWebAppEvent);
+        window.Telegram.WebApp.offEvent('webappUnpinned', handleWebAppEvent);
         window.Telegram.WebApp.disableClosingConfirmation();
       }
     };
   }, []);
 
   useEffect(() => {
-    // Проверка текущего маршрута
+    // Обработка маршрутов
     if (['/', '/friends', '/tasks', '/boost'].includes(location.pathname)) {
       document.body.classList.add('no-scroll');
     } else {
@@ -77,47 +84,26 @@ const App = () => {
     }
   }, [location.pathname]);
 
-  useEffect(() => {
-    // Проверка активности мини-приложения
-    if (window.Telegram && window.Telegram.WebApp) {
-      setIsActive(window.Telegram.WebApp.isActive);
-      if (window.Telegram.WebApp.isActive) {
-        window.Telegram.WebApp.requestFullscreen();
-        window.Telegram.WebApp.expand(); // Расширяем при активации
-        window.Telegram.WebApp.isVerticalSwipesEnabled = false; // или true по необходимости
-      }
-    }
-  }, []);
-
-  // Обработчик для кнопок или событий, вызывающий возврат
-  const handleUserInteraction = () => {
-    returnToWebApp();
-    // Можно добавить сюда логику открытия нужных страниц
-  };
-
   return (
     <>
       {loading && <Loader />}
       <PageTransition location={location}>
-        {/* Например, добавим обработчик к кнопкам внутри страниц */}
-        {/* Или вызывайте handleUserInteraction() при клике на кнопки */}
-        <Routes location={location}>
-          <Route path="/" element={<HomePage isActive={isActive} onInteraction={handleUserInteraction} />} />
-          <Route path="/friends" element={<Friends isActive={isActive} onInteraction={handleUserInteraction} />} />
-          <Route path="/tasks" element={<Tasks isActive={isActive} onInteraction={handleUserInteraction} />} />
-          <Route path="/boost" element={<Boosters isActive={isActive} onInteraction={handleUserInteraction} />} />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/friends" element={<Friends />} />
+          <Route path="/tasks" element={<Tasks />} />
+          <Route path="/boost" element={<Boosters />} />
         </Routes>
       </PageTransition>
     </>
   );
 };
 
-const Main = () => {
-  return (
-    <Router>
-      <App />
-    </Router>
-  );
-};
+const Main = () => (
+  <Router>
+    <App />
+  </Router>
+);
 
 export default Main;
+
