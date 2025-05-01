@@ -12,12 +12,13 @@
   --blue-another-color: #1d71d1;
 }
 
-.html-home, .bodyhomepage {
+.bodyhomepage {
   width: 100%; 
-  min-height: 100vh;
+  height: 100%;
   margin: 0; 
   padding: 0;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 .bodyhomepage {
@@ -31,15 +32,13 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  padding-top: env(safe-area-inset-top);
 }
 
 .no-scroll {
   overflow: hidden;
 }
 
-.margin-div {
-  margin-top: 120px;
-}
 
 .points-count {
   font-family: var(--font-family);
