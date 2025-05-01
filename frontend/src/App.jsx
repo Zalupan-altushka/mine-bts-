@@ -15,15 +15,8 @@ const App = () => {
 
   const handleReturnToWebApp = () => {
     if (window.Telegram && window.Telegram.WebApp) {
-      // Если WebApp уже активен
-      if (window.Telegram.WebApp.isActive) {
-        // Можно вызвать expand() или просто активировать
-        window.Telegram.WebApp.expand(); // Расширяет WebApp, если свернуто
-        // Или, если нужно, можно вызвать другие методы
-      } else {
-        // Если WebApp не активен, можно активировать его
-        window.Telegram.WebApp.ready(); // Говорим, что приложение готово
-      }
+      // Если WebApp свернуто, расширяем его
+      window.Telegram.WebApp.expand();
     }
   };
 
@@ -62,18 +55,43 @@ const App = () => {
       setLoading(false);
     }, 4000);
 
+    // Обработка событий Telegram WebApp
+    const handleEvent = (eventType) => {
+      // Если приложение свернуто, возвращаем его в активное состояние
+      if (window.Telegram && window.Telegram.WebApp) {
+        if (window.Telegram.WebApp.isExpanded === false) {
+          window.Telegram.WebApp.expand();
+        }
+      }
+    };
+
+    // Подписка на события
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.onEvent('mainButtonClicked', handleEvent);
+      window.Telegram.WebApp.onEvent('popupClosed', handleEvent);
+      window.Telegram.WebApp.onEvent('backButtonClicked', handleEvent);
+      window.Telegram.WebApp.onEvent('settingsButtonClicked', handleEvent);
+      window.Telegram.WebApp.onEvent('homeButtonClicked', handleEvent);
+      // Можно добавить другие события по необходимости
+    }
+
     return () => {
       clearTimeout(timer);
-      // Отключаем подтверждение закрытия при размонтировании
       if (window.Telegram && window.Telegram.WebApp) {
         window.Telegram.WebApp.disableClosingConfirmation();
+        // Удаление слушателей
+        window.Telegram.WebApp.offEvent('mainButtonClicked', handleEvent);
+        window.Telegram.WebApp.offEvent('popupClosed', handleEvent);
+        window.Telegram.WebApp.offEvent('backButtonClicked', handleEvent);
+        window.Telegram.WebApp.offEvent('settingsButtonClicked', handleEvent);
+        window.Telegram.WebApp.offEvent('homeButtonClicked', handleEvent);
       }
     };
   }, []);
 
   useEffect(() => {
     // Проверка текущего маршрута
-    if (location.pathname === '/' || location.pathname === '/friends' || location.pathname === '/tasks' || location.pathname === '/boost') {
+    if (['/', '/friends', '/tasks', '/boost'].includes(location.pathname)) {
       document.body.classList.add('no-scroll');
     } else {
       document.body.classList.remove('no-scroll');

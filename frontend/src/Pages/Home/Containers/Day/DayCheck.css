@@ -50,7 +50,6 @@
 .Get-button {
   background-color: var(--green-color);
   color: var(--background-color);
-  box-shadow: 0 0 10px var(--green-color), 0 0 10px var(--container-color-two);
   border-radius: 25px;
   font-size: 12px;
   transition: background-color 0.3s, color 0.3s; /* Добавляем плавный переход */
