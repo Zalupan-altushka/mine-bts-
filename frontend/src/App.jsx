@@ -8,35 +8,17 @@ import Boosters from './Pages/Boosters/Boosters.jsx';
 import PageTransition from './Pages/Transition/PageTransition.jsx';
 import Loader from './Pages/Loader/Loader.jsx';
 
-// Импорт функций для работы с Back4App
-import { initializeParse, saveUserData, fetchUserData } from './backend/Back4AppService.js';
-
-const APP_ID = 'O5Vs2Aa6uDbSoTQTYVAA9pHSmEyEsmwYRBH3xoZp'; // замените на ваш APP ID
-const JS_KEY = 'LJqfe9uwULRDNBDM3zPrHq5e6xU4xIKdtP8n3g9U'; // замените на ваш JS Key
-const SERVER_URL = 'https://parseapi.back4app.com/';
-
 const App = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [isActive, setIsActive] = useState(false); // Состояние для активности мини-приложения
-  const [userData, setUserData] = useState(null); // Для хранения данных пользователя
 
   useEffect(() => {
-    // Инициализация Parse
-    initializeParse(APP_ID, JS_KEY, SERVER_URL);
-
-    // Получение данных пользователя из Back4App
-    fetchUserData().then((result) => {
-      if (result.success && result.data.length > 0) {
-        setUserData(result.data[0]); // Обработка по необходимости
-      }
-    });
-
-    // Получение raw-данных инициализации Telegram
+    // Получаем raw-данные инициализации Telegram
     const initDataRaw = retrieveRawInitData();
 
     // Отправляем их на сервер
-    fetch('https://parseapi.back4app.com', {
+    fetch('https://example.com/api', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -46,20 +28,6 @@ const App = () => {
       // Обработка ответа, если нужно
     }).catch((error) => {
       console.error('Ошибка при отправке init-данных:', error);
-    });
-
-    // Пример: отправка данных пользователя в Back4App
-    const initData = initDataRaw; // или обработка из Telegram SDK
-    const userDataToSave = {
-      telegramInitData: initData,
-      timestamp: new Date().toISOString(),
-    };
-    saveUserData(userDataToSave).then((res) => {
-      if (res.success) {
-        console.log('Данные сохранены, ID:', res.id);
-      } else {
-        console.error('Ошибка сохранения:', res.error);
-      }
     });
 
     // Установка подтверждения закрытия
@@ -83,7 +51,7 @@ const App = () => {
 
   useEffect(() => {
     // Проверка текущего маршрута
-    if (['/', '/friends', '/tasks', '/boost'].includes(location.pathname)) {
+    if (location.pathname === '/' || location.pathname === '/friends' || location.pathname === '/tasks' || location.pathname === '/boost') {
       document.body.classList.add('no-scroll');
     } else {
       document.body.classList.remove('no-scroll');
@@ -129,4 +97,3 @@ const Main = () => {
 };
 
 export default Main;
-
