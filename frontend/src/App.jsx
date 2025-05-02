@@ -11,8 +11,8 @@ import Loader from './Pages/Loader/Loader.jsx';
 // Импорт функций для работы с Back4App
 import { initializeParse, saveUserData, fetchUserData } from './backend/Back4AppService.js';
 
-const APP_ID = 'YOUR_APPLICATION_ID'; // замените на ваш APP ID
-const JS_KEY = 'YOUR_JAVASCRIPT_KEY'; // замените на ваш JS Key
+const APP_ID = 'O5Vs2Aa6uDbSoTQTYVAA9pHSmEyEsmwYRBH3xoZp'; // замените на ваш APP ID
+const JS_KEY = 'LJqfe9uwULRDNBDM3zPrHq5e6xU4xIKdtP8n3g9U'; // замените на ваш JS Key
 const SERVER_URL = 'https://parseapi.back4app.com/';
 
 const App = () => {
