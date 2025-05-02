@@ -8,54 +8,63 @@ import Boosters from './Pages/Boosters/Boosters.jsx';
 import PageTransition from './Pages/Transition/PageTransition.jsx';
 import Loader from './Pages/Loader/Loader.jsx';
 
+// Импорт функций для работы с Back4App
+import { initializeParse, saveUserData, fetchUserData } from './backend/Back4AppService.js';
+
+const APP_ID = 'YOUR_APPLICATION_ID'; // замените на ваш APP ID
+const JS_KEY = 'YOUR_JAVASCRIPT_KEY'; // замените на ваш JS Key
+const SERVER_URL = 'https://parseapi.back4app.com/';
+
 const App = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
-
-  // Функция для возврата на передний план
-  const returnToWebApp = () => {
-    if (window.Telegram?.WebApp) {
-      // Если WebApp свернут или не расширен — расширяем
-      if (!window.Telegram.WebApp.isExpanded) {
-        window.Telegram.WebApp.expand();
-      }
-    }
-  };
+  const [isActive, setIsActive] = useState(false); // Состояние для активности мини-приложения
+  const [userData, setUserData] = useState(null); // Для хранения данных пользователя
 
   useEffect(() => {
-    // Получение initData
+    // Инициализация Parse
+    initializeParse(APP_ID, JS_KEY, SERVER_URL);
+
+    // Получение данных пользователя из Back4App
+    fetchUserData().then((result) => {
+      if (result.success && result.data.length > 0) {
+        setUserData(result.data[0]); // Обработка по необходимости
+      }
+    });
+
+    // Получение raw-данных инициализации Telegram
     const initDataRaw = retrieveRawInitData();
 
-    // Отправка данных на сервер
-    fetch('https://example.com/api', {
+    // Отправляем их на сервер
+    fetch('https://parseapi.back4app.com', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `tma ${initDataRaw}`,
       },
+    }).then((response) => {
+      // Обработка ответа, если нужно
     }).catch((error) => {
       console.error('Ошибка при отправке init-данных:', error);
     });
 
-    // Включение подтверждения закрытия
-    if (window.Telegram?.WebApp) {
-      window.Telegram.WebApp.enableClosingConfirmation();
-
-      // Обработка события закрытия или свертывания
-      const handleWebAppEvent = () => {
-        returnToWebApp();
-      };
-
-      // Подписка на события
-      window.Telegram.WebApp.onEvent('webappClose', handleWebAppEvent);
-      window.Telegram.WebApp.onEvent('webappSwitch', handleWebAppEvent);
-      window.Telegram.WebApp.onEvent('webappPinned', handleWebAppEvent);
-      window.Telegram.WebApp.onEvent('webappUnpinned', handleWebAppEvent);
-
-      // Если WebApp уже активен, расширяем его
-      if (window.Telegram.WebApp.isActive) {
-        returnToWebApp();
+    // Пример: отправка данных пользователя в Back4App
+    const initData = initDataRaw; // или обработка из Telegram SDK
+    const userDataToSave = {
+      telegramInitData: initData,
+      timestamp: new Date().toISOString(),
+    };
+    saveUserData(userDataToSave).then((res) => {
+      if (res.success) {
+        console.log('Данные сохранены, ID:', res.id);
+      } else {
+        console.error('Ошибка сохранения:', res.error);
       }
+    });
+
+    // Установка подтверждения закрытия
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.enableClosingConfirmation();
     }
 
     // Таймаут для загрузки
@@ -65,45 +74,59 @@ const App = () => {
 
     return () => {
       clearTimeout(timer);
-      if (window.Telegram?.WebApp) {
-        window.Telegram.WebApp.offEvent('webappClose', handleWebAppEvent);
-        window.Telegram.WebApp.offEvent('webappSwitch', handleWebAppEvent);
-        window.Telegram.WebApp.offEvent('webappPinned', handleWebAppEvent);
-        window.Telegram.WebApp.offEvent('webappUnpinned', handleWebAppEvent);
+      // Отключаем подтверждение закрытия при размонтировании
+      if (window.Telegram && window.Telegram.WebApp) {
         window.Telegram.WebApp.disableClosingConfirmation();
       }
     };
   }, []);
 
   useEffect(() => {
-    // Обработка маршрутов
+    // Проверка текущего маршрута
     if (['/', '/friends', '/tasks', '/boost'].includes(location.pathname)) {
       document.body.classList.add('no-scroll');
     } else {
       document.body.classList.remove('no-scroll');
     }
+
+    return () => {
+      document.body.classList.remove('no-scroll');
+    };
   }, [location.pathname]);
+
+  useEffect(() => {
+    // Проверка активности мини-приложения
+    if (window.Telegram && window.Telegram.WebApp) {
+      setIsActive(window.Telegram.WebApp.isActive);
+      if (window.Telegram.WebApp.isActive) {
+        window.Telegram.WebApp.requestFullscreen();
+        window.Telegram.WebApp.isVerticalSwipesEnabled = false; // или true по необходимости
+      }
+    }
+  }, []);
 
   return (
     <>
       {loading && <Loader />}
       <PageTransition location={location}>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/friends" element={<Friends />} />
-          <Route path="/tasks" element={<Tasks />} />
-          <Route path="/boost" element={<Boosters />} />
+        <Routes location={location}>
+          <Route path="/" element={<HomePage isActive={isActive} />} />
+          <Route path="/friends" element={<Friends isActive={isActive} />} />
+          <Route path="/tasks" element={<Tasks isActive={isActive} />} />
+          <Route path="/boost" element={<Boosters isActive={isActive} />} />
         </Routes>
       </PageTransition>
     </>
   );
 };
 
-const Main = () => (
-  <Router>
-    <App />
-  </Router>
-);
+const Main = () => {
+  return (
+    <Router>
+      <App />
+    </Router>
+  );
+};
 
 export default Main;
 
