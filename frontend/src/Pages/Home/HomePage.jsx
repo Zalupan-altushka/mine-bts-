@@ -2,24 +2,22 @@ import './Home.css';
 import Menu from '../../Most Used/Menu/Menu';
 import { useState, useEffect } from 'react';
 import Timer from '../../Most Used/Image/Timer';
-import DayCheck from './Containers/Day/DayCheck';
-import BoosterContainer from './Containers/BoostersCon/BoosterContainer';
-import FriendsConnt from './Containers/FriendsCon/FriendsConnt';
-import Game from './Containers/MiniGame/Game';
 
-const tg = window.Telegram.WebApp;
+const tg = window.Telegram?.WebApp;
 
 function HomePage() {
-  const [points, setPoints] = useState(0.0333);
-  const [userId, setUserId] = useState('');
+  const userId = localStorage.getItem('userId');
+  const [points, setPoints] = useState(() => {
+    const savedPoints = localStorage.getItem('points');
+    return savedPoints ? parseFloat(savedPoints) : 0.0333;
+  });
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [isClaimButton, setIsClaimButton] = useState(true);
   const [timerInterval, setTimerInterval] = useState(null);
 
-  // Получение данных при загрузке
+  // Загрузка таймера
   useEffect(() => {
-    // Восстановление таймера из localStorage
     const endTimeStr = localStorage.getItem('endTime');
     if (endTimeStr) {
       const endTime = parseInt(endTimeStr, 10);
@@ -35,7 +33,6 @@ function HomePage() {
     }
   }, []);
 
-  // Таймер
   const startTimer = (duration) => {
     const endTime = Date.now() + duration * 1000;
     localStorage.setItem('endTime', endTime);
@@ -52,53 +49,66 @@ function HomePage() {
     setTimerInterval(interval);
   };
 
-  // Обработчик для "Mine"
   const handleMineFor100 = () => {
+    const bonusPoints = 52.033;
+    const newPoints = points + bonusPoints;
+    setPoints(newPoints);
+    localStorage.setItem('points', newPoints);
+    sendUserData({ id: userId, points: newPoints });
+    // Запускаем таймер
     setIsButtonDisabled(true);
     const sixHoursInSeconds = 6 * 60 * 60;
     setTimeRemaining(sixHoursInSeconds);
     startTimer(sixHoursInSeconds);
   };
 
-  // Обработчик для "Claim"
-  const handleClaimPoints = async () => {
-    const newPoints = points + 52.033;
+  const handleClaimPoints = () => {
+    const bonusPoints = 52.033;
+    const newPoints = points + bonusPoints;
     setPoints(newPoints);
+    localStorage.setItem('points', newPoints);
+    sendUserData({ id: userId, points: newPoints });
     setIsClaimButton(false);
   };
 
-  // Форматирование времени
+  const sendUserData = (user) => {
+    fetch('http://localhost:3001/save-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(user),
+    }).catch((err) => console.error('Ошибка отправки данных:', err));
+  };
+
   const formatTime = (seconds) => {
-    const hours = String(Math.floor(seconds / 3600)).padStart(2, '0');
-    const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
-    const secs = String(seconds % 60).padStart(2, '0');
-    return `${hours}:${minutes}:${secs}`;
+    const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
+    const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+    const s = String(seconds % 60).padStart(2, '0');
+    return `${h}:${m}:${s}`;
   };
 
   return (
     <section className='bodyhomepage'>
-      <div className='margin-div'></div>
-      <div className='for-margin-home'></div>
+      {/* Ваша разметка */}
       <span className='points-count'>{points.toFixed(4)}</span>
-      <DayCheck onPointsUpdate={(amount) => setPoints(prev => prev + amount)} />
-      <Game />
-      <BoosterContainer />
-      <FriendsConnt />
       <div className='ButtonGroup'>
         <button
           className='FarmButton'
           onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
           disabled={isButtonDisabled && !isClaimButton}
           style={{
-            backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
-            color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
+            backgroundColor: '#c4f85c',
+            color: 'black',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
           {isButtonDisabled && !isClaimButton && <Timer style={{ marginRight: '8px' }} />}
-          {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
+          {isClaimButton
+            ? 'Claim 52.033 BTS'
+            : isButtonDisabled
+            ? formatTime(timeRemaining)
+            : 'Mine 52.033 BTS'}
         </button>
       </div>
       <Menu />

@@ -11,24 +11,43 @@ import Loader from './Pages/Loader/Loader.jsx';
 const App = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
-  const [isActive, setIsActive] = useState(false); // Состояние для активности мини-приложения
+  const [isActive, setIsActive] = useState(false); // Для активности мини-приложения
 
   useEffect(() => {
-    // Получаем raw-данные инициализации Telegram
+    // Получаем initDataUnsafe
     const initDataRaw = retrieveRawInitData();
 
-    // Отправляем их на сервер
-    fetch('https://example.com/api', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `tma ${initDataRaw}`,
-      },
-    }).then((response) => {
-      // Обработка ответа, если нужно
-    }).catch((error) => {
-      console.error('Ошибка при отправке init-данных:', error);
-    });
+    // Сохраняем его в localStorage для дальнейшего использования
+    if (initDataRaw) {
+      localStorage.setItem('initDataUnsafe', initDataRaw);
+    }
+
+    let initDataObj = null;
+    try {
+      initDataObj = JSON.parse(initDataRaw);
+    } catch (e) {
+      console.error('Ошибка парсинга initDataUnsafe:', e);
+    }
+
+    if (initDataObj && initDataObj?.user) {
+      const user = initDataObj.user; // Объект с id, first_name, last_name, username
+      // Сохраняем id в localStorage
+      localStorage.setItem('userId', user.id);
+      // Отправляем данные пользователя на сервер
+      fetch('http://localhost:3001/save-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: user.id,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          username: user.username,
+          points: 0, // или начальные очки, если есть
+        }),
+      }).catch((err) => console.error('Ошибка отправки данных пользователя:', err));
+    }
 
     // Установка подтверждения закрытия
     if (window.Telegram && window.Telegram.WebApp) {
