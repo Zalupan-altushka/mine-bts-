@@ -2,6 +2,10 @@ import './Home.css';
 import Menu from '../../Most Used/Menu/Menu';
 import { useState, useEffect } from 'react';
 import Timer from '../../Most Used/Image/Timer';
+import DayCheck from './Containers/Day/DayCheck';
+import BoosterContainer from './Containers/BoostersCon/BoosterContainer';
+import FriendsConnt from './Containers/FriendsCon/FriendsConnt';
+import Game from './Containers/MiniGame/Game';
 
 const tg = window.Telegram?.WebApp;
 
@@ -88,27 +92,28 @@ function HomePage() {
 
   return (
     <section className='bodyhomepage'>
-      {/* Ваша разметка */}
+      <div className='margin-div'></div>
+      <div className='for-margin-home'></div>
       <span className='points-count'>{points.toFixed(4)}</span>
+      <DayCheck onPointsUpdate={(amount) => setPoints(prev => prev + amount)} />
+      <Game />
+      <BoosterContainer />
+      <FriendsConnt />
       <div className='ButtonGroup'>
         <button
           className='FarmButton'
           onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
           disabled={isButtonDisabled && !isClaimButton}
           style={{
-            backgroundColor: '#c4f85c',
-            color: 'black',
+            backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
+            color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
           {isButtonDisabled && !isClaimButton && <Timer style={{ marginRight: '8px' }} />}
-          {isClaimButton
-            ? 'Claim 52.033 BTS'
-            : isButtonDisabled
-            ? formatTime(timeRemaining)
-            : 'Mine 52.033 BTS'}
+          {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
         </button>
       </div>
       <Menu />
