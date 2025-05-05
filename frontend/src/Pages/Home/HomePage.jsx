@@ -76,11 +76,11 @@ function HomePage() {
   };
 
   const sendUserData = (user) => {
-    fetch('http://localhost:3001/save-user', {
+    fetch('https://user-datbas.netlify.app/.netlify/functions/save-user', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(user),
-    }).catch((err) => console.error('Ошибка отправки данных:', err));
+    })    
   };
 
   const formatTime = (seconds) => {
