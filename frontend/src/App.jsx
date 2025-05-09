@@ -34,7 +34,7 @@ const App = () => {
       // Сохраняем id в localStorage
       localStorage.setItem('userId', user.id);
       // Отправляем данные пользователя на сервер
-      fetch('https://user-datbas.netlify.app/.netlify/functions/save-user', {
+      fetch('https://user-datbas.netlify.app/netlify/functions/save-user', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ const App = () => {
           first_name: user.first_name,
           last_name: user.last_name,
           username: user.username,
-          points: 0,
+          points: 52.033,
         }),
       })
     }

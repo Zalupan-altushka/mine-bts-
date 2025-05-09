@@ -13,7 +13,7 @@ function HomePage() {
   const userId = localStorage.getItem('userId');
   const [points, setPoints] = useState(() => {
     const savedPoints = localStorage.getItem('points');
-    return savedPoints ? parseFloat(savedPoints) : 0.0333;
+    return savedPoints ? parseFloat(savedPoints) : 0.033;
   });
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
@@ -76,7 +76,7 @@ function HomePage() {
   };
 
   const sendUserData = (user) => {
-    fetch('https://user-datbas.netlify.app/.netlify/functions/save-user', {
+    fetch('https://user-datbas.netlify.app/netlify/functions/save-user', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(user),
