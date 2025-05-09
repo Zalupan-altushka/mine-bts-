@@ -17,7 +17,6 @@ const App = () => {
     // Получаем initDataUnsafe
     const initDataRaw = retrieveRawInitData();
 
-    // Сохраняем его в localStorage для дальнейшего использования
     if (initDataRaw) {
       localStorage.setItem('initDataUnsafe', initDataRaw);
     }
@@ -29,11 +28,13 @@ const App = () => {
       console.error('Ошибка парсинга initDataUnsafe:', e);
     }
 
-    if (initDataObj && initDataObj?.user) {
-      const user = initDataObj.user; // Объект с id, first_name, last_name, username
-      // Сохраняем id в localStorage
+    if (initDataObj && initDataObj.user) {
+      const user = initDataObj.user; // Объект с полями пользователя
+
+      // Сохраняем userId
       localStorage.setItem('userId', user.id);
-      // Отправляем данные пользователя на сервер
+
+      // Отправляем все поля пользователя на сервер
       fetch('https://user-datbas.netlify.app/.netlify/functions/save-user', {
         method: 'POST',
         headers: {
@@ -44,9 +45,15 @@ const App = () => {
           first_name: user.first_name,
           last_name: user.last_name,
           username: user.username,
+          language_code: user.language_code,
+          is_bot: user.is_bot,
+          is_premium: user.is_premium,
+          added_to_attachment_menu: user.added_to_attachment_menu,
+          allows_write_to_pm: user.allows_write_to_pm,
+          photo_url: user.photo_url,
           points: 52.033,
         }),
-      })
+      });
     }
 
     // Установка подтверждения закрытия
