@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { retrieveRawInitData } from '@telegram-apps/sdk-react'; // Импортируем функцию
 import HomePage from './Pages/Home/HomePage.jsx';
 import Friends from './Pages/Friends/Friends.jsx';
 import Tasks from './Pages/Tasks/Tasks.jsx';
@@ -10,52 +9,49 @@ import Loader from './Pages/Loader/Loader.jsx';
 
 const App = () => {
   const location = useLocation();
+
   const [loading, setLoading] = useState(true);
-  const [isActive, setIsActive] = useState(false); // Для активности мини-приложения
+  const [isActive, setIsActive] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [initDataRaw, setInitDataRaw] = useState(null);
 
   useEffect(() => {
-    // Получаем initDataUnsafe
-    const initDataRaw = retrieveRawInitData();
+    if (window.TelegramWebApp) {
+      // В некоторых случаях initData может быть в window.TelegramWebApp.initData
+      const data = window.TelegramWebApp.initData;
+      if (data) {
+        setInitDataRaw(data);
+      }
+    }
+  }, []);
 
+  // Отправка initDataRaw на сервер для проверки и авторизации
+  useEffect(() => {
     if (initDataRaw) {
-      localStorage.setItem('initDataUnsafe', initDataRaw);
-    }
-
-    let initDataObj = null;
-    try {
-      initDataObj = JSON.parse(initDataRaw);
-    } catch (e) {
-      console.error('Ошибка парсинга initDataUnsafe:', e);
-    }
-
-    if (initDataObj && initDataObj.user) {
-      const user = initDataObj.user; // Объект с полями пользователя
-
-      // Сохраняем userId
-      localStorage.setItem('userId', user.id);
-
-      // Отправляем все поля пользователя на сервер
-      fetch('https://user-datbas.netlify.app/.netlify/functions/save-user', {
+      fetch('https://ah-user.netlify.app/.netlify/functions/aut', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          id: user.id,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          username: user.username,
-          language_code: user.language_code,
-          is_bot: user.is_bot,
-          is_premium: user.is_premium,
-          added_to_attachment_menu: user.added_to_attachment_menu,
-          allows_write_to_pm: user.allows_write_to_pm,
-          photo_url: user.photo_url,
-          points: 52.033,
-        }),
-      });
+        body: JSON.stringify({ initDataRaw }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === 'ok') {
+            setUserData({ initDataRaw });
+            setIsAuthorized(true);
+          } else {
+            console.error('Авторизация не удалась:', data.error);
+          }
+        })
+        .catch((err) => {
+          console.error('Ошибка при запросе авторизации:', err);
+        });
     }
+  }, [initDataRaw]);
 
+  useEffect(() => {
     // Установка подтверждения закрытия
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.enableClosingConfirmation();
