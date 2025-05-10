@@ -29,7 +29,7 @@ const App = () => {
   // Отправка initDataRaw на сервер для проверки и авторизации
   useEffect(() => {
     if (initDataRaw) {
-      fetch('https://ah-user.netlify.app/.netlify/functions/auth', {
+      fetch('/.netlify/functions/auth', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
