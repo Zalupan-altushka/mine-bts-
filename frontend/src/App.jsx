@@ -43,7 +43,7 @@ const App = () => {
             setUserData(data.userData);
             setIsAuthorized(true);
           } else {
-            console.error('Авторизация не удалась:', data.error);
+            console.error('Авторизация не удалась, ошибка:', data.error);
           }
         })
         .catch((err) => {
