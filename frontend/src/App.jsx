@@ -10,17 +10,15 @@ import Loader from './Pages/Loader/Loader.jsx';
 const App = () => {
   const location = useLocation();
 
-  const [loading, setLoading] = useState(true); // Изначально показываем Loader
+  const [loading, setLoading] = useState(true);
   const [isActive, setIsActive] = useState(false);
   const [userData, setUserData] = useState(null);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [initDataRaw, setInitDataRaw] = useState(null);
 
-  // Для отслеживания завершения авторизации
-  const [authFinished, setAuthFinished] = useState(false);
-
   useEffect(() => {
     if (window.TelegramWebApp) {
+      // В некоторых случаях initData может быть в window.TelegramWebApp.initData
       const data = window.TelegramWebApp.initData;
       if (data) {
         setInitDataRaw(data);
@@ -41,6 +39,7 @@ const App = () => {
         .then((res) => res.json())
         .then((data) => {
           if (data.status === 'ok') {
+            // Сохраняем полные данные пользователя
             setUserData(data.userData);
             setIsAuthorized(true);
           } else {
@@ -49,70 +48,65 @@ const App = () => {
         })
         .catch((err) => {
           console.error('Ошибка при запросе авторизации:', err);
-        })
-        .finally(() => {
-          setAuthFinished(true); // Авторизация завершена (успешно или нет)
         });
     }
   }, [initDataRaw]);
 
-  // Установка подтверждения закрытия и таймаута
   useEffect(() => {
+    // Установка подтверждения закрытия
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.enableClosingConfirmation();
     }
 
+    // Таймаут для загрузки
     const timer = setTimeout(() => {
       setLoading(false);
     }, 4000);
 
     return () => {
       clearTimeout(timer);
+      // Отключаем подтверждение закрытия при размонтировании
       if (window.Telegram && window.Telegram.WebApp) {
         window.Telegram.WebApp.disableClosingConfirmation();
       }
     };
   }, []);
 
-  // Управление классами body в зависимости от маршрута
   useEffect(() => {
-    if (['/', '/friends', '/tasks', '/boost'].includes(location.pathname)) {
+    // Проверка текущего маршрута
+    if (location.pathname === '/' || location.pathname === '/friends' || location.pathname === '/tasks' || location.pathname === '/boost') {
       document.body.classList.add('no-scroll');
     } else {
       document.body.classList.remove('no-scroll');
     }
+
     return () => {
       document.body.classList.remove('no-scroll');
     };
   }, [location.pathname]);
 
-  // Проверка активности мини-приложения
   useEffect(() => {
+    // Проверка активности мини-приложения
     if (window.Telegram && window.Telegram.WebApp) {
       setIsActive(window.Telegram.WebApp.isActive);
       if (window.Telegram.WebApp.isActive) {
         window.Telegram.WebApp.requestFullscreen();
-        window.Telegram.WebApp.isVerticalSwipesEnabled = false;
+        window.Telegram.WebApp.isVerticalSwipesEnabled = false; // или true по необходимости
       }
     }
   }, []);
 
-  // Логика отображения Loader: показывать, пока авторизация не завершена
-  const showLoader = loading || !authFinished;
-
   return (
     <>
-      {showLoader && <Loader />}
-      {!showLoader && (
-        <PageTransition location={location}>
-          <Routes location={location}>
-            <Route path="/" element={<HomePage isActive={isActive} />} />
-            <Route path="/friends" element={<Friends isActive={isActive} />} />
-            <Route path="/tasks" element={<Tasks isActive={isActive} />} />
-            <Route path="/boost" element={<Boosters isActive={isActive} />} />
-          </Routes>
-        </PageTransition>
-      )}
+      {loading && <Loader />}
+      <PageTransition location={location}>
+        <Routes location={location}>
+          <Route path="/" element={<HomePage isActive={isActive} />} />
+          <Route path="/friends" element={<Friends isActive={isActive} />} />
+          <Route path="/tasks" element={<Tasks isActive={isActive} />} />
+          <Route path="/boost" element={<Boosters isActive={isActive} />} />
+        </Routes>
+      </PageTransition>
     </>
   );
 };
