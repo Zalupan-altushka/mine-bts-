@@ -39,7 +39,8 @@ const App = () => {
         .then((res) => res.json())
         .then((data) => {
           if (data.status === 'ok') {
-            setUserData({ initDataRaw });
+            // Сохраняем полные данные пользователя
+            setUserData(data.userData);
             setIsAuthorized(true);
           } else {
             console.error('Авторизация не удалась:', data.error);
