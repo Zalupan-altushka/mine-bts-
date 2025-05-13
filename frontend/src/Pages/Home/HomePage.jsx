@@ -19,6 +19,7 @@ function HomePage() {
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [isClaimButton, setIsClaimButton] = useState(true);
   const [timerInterval, setTimerInterval] = useState(null);
+  const [hitAnimation, setHitAnimation] = useState(false); // Для эффекта удара
 
   // Загрузка таймера
   useEffect(() => {
@@ -54,10 +55,14 @@ function HomePage() {
   };
 
   const handleMineFor100 = () => {
+    // Запускаем эффект удара
+    setHitAnimation(true);
+    setTimeout(() => setHitAnimation(false), 300); // длительность эффекта
+
+    // Не добавляем очки при "Mine"
     const bonusPoints = 52.033;
-    const newPoints = points + bonusPoints;
+    const newPoints = points; // не меняем очки
     setPoints(newPoints);
-    localStorage.setItem('points', newPoints);
     sendUserData({ id: userId, points: newPoints });
     // Запускаем таймер
     setIsButtonDisabled(true);
@@ -80,7 +85,7 @@ function HomePage() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(user),
-    })    
+    });    
   };
 
   const formatTime = (seconds) => {
@@ -101,8 +106,14 @@ function HomePage() {
       <FriendsConnt />
       <div className='ButtonGroup'>
         <button
-          className='FarmButton'
-          onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
+          className={`FarmButton ${hitAnimation ? 'hit-effect' : ''}`} // добавляем класс для эффекта
+          onClick={() => {
+            if (isClaimButton) {
+              handleClaimPoints();
+            } else {
+              handleMineFor100();
+            }
+          }}
           disabled={isButtonDisabled && !isClaimButton}
           style={{
             backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
