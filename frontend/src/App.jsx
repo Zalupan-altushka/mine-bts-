@@ -7,7 +7,7 @@ import Boosters from './Pages/Boosters/Boosters.jsx';
 import PageTransition from './Pages/Transition/PageTransition.jsx';
 import Loader from './Pages/Loader/Loader.jsx';
 
-import supabase from './db/supabaseClient.js'; // импортируем клиента
+import supabase from './supabaseClient.js'; // импортируем клиента
 
 const App = () => {
   const location = useLocation();
