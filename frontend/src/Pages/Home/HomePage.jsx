@@ -6,7 +6,6 @@ import DayCheck from './Containers/Day/DayCheck';
 import BoosterContainer from './Containers/BoostersCon/BoosterContainer';
 import FriendsConnt from './Containers/FriendsCon/FriendsConnt';
 import Game from './Containers/MiniGame/Game';
-import TonButton from './Ton-connect-button/TonButton';
 
 const tg = window.Telegram?.WebApp;
 
@@ -98,10 +97,9 @@ function HomePage() {
 
   return (
     <section className='bodyhomepage'>
-      <div className='button_points'>
-        <span className='points-count'>{points.toFixed(4)}</span>
-        <TonButton />
-      </div>
+      <div className='margin-div'></div>
+      <div className='for-margin-home'></div>
+      <span className='points-count'>{points.toFixed(4)}</span>
       <DayCheck onPointsUpdate={(amount) => setPoints(prev => prev + amount)} />
       <Game />
       <BoosterContainer />

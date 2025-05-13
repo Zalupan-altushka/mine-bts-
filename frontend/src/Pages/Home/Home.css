@@ -44,7 +44,7 @@
 .points-count {
   font-family: var(--font-family);
   font-size: 40px;
-  margin-top: 30px;
+  margin-bottom: 30px;
   color: var(--green-color);
 }
 
@@ -79,10 +79,4 @@
 
 .hit-effect {
   animation: hitEffect 0.3s ease;
-}
-
-.button_points {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
 }
