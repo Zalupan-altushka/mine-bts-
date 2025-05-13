@@ -7,8 +7,6 @@ import Boosters from './Pages/Boosters/Boosters.jsx';
 import PageTransition from './Pages/Transition/PageTransition.jsx';
 import Loader from './Pages/Loader/Loader.jsx';
 
-import supabase from './supabaseClient.js'; // импортируем клиента
-
 const App = () => {
   const location = useLocation();
 
@@ -17,27 +15,10 @@ const App = () => {
   const [userData, setUserData] = useState(null);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [initDataRaw, setInitDataRaw] = useState(null);
-  const [allUsers, setAllUsers] = useState([]); // для хранения всех пользователей
-
-  // Получение всех пользователей из базы
-  const fetchUsers = async () => {
-    const { data, error } = await supabase
-      .from('users')
-      .select('*');
-
-    if (error) {
-      console.error('Ошибка при получении пользователей:', error);
-    } else {
-      setAllUsers(data);
-    }
-  };
-
-  useEffect(() => {
-    fetchUsers(); // вызываем при монтировании
-  }, []);
 
   useEffect(() => {
     if (window.TelegramWebApp) {
+      // В некоторых случаях initData может быть в window.TelegramWebApp.initData
       const data = window.TelegramWebApp.initData;
       if (data) {
         setInitDataRaw(data);
@@ -45,7 +26,7 @@ const App = () => {
     }
   }, []);
 
-  // Обработка авторизации
+  // Отправка initDataRaw на сервер для проверки и авторизации
   useEffect(() => {
     if (initDataRaw) {
       fetch('/.netlify/functions/auth', {
@@ -58,6 +39,7 @@ const App = () => {
         .then((res) => res.json())
         .then((data) => {
           if (data.status === 'ok') {
+            // Сохраняем полные данные пользователя
             setUserData(data.userData);
             setIsAuthorized(true);
           } else {
@@ -71,16 +53,19 @@ const App = () => {
   }, [initDataRaw]);
 
   useEffect(() => {
+    // Установка подтверждения закрытия
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.enableClosingConfirmation();
     }
 
+    // Таймаут для загрузки
     const timer = setTimeout(() => {
       setLoading(false);
     }, 4000);
 
     return () => {
       clearTimeout(timer);
+      // Отключаем подтверждение закрытия при размонтировании
       if (window.Telegram && window.Telegram.WebApp) {
         window.Telegram.WebApp.disableClosingConfirmation();
       }
@@ -117,7 +102,7 @@ const App = () => {
       <PageTransition location={location}>
         <Routes location={location}>
           <Route path="/" element={<HomePage isActive={isActive} />} />
-          <Route path="/friends" element={<Friends isActive={isActive} allUsers={allUsers} />} />
+          <Route path="/friends" element={<Friends isActive={isActive} />} />
           <Route path="/tasks" element={<Tasks isActive={isActive} />} />
           <Route path="/boost" element={<Boosters isActive={isActive} />} />
         </Routes>
