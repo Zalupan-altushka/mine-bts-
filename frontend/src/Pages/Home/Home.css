@@ -42,7 +42,7 @@
 }
 
 .points-count {
-  font-family: "Roboto Mono", serif;
+  font-family: var(--font-family);
   font-size: 40px;
   margin-bottom: 30px;
   color: var(--green-color);
@@ -79,4 +79,10 @@
 
 .hit-effect {
   animation: hitEffect 0.3s ease;
+}
+
+.button_points {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
 }
