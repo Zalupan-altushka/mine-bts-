@@ -13,18 +13,11 @@
 }
 
 .bodyhomepage {
-  width: 100%; 
+  margin: 0;
+  padding: 0;
+  flex: 1;
   height: var(--tg-viewport-stable-height, 100vh); /* Значение по умолчанию */
   min-height: 100vh; /* чтобы не было меньше высоты экрана */
-  margin: 0; 
-  padding: 0;
-  flex-direction: column;
-}
-
-.bodyhomepage {
-  margin: 0;
-  flex: 1;
-  height: 100vh;
   width: 100vw;
   background-image: url('../../Most Used/Image/222.jpg');
   background-size: cover;
@@ -32,6 +25,7 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  flex-direction: column;
 }
 
 .no-scroll {
