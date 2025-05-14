@@ -16,9 +16,9 @@ const App = () => {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [initDataRaw, setInitDataRaw] = useState(null);
 
-  // Инициализация initDataRaw при загрузке
   useEffect(() => {
     if (window.TelegramWebApp) {
+      // В некоторых случаях initData может быть в window.TelegramWebApp.initData
       const data = window.TelegramWebApp.initData;
       if (data) {
         setInitDataRaw(data);
@@ -26,7 +26,7 @@ const App = () => {
     }
   }, []);
 
-  // Авторизация по initDataRaw
+  // Отправка initDataRaw на сервер для проверки и авторизации
   useEffect(() => {
     if (initDataRaw) {
       fetch('/.netlify/functions/auth', {
@@ -39,6 +39,7 @@ const App = () => {
         .then((res) => res.json())
         .then((data) => {
           if (data.status === 'ok') {
+            // Сохраняем полные данные пользователя
             setUserData(data.userData);
             setIsAuthorized(true);
           } else {
@@ -51,66 +52,6 @@ const App = () => {
     }
   }, [initDataRaw]);
 
-  // Обработка активации WebApp
-  useEffect(() => {
-    if (window.Telegram && window.Telegram.WebApp) {
-      // Устанавливаем isActive при загрузке
-      setIsActive(window.Telegram.WebApp.isActive);
-      
-      // Обновляем isActive при изменении
-      const handleActiveChange = () => {
-        setIsActive(window.Telegram.WebApp.isActive);
-      };
-
-      // Можно слушать событие, если есть
-      window.Telegram.WebApp.onEvent('web_app_active', handleActiveChange);
-      
-      // Инициируем полноэкранный режим
-      if (window.Telegram.WebApp.isActive) {
-        window.Telegram.WebApp.requestFullscreen();
-        // Можно отключить вертикальные свайпы, если нужно
-        // window.Telegram.WebApp.isVerticalSwipesEnabled = false;
-      }
-
-      // Очистка слушателя при размонтировании
-      return () => {
-        window.Telegram.WebApp.offEvent('web_app_active', handleActiveChange);
-      };
-    }
-  }, []);
-
-  // Вызов API при каждом изменении isActive
- useEffect(() => {
-    if (isActive && window.TelegramWebApp) {
-      const data = window.TelegramWebApp.initData;
-      if (data) {
-        console.log('WebApp активен, вызываем API, initData:', data);
-        fetch('/.netlify/functions/auth', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache', // отключение кэширования
-          },
-          body: JSON.stringify({ initDataRaw: data }),
-        })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log('Ответ сервера:', data);
-          if (data.status === 'ok') {
-            setUserData(data.userData);
-            setIsAuthorized(true);
-          } else {
-            console.error('Авторизация не удалась, ошибка:', data.error);
-          }
-        })
-        .catch((err) => {
-          console.error('Ошибка при запросе:', err);
-        });
-      }
-    }
-  }, [isActive]);
-
-  // Остальной код
   useEffect(() => {
     // Установка подтверждения закрытия
     if (window.Telegram && window.Telegram.WebApp) {
@@ -132,22 +73,34 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    // Проверка маршрута для добавления/удаления класса
-    if (['/', '/friends', '/tasks', '/boost'].includes(location.pathname)) {
+    // Проверка текущего маршрута
+    if (location.pathname === '/' || location.pathname === '/friends' || location.pathname === '/tasks' || location.pathname === '/boost') {
       document.body.classList.add('no-scroll');
     } else {
       document.body.classList.remove('no-scroll');
     }
+
     return () => {
       document.body.classList.remove('no-scroll');
     };
   }, [location.pathname]);
 
+  useEffect(() => {
+    // Проверка активности мини-приложения
+    if (window.Telegram && window.Telegram.WebApp) {
+      setIsActive(window.Telegram.WebApp.isActive);
+      if (window.Telegram.WebApp.isActive) {
+        window.Telegram.WebApp.requestFullscreen();
+        window.Telegram.WebApp.isVerticalSwipesEnabled = false; // или true по необходимости
+      }
+    }
+  }, []);
+
   return (
     <>
       {loading && <Loader />}
       <PageTransition location={location}>
-        <Routes>
+        <Routes location={location}>
           <Route path="/" element={<HomePage isActive={isActive} />} />
           <Route path="/friends" element={<Friends isActive={isActive} />} />
           <Route path="/tasks" element={<Tasks isActive={isActive} />} />
@@ -167,3 +120,4 @@ const Main = () => {
 };
 
 export default Main;
+
