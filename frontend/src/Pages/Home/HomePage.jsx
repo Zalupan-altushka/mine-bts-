@@ -88,39 +88,38 @@ function HomePage() {
   };
 
   return (
-    <div className='margin-div'>
-      <section className='bodyhomepage'>
-        <span className='points-count'>{points.toFixed(4)}</span>
-        <DayCheck onPointsUpdate={(amount) => setPoints(prev => prev + amount)} />
-        <Game />
-        <BoosterContainer />
-        <FriendsConnt />
-        <div className='ButtonGroup'>
-          <button
-            className={`FarmButton ${hitAnimation ? 'hit-effect' : ''}`} // добавляем класс для эффекта
-            onClick={() => {
-              if (isClaimButton) {
-                handleClaimPoints();
-              } else {
-                handleMineFor100();
-              }
-            }}
-            disabled={isButtonDisabled && !isClaimButton}
-            style={{
-              backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
-              color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            {isButtonDisabled && !isClaimButton && <Timer style={{ marginRight: '8px' }} />}
-            {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
-          </button>
-        </div>
-        <Menu />
-      </section>
-    </div>
+    <section className='bodyhomepage'>
+      <div className='margin-div'></div>
+      <span className='points-count'>{points.toFixed(4)}</span>
+      <DayCheck onPointsUpdate={(amount) => setPoints(prev => prev + amount)} />
+      <Game />
+      <BoosterContainer />
+      <FriendsConnt />
+      <div className='ButtonGroup'>
+        <button
+          className={`FarmButton ${hitAnimation ? 'hit-effect' : ''}`} // добавляем класс для эффекта
+          onClick={() => {
+            if (isClaimButton) {
+              handleClaimPoints();
+            } else {
+              handleMineFor100();
+            }
+          }}
+          disabled={isButtonDisabled && !isClaimButton}
+          style={{
+            backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
+            color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {isButtonDisabled && !isClaimButton && <Timer style={{ marginRight: '8px' }} />}
+          {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
+        </button>
+      </div>
+      <Menu />
+    </section>
   );
 }
 
