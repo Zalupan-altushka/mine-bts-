@@ -21,41 +21,6 @@ function HomePage() {
   const [timerInterval, setTimerInterval] = useState(null);
   const [hitAnimation, setHitAnimation] = useState(false); // Для эффекта удара
 
-  useEffect(() => {
-    // Проверяем, что WebApp доступен
-    if (window.Telegram && window.Telegram.WebApp) {
-      const tgWebApp = window.Telegram.WebApp;
-
-      // Обработчик события viewportChanged
-      const handleViewportChange = (e) => {
-        if (e.isStateStable) {
-          const stableHeight = tgWebApp.viewportStableHeight;
-          // Обновляем CSS переменную
-          document.documentElement.style.setProperty(
-            '--tg-viewport-stable-height',
-            `${stableHeight}px`
-          );
-        }
-      };
-
-      // Подписка на событие
-      tgWebApp.onEvent('viewportChanged', handleViewportChange);
-
-      // Инициализация переменной при загрузке
-      if (tgWebApp.viewportStableHeight) {
-        document.documentElement.style.setProperty(
-          '--tg-viewport-stable-height',
-          `${tgWebApp.viewportStableHeight}px`
-        );
-      }
-
-      // Очистка при размонтировании компонента
-      return () => {
-        tgWebApp.offEvent('viewportChanged', handleViewportChange);
-      };
-    }
-  }, []);
-
   // Загрузка таймера
   useEffect(() => {
     const endTimeStr = localStorage.getItem('endTime');
