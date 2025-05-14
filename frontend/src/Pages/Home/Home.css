@@ -13,11 +13,11 @@
 }
 
 .bodyhomepage {
-  margin: 0;
+  margin: 94px 0 0 0; /* Отступ сверху 94px, остальные по умолчанию 0 */
   padding: 0;
   flex: 1;
-  height: var(--tg-viewport-stable-height, 100vh); /* Значение по умолчанию */
-  min-height: 100vh; /* чтобы не было меньше высоты экрана */
+  height: var(--tg-viewport-stable-height, 100vh);
+  min-height: 100vh;
   width: 100vw;
   background-image: url('../../Most Used/Image/222.jpg');
   background-size: cover;
@@ -27,6 +27,7 @@
   align-items: center;
   flex-direction: column;
 }
+
 
 .no-scroll {
   overflow: hidden;
