@@ -16,8 +16,8 @@
   margin: 0; /* Отступ сверху 94px, остальные по умолчанию 0 */
   padding: 0;
   flex: 1;
-  height: 640px;
-  min-height: 640px;
+  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
   background-image: url('../../Most Used/Image/222.jpg');
   background-size: cover;
