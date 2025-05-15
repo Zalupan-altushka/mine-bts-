@@ -11,26 +11,29 @@ const tg = window.Telegram?.WebApp;
 
 function HomePage() {
   const userId = localStorage.getItem('userId');
+
+  // Загружаем очки из localStorage или устанавливаем начальные
   const [points, setPoints] = useState(() => {
     const savedPoints = localStorage.getItem('points');
     return savedPoints ? parseFloat(savedPoints) : 0.033;
   });
+
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [mode, setMode] = useState('mine'); // 'mine' или 'claim'
   const [timerInterval, setTimerInterval] = useState(null);
   const [hitAnimation, setHitAnimation] = useState(false); // Для эффекта удара
 
-  // Загрузка таймера
+  // Загружаем таймер при монтировании компонента
   useEffect(() => {
     const endTimeStr = localStorage.getItem('endTime');
     if (endTimeStr) {
       const endTime = parseInt(endTimeStr, 10);
       const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
       setTimeRemaining(remaining);
-      setIsButtonDisabled(remaining > 0);
       if (remaining > 0) {
-        setMode('mine'); // Пока таймер идет, показываем "Mine"
+        setIsButtonDisabled(true);
+        setMode('mine');
         startTimer(remaining);
       } else {
         localStorage.removeItem('endTime');
@@ -39,6 +42,7 @@ function HomePage() {
     }
   }, []);
 
+  // Функция запуска таймера
   const startTimer = (duration) => {
     const endTime = Date.now() + duration * 1000;
     localStorage.setItem('endTime', endTime);
@@ -55,31 +59,34 @@ function HomePage() {
     setTimerInterval(interval);
   };
 
+  // Обработчик для "Mine"
   const handleMineFor100 = () => {
-    // Запускаем эффект удара
+    // Эффект удара
     setHitAnimation(true);
-    setTimeout(() => setHitAnimation(false), 300); // длительность эффекта
+    setTimeout(() => setHitAnimation(false), 300);
 
     // Не добавляем очки при "Mine"
     const bonusPoints = 52.033;
-    const newPoints = points; // не меняем очки
+    // Очки не меняем
+    const newPoints = points;
     setPoints(newPoints);
     sendUserData({ id: userId, points: newPoints });
-    // Запускаем таймер
-    setIsButtonDisabled(true);
+
+    // Запускаем таймер на 6 часов
     const sixHoursInSeconds = 6 * 60 * 60;
-    setTimeRemaining(sixHoursInSeconds);
+    setIsButtonDisabled(true);
     setMode('mine');
     startTimer(sixHoursInSeconds);
   };
 
+  // Обработчик для "Claim"
   const handleClaimPoints = () => {
     const bonusPoints = 52.033;
     const newPoints = points + bonusPoints;
     setPoints(newPoints);
     localStorage.setItem('points', newPoints);
     sendUserData({ id: userId, points: newPoints });
-    setMode('mine'); // После Claim возвращаемся к режиму "Mine"
+    setMode('mine'); // Возвращаемся к режиму "Mine"
   };
 
   const formatTime = (seconds) => {
@@ -99,7 +106,7 @@ function HomePage() {
       <FriendsConnt />
       <div className='ButtonGroup'>
         <button
-          className={`FarmButton ${hitAnimation ? 'hit-effect' : ''}`} // добавляем класс для эффекта
+          className={`FarmButton ${hitAnimation ? 'hit-effect' : ''}`}
           onClick={() => {
             if (mode === 'claim') {
               handleClaimPoints();
@@ -116,14 +123,16 @@ function HomePage() {
             justifyContent: 'center',
           }}
         >
+          {/* Пока таймер идет, показываем таймер */}
           {isButtonDisabled && mode === 'mine' && <Timer style={{ marginRight: '8px' }} />}
-          {mode === 'mine'
-            ? 'Mine 52.033 BTS'
-            : mode === 'claim'
-            ? 'Claim 52.033 BTS'
-            : ''}
-          {mode === 'claim' && !isButtonDisabled && 'Claim 52.033 BTS'}
-          {mode === 'mine' && isButtonDisabled && formatTime(timeRemaining)}
+          
+          {/* Текст кнопки зависит от режима */}
+          {mode === 'mine' ? 'Mine 52.033 BTS' : 'Claim 52.033 BTS'}
+          
+          {/* Если режим "mine" и таймер активен, показываем оставшееся время */}
+          {mode === 'mine' && isButtonDisabled && (
+            <span style={{ marginLeft: '8px' }}>{formatTime(timeRemaining)}</span>
+          )}
         </button>
       </div>
       <Menu />
@@ -132,4 +141,5 @@ function HomePage() {
 }
 
 export default HomePage;
+
 
