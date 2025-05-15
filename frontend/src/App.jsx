@@ -16,31 +16,27 @@ const App = () => {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [initDataRaw, setInitDataRaw] = useState(null);
 
-  // Обновление initDataRaw при каждом фокусе Web App
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        console.log('Вкладка стала активной');
-        if (window.TelegramWebApp) {
-          const data = window.TelegramWebApp.initData;
-          if (data) {
-            console.log('Обновляем initDataRaw из visibilitychange:', data);
-            setInitDataRaw(data);
-          }
-        }
+  // Функция для проверки и установки initDataRaw
+  const checkAndSetInitData = () => {
+    if (window.TelegramWebApp) {
+      const data = window.TelegramWebApp.initData;
+      if (data && data !== initDataRaw) {
+        setInitDataRaw(data);
       }
-    };
-  
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-  
-    // Изначально вызываем
-    handleVisibilityChange();
-  
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, []);
-  
+    }
+  };
+
+  // Проверка initData при монтировании и по таймауту
+  useEffect(() => {
+    checkAndSetInitData();
+
+    // Можно добавить интервал для периодической проверки
+    const interval = setInterval(() => {
+      checkAndSetInitData();
+    }, 60000); // каждые 60 секунд
+
+    return () => clearInterval(interval);
+  }, [initDataRaw]);
 
   // Отправка initDataRaw на сервер для проверки и авторизации
   useEffect(() => {
@@ -55,9 +51,9 @@ const App = () => {
         .then((res) => res.json())
         .then((data) => {
           if (data.status === 'ok') {
-            // Сохраняем полные данные пользователя
             setUserData(data.userData);
             setIsAuthorized(true);
+            console.log('Пользователь авторизован:', data.userData);
           } else {
             console.error('Авторизация не удалась, ошибка:', data.error);
           }
@@ -81,7 +77,6 @@ const App = () => {
 
     return () => {
       clearTimeout(timer);
-      // Отключаем подтверждение закрытия при размонтировании
       if (window.Telegram && window.Telegram.WebApp) {
         window.Telegram.WebApp.disableClosingConfirmation();
       }
@@ -89,30 +84,24 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    // Проверка текущего маршрута
-    if (
-      location.pathname === '/' ||
-      location.pathname === '/friends' ||
-      location.pathname === '/tasks' ||
-      location.pathname === '/boost'
-    ) {
+    // Проверка маршрута
+    if (['/', '/friends', '/tasks', '/boost'].includes(location.pathname)) {
       document.body.classList.add('no-scroll');
     } else {
       document.body.classList.remove('no-scroll');
     }
-
     return () => {
       document.body.classList.remove('no-scroll');
     };
   }, [location.pathname]);
 
   useEffect(() => {
-    // Проверка активности мини-приложения
+    // Проверка активности
     if (window.Telegram && window.Telegram.WebApp) {
       setIsActive(window.Telegram.WebApp.isActive);
       if (window.Telegram.WebApp.isActive) {
         window.Telegram.WebApp.requestFullscreen();
-        window.Telegram.WebApp.isVerticalSwipesEnabled = false; // или true по необходимости
+        window.Telegram.WebApp.isVerticalSwipesEnabled = false;
       }
     }
   }, []);
@@ -141,5 +130,3 @@ const Main = () => {
 };
 
 export default Main;
-
-
