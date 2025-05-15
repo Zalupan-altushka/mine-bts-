@@ -41,6 +41,7 @@ const App = () => {
   // Отправка initDataRaw на сервер для проверки и авторизации
   useEffect(() => {
     if (initDataRaw) {
+      console.log('Отправка initDataRaw на сервер:', initDataRaw);
       fetch('/.netlify/functions/auth', {
         method: 'POST',
         headers: {
@@ -48,21 +49,22 @@ const App = () => {
         },
         body: JSON.stringify({ initDataRaw }),
       })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.status === 'ok') {
-            setUserData(data.userData);
-            setIsAuthorized(true);
-            console.log('Пользователь авторизован:', data.userData);
-          } else {
-            console.error('Авторизация не удалась, ошибка:', data.error);
-          }
-        })
-        .catch((err) => {
-          console.error('Ошибка при запросе авторизации:', err);
-        });
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === 'ok') {
+          setUserData(data.userData);
+          setIsAuthorized(true);
+          console.log('Пользователь авторизован:', data.userData);
+        } else {
+          console.error('Ошибка авторизации:', data);
+        }
+      })
+      .catch((err) => {
+        console.error('Ошибка fetch:', err);
+      });
     }
   }, [initDataRaw]);
+  
 
   useEffect(() => {
     // Установка подтверждения закрытия
