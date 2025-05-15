@@ -17,7 +17,7 @@ function HomePage() {
   });
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
-  const [isClaimButton, setIsClaimButton] = useState(true);
+  const [mode, setMode] = useState('mine'); // 'mine' или 'claim'
   const [timerInterval, setTimerInterval] = useState(null);
   const [hitAnimation, setHitAnimation] = useState(false); // Для эффекта удара
 
@@ -29,11 +29,12 @@ function HomePage() {
       const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
       setTimeRemaining(remaining);
       setIsButtonDisabled(remaining > 0);
-      setIsClaimButton(remaining <= 0);
       if (remaining > 0) {
+        setMode('mine'); // Пока таймер идет, показываем "Mine"
         startTimer(remaining);
       } else {
         localStorage.removeItem('endTime');
+        setMode('claim'); // Таймер завершен, показываем "Claim"
       }
     }
   }, []);
@@ -48,7 +49,7 @@ function HomePage() {
         clearInterval(interval);
         localStorage.removeItem('endTime');
         setIsButtonDisabled(false);
-        setIsClaimButton(true);
+        setMode('claim'); // Таймер завершен, показываем "Claim"
       }
     }, 1000);
     setTimerInterval(interval);
@@ -68,6 +69,7 @@ function HomePage() {
     setIsButtonDisabled(true);
     const sixHoursInSeconds = 6 * 60 * 60;
     setTimeRemaining(sixHoursInSeconds);
+    setMode('mine');
     startTimer(sixHoursInSeconds);
   };
 
@@ -77,9 +79,8 @@ function HomePage() {
     setPoints(newPoints);
     localStorage.setItem('points', newPoints);
     sendUserData({ id: userId, points: newPoints });
-    setIsClaimButton(true); // переключение обратно на "Mine 52.033 BTS"
+    setMode('mine'); // После Claim возвращаемся к режиму "Mine"
   };
-  
 
   const formatTime = (seconds) => {
     const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
@@ -100,23 +101,29 @@ function HomePage() {
         <button
           className={`FarmButton ${hitAnimation ? 'hit-effect' : ''}`} // добавляем класс для эффекта
           onClick={() => {
-            if (isClaimButton) {
+            if (mode === 'claim') {
               handleClaimPoints();
-            } else {
+            } else if (mode === 'mine') {
               handleMineFor100();
             }
           }}
-          disabled={isButtonDisabled && !isClaimButton}
+          disabled={isButtonDisabled}
           style={{
-            backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
-            color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
+            backgroundColor: '#c4f85c',
+            color: 'black',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          {isButtonDisabled && !isClaimButton && <Timer style={{ marginRight: '8px' }} />}
-          {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
+          {isButtonDisabled && mode === 'mine' && <Timer style={{ marginRight: '8px' }} />}
+          {mode === 'mine'
+            ? 'Mine 52.033 BTS'
+            : mode === 'claim'
+            ? 'Claim 52.033 BTS'
+            : ''}
+          {mode === 'claim' && !isButtonDisabled && 'Claim 52.033 BTS'}
+          {mode === 'mine' && isButtonDisabled && formatTime(timeRemaining)}
         </button>
       </div>
       <Menu />
@@ -125,3 +132,4 @@ function HomePage() {
 }
 
 export default HomePage;
+
