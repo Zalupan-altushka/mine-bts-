@@ -54,13 +54,6 @@ function HomePage() {
   };
 
   const handleMineFor100 = () => {
-    // Удалена прибавка очков
-    // const bonusPoints = 52.033;
-    // const newPoints = points + bonusPoints;
-    // setPoints(newPoints);
-    // localStorage.setItem('points', newPoints);
-    // sendUserData({ points: newPoints });
-    // Запускаем таймер
     setIsButtonDisabled(true);
     const sixHoursInSeconds = 6 * 60 * 60;
     setTimeRemaining(sixHoursInSeconds);
@@ -72,19 +65,9 @@ function HomePage() {
     const newPoints = points + bonusPoints;
     setPoints(newPoints);
     localStorage.setItem('points', newPoints);
-    // Удалена отправка данных пользователя
-    // sendUserData({ points: newPoints });
     setIsClaimButton(false);
   };
-
-  const sendUserData = (user) => {
-    fetch('https://user-datbas.netlify.app/.netlify/functions/save-user', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(user),
-    })    
-  };
-
+  
   const formatTime = (seconds) => {
     const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
     const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');

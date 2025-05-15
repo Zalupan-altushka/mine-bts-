@@ -16,14 +16,31 @@ const App = () => {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [initDataRaw, setInitDataRaw] = useState(null);
 
+  // Обновление initDataRaw при каждом фокусе Web App
   useEffect(() => {
-    if (window.TelegramWebApp) {
-      // В некоторых случаях initData может быть в window.TelegramWebApp.initData
-      const data = window.TelegramWebApp.initData;
-      if (data) {
-        setInitDataRaw(data);
+    const handleFocus = () => {
+      if (window.TelegramWebApp) {
+        const data = window.TelegramWebApp.initData;
+        if (data) {
+          setInitDataRaw(data);
+        }
       }
+    };
+
+    // Подписка на событие 'focus'
+    if (window.TelegramWebApp) {
+      window.TelegramWebApp.onEvent('focus', handleFocus);
     }
+
+    // Изначально вызываем
+    handleFocus();
+
+    // Очистка
+    return () => {
+      if (window.TelegramWebApp) {
+        window.TelegramWebApp.offEvent('focus', handleFocus);
+      }
+    };
   }, []);
 
   // Отправка initDataRaw на сервер для проверки и авторизации
@@ -74,7 +91,12 @@ const App = () => {
 
   useEffect(() => {
     // Проверка текущего маршрута
-    if (location.pathname === '/' || location.pathname === '/friends' || location.pathname === '/tasks' || location.pathname === '/boost') {
+    if (
+      location.pathname === '/' ||
+      location.pathname === '/friends' ||
+      location.pathname === '/tasks' ||
+      location.pathname === '/boost'
+    ) {
       document.body.classList.add('no-scroll');
     } else {
       document.body.classList.remove('no-scroll');
@@ -120,4 +142,5 @@ const Main = () => {
 };
 
 export default Main;
+
 
