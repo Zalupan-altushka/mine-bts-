@@ -18,30 +18,29 @@ const App = () => {
 
   // Обновление initDataRaw при каждом фокусе Web App
   useEffect(() => {
-    const handleFocus = () => {
-      if (window.TelegramWebApp) {
-        const data = window.TelegramWebApp.initData;
-        if (data) {
-          setInitDataRaw(data);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        console.log('Вкладка стала активной');
+        if (window.TelegramWebApp) {
+          const data = window.TelegramWebApp.initData;
+          if (data) {
+            console.log('Обновляем initDataRaw из visibilitychange:', data);
+            setInitDataRaw(data);
+          }
         }
       }
     };
-
-    // Подписка на событие 'focus'
-    if (window.TelegramWebApp) {
-      window.TelegramWebApp.onEvent('focus', handleFocus);
-    }
-
+  
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+  
     // Изначально вызываем
-    handleFocus();
-
-    // Очистка
+    handleVisibilityChange();
+  
     return () => {
-      if (window.TelegramWebApp) {
-        window.TelegramWebApp.offEvent('focus', handleFocus);
-      }
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
+  
 
   // Отправка initDataRaw на сервер для проверки и авторизации
   useEffect(() => {
