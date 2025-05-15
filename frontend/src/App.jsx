@@ -64,7 +64,7 @@ const App = () => {
         }
       })
       .catch((err) => {
-        console.error('Ошибка fetch:', err);
+        console.error('Ошибкаа fetch:', err);
       });
     }
   }, [initDataRaw]);
