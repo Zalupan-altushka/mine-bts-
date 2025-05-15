@@ -41,7 +41,7 @@ const App = () => {
   // Отправка initDataRaw на сервер для проверки и авторизации
   useEffect(() => {
     if (initDataRaw) {
-      console.log('Отправка initDataRaw на сервер:', initDataRaw);
+      console.log('Отправляю initDataRaw на сервер:', initDataRaw);
       fetch('/.netlify/functions/auth', {
         method: 'POST',
         headers: {
@@ -49,8 +49,12 @@ const App = () => {
         },
         body: JSON.stringify({ initDataRaw }),
       })
-      .then((res) => res.json())
+      .then((res) => {
+        console.log('Ответ сервера:', res);
+        return res.json();
+      })
       .then((data) => {
+        console.log('Данные ответа:', data);
         if (data.status === 'ok') {
           setUserData(data.userData);
           setIsAuthorized(true);
