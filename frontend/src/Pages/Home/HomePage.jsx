@@ -10,7 +10,7 @@ import Game from './Containers/MiniGame/Game';
 const tg = window.Telegram?.WebApp;
 
 function HomePage() {
-  const userId = localStorage.getItem('userId');
+  // Удалена переменная userId
   const [points, setPoints] = useState(() => {
     const savedPoints = localStorage.getItem('points');
     return savedPoints ? parseFloat(savedPoints) : 0.033;
@@ -54,11 +54,12 @@ function HomePage() {
   };
 
   const handleMineFor100 = () => {
-    const bonusPoints = 52.033;
-    const newPoints = points + bonusPoints;
-    setPoints(newPoints);
-    localStorage.setItem('points', newPoints);
-    sendUserData({ id: userId, points: newPoints });
+    // Удалена прибавка очков
+    // const bonusPoints = 52.033;
+    // const newPoints = points + bonusPoints;
+    // setPoints(newPoints);
+    // localStorage.setItem('points', newPoints);
+    // sendUserData({ points: newPoints });
     // Запускаем таймер
     setIsButtonDisabled(true);
     const sixHoursInSeconds = 6 * 60 * 60;
@@ -71,7 +72,8 @@ function HomePage() {
     const newPoints = points + bonusPoints;
     setPoints(newPoints);
     localStorage.setItem('points', newPoints);
-    sendUserData({ id: userId, points: newPoints });
+    // Удалена отправка данных пользователя
+    // sendUserData({ points: newPoints });
     setIsClaimButton(false);
   };
 
@@ -122,4 +124,5 @@ function HomePage() {
 }
 
 export default HomePage;
+
 
