@@ -77,8 +77,9 @@ function HomePage() {
     setPoints(newPoints);
     localStorage.setItem('points', newPoints);
     sendUserData({ id: userId, points: newPoints });
-    setIsClaimButton(false);
+    setIsClaimButton(true); // переключение обратно на "Mine 52.033 BTS"
   };
+  
 
   const formatTime = (seconds) => {
     const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
