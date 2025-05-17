@@ -17,17 +17,18 @@ const App = () => {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [initData, setInitData] = useState(null);
 
-  // Функция для проверки и установки initData
+  // Проверка и установка initData
+  const tg = window.Telegram?.WebApp;
+
   const checkAndSetInitData = () => {
-    if (window.TelegramWebApp) {
-      const data = window.TelegramWebApp.initData;
-      if (data && data !== initData) {
-        setInitData(data);
+    if (tg && tg.initData) {
+      if (tg.initData !== initData) {
+        setInitData(tg.initData);
       }
     }
   };
 
-  // Проверка initData при монтировании и по таймауту
+  // Проверка initData при монтировании и каждые 60 секунд
   useEffect(() => {
     checkAndSetInitData();
 
@@ -38,7 +39,7 @@ const App = () => {
     return () => clearInterval(interval);
   }, [initData]);
 
-  // Отправка initData на сервер для проверки и авторизации
+  // Отправляем initDataRaw на сервер
   useEffect(() => {
     if (initData) {
       console.log('Отправляю initDataRaw на сервер:', initData);
@@ -66,9 +67,9 @@ const App = () => {
   }, [initData]);
 
   useEffect(() => {
-    // Установка подтверждения закрытия
-    if (window.Telegram && window.Telegram.WebApp) {
-      window.Telegram.WebApp.enableClosingConfirmation();
+    // Включение подтверждения закрытия
+    if (tg) {
+      tg.enableClosingConfirmation();
     }
 
     const timer = setTimeout(() => {
@@ -77,8 +78,8 @@ const App = () => {
 
     return () => {
       clearTimeout(timer);
-      if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.disableClosingConfirmation();
+      if (tg) {
+        tg.disableClosingConfirmation();
       }
     };
   }, []);
@@ -94,11 +95,11 @@ const App = () => {
 
   useEffect(() => {
     // Проверка активности
-    if (window.Telegram && window.Telegram.WebApp) {
-      setIsActive(window.Telegram.WebApp.isActive);
-      if (window.Telegram.WebApp.isActive) {
-        window.Telegram.WebApp.requestFullscreen();
-        window.Telegram.WebApp.isVerticalSwipesEnabled = false;
+    if (tg) {
+      setIsActive(tg.isActive);
+      if (tg.isActive) {
+        tg.requestFullscreen();
+        tg.isVerticalSwipesEnabled = false;
       }
     }
   }, []);

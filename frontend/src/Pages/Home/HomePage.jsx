@@ -7,7 +7,7 @@ import BoosterContainer from './Containers/BoostersCon/BoosterContainer';
 import FriendsConnt from './Containers/FriendsCon/FriendsConnt';
 import Game from './Containers/MiniGame/Game';
 
-const tg = window.Telegram?.WebApp;
+const tg = window.Telegram.WebApp;
 
 function HomePage() {
   // Удалена переменная userId
