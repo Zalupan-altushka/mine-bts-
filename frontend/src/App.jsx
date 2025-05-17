@@ -1,6 +1,7 @@
 // app.jsx
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { retrieveLaunchParams } from '@telegram-apps/sdk-react'; // Импортируем SDK
 import HomePage from './Pages/Home/HomePage.jsx';
 import Friends from './Pages/Friends/Friends.jsx';
 import Tasks from './Pages/Tasks/Tasks.jsx';
@@ -16,39 +17,36 @@ const App = () => {
   const [userData, setUserData] = useState(null);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [initData, setInitData] = useState(null);
+  const [initDataRaw, setInitDataRaw] = useState(null);
+  const [tg, setTg] = useState(null); // Для хранения объекта WebApp
 
-  // Проверка и установка initData
-  const tg = window.Telegram?.WebApp;
-
-  const checkAndSetInitData = () => {
-    if (tg && tg.initData) {
-      if (tg.initData !== initData) {
-        setInitData(tg.initData);
-      }
-    }
-  };
-
-  // Проверка initData при монтировании и каждые 60 секунд
+  // Получаем параметры запуска через SDK
   useEffect(() => {
-    checkAndSetInitData();
+    const { initData, initDataRaw } = retrieveLaunchParams();
 
-    const interval = setInterval(() => {
-      checkAndSetInitData();
-    }, 60000); // каждые 60 секунд
-
-    return () => clearInterval(interval);
-  }, [initData]);
-
-  // Отправляем initDataRaw на сервер
-  useEffect(() => {
     if (initData) {
-      console.log('Отправляю initDataRaw на сервер:', initData);
+      setInitData(initData);
+    }
+    if (initDataRaw) {
+      setInitDataRaw(initDataRaw);
+    }
+
+    // Попытка получить объект WebApp (если он есть)
+    if (window.Telegram?.WebApp) {
+      setTg(window.Telegram.WebApp);
+    }
+  }, []);
+
+  // Проверка и отправка initDataRaw на сервер
+  useEffect(() => {
+    if (initDataRaw) {
+      console.log('Отправляю initDataRaw на сервер:', initDataRaw);
       fetch('/.netlify/functions/auth', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ initDataRaw: initData }),
+        body: JSON.stringify({ initDataRaw }),
       })
       .then((res) => res.json())
       .then((data) => {
@@ -64,8 +62,9 @@ const App = () => {
         console.error('Ошибка fetch:', err);
       });
     }
-  }, [initData]);
+  }, [initDataRaw]);
 
+  // Остальные эффекты
   useEffect(() => {
     // Включение подтверждения закрытия
     if (tg) {
@@ -82,7 +81,7 @@ const App = () => {
         tg.disableClosingConfirmation();
       }
     };
-  }, []);
+  }, [tg]);
 
   useEffect(() => {
     // Проверка маршрута
@@ -102,7 +101,7 @@ const App = () => {
         tg.isVerticalSwipesEnabled = false;
       }
     }
-  }, []);
+  }, [tg]);
 
   return (
     <>
