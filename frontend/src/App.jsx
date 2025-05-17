@@ -1,3 +1,4 @@
+// app.jsx
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import HomePage from './Pages/Home/HomePage.jsx';
@@ -14,14 +15,14 @@ const App = () => {
   const [isActive, setIsActive] = useState(false);
   const [userData, setUserData] = useState(null);
   const [isAuthorized, setIsAuthorized] = useState(false);
-  const [initDataRaw, setInitDataRaw] = useState(null);
+  const [initData, setInitData] = useState(null);
 
-  // Функция для проверки и установки initDataRaw
+  // Функция для проверки и установки initData
   const checkAndSetInitData = () => {
     if (window.TelegramWebApp) {
       const data = window.TelegramWebApp.initData;
-      if (data && data !== initDataRaw) {
-        setInitDataRaw(data);
+      if (data && data !== initData) {
+        setInitData(data);
       }
     }
   };
@@ -30,31 +31,26 @@ const App = () => {
   useEffect(() => {
     checkAndSetInitData();
 
-    // Можно добавить интервал для периодической проверки
     const interval = setInterval(() => {
       checkAndSetInitData();
     }, 60000); // каждые 60 секунд
 
     return () => clearInterval(interval);
-  }, [initDataRaw]);
+  }, [initData]);
 
-  // Отправка initDataRaw на сервер для проверки и авторизации
+  // Отправка initData на сервер для проверки и авторизации
   useEffect(() => {
-    if (initDataRaw) {
-      console.log('Отправляю initDataRaw на сервер:', initDataRaw);
+    if (initData) {
+      console.log('Отправляю initDataRaw на сервер:', initData);
       fetch('/.netlify/functions/auth', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ initDataRaw }),
+        body: JSON.stringify({ initDataRaw: initData }),
       })
-      .then((res) => {
-        console.log('Ответ сервера:', res);
-        return res.json();
-      })
+      .then((res) => res.json())
       .then((data) => {
-        console.log('Данные ответа:', data);
         if (data.status === 'ok') {
           setUserData(data.userData);
           setIsAuthorized(true);
@@ -64,11 +60,10 @@ const App = () => {
         }
       })
       .catch((err) => {
-        console.error('Ошибкааф fetch:', err);
+        console.error('Ошибка fetch:', err);
       });
     }
-  }, [initDataRaw]);
-  
+  }, [initData]);
 
   useEffect(() => {
     // Установка подтверждения закрытия
@@ -76,7 +71,6 @@ const App = () => {
       window.Telegram.WebApp.enableClosingConfirmation();
     }
 
-    // Таймаут для загрузки
     const timer = setTimeout(() => {
       setLoading(false);
     }, 4000);
@@ -96,9 +90,6 @@ const App = () => {
     } else {
       document.body.classList.remove('no-scroll');
     }
-    return () => {
-      document.body.classList.remove('no-scroll');
-    };
   }, [location.pathname]);
 
   useEffect(() => {
@@ -127,12 +118,10 @@ const App = () => {
   );
 };
 
-const Main = () => {
-  return (
-    <Router>
-      <App />
-    </Router>
-  );
-};
+const Main = () => (
+  <Router>
+    <App />
+  </Router>
+);
 
 export default Main;
