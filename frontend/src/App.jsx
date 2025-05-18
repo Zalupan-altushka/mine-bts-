@@ -7,7 +7,7 @@ import Boosters from './Pages/Boosters/Boosters.jsx';
 import PageTransition from './Pages/Transition/PageTransition.jsx';
 import Loader from './Pages/Loader/Loader.jsx';
 
-const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth'; // URL вашей Netlify Function
+const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth';
 
 const App = () => {
     const location = useLocation();
@@ -16,6 +16,21 @@ const App = () => {
     const [isActive, setIsActive] = useState(false);
     const [userData, setUserData] = useState(null);
     const [authCheckLoading, setAuthCheckLoading] = useState(true);
+    const [isDesktop, setIsDesktop] = useState(false);
+
+    useEffect(() => {
+      // Определяем, открыто ли приложение на ПК
+      const checkIsDesktop = () => {
+          setIsDesktop(window.innerWidth > 768); // Например, считаем, что больше 768px - это ПК
+      };
+
+      checkIsDesktop();
+      window.addEventListener('resize', checkIsDesktop);
+
+      return () => {
+          window.removeEventListener('resize', checkIsDesktop);
+      };
+    }, []);
 
     useEffect(() => {
         // Установка подтверждения закрытия
@@ -49,15 +64,15 @@ const App = () => {
     }, [location.pathname]);
 
     useEffect(() => {
-        // Проверка активности
+        // Проверка активности и запрос полноэкранного режима (только не на ПК)
         if (window.Telegram && window.Telegram.WebApp) {
             setIsActive(window.Telegram.WebApp.isActive);
-            if (window.Telegram.WebApp.isActive) {
+            if (window.Telegram.WebApp.isActive && !isDesktop) {
                 window.Telegram.WebApp.requestFullscreen();
                 window.Telegram.WebApp.isVerticalSwipesEnabled = false;
             }
         }
-    }, []);
+    }, [isDesktop]);
 
     useEffect(() => {
         const initData = window.Telegram?.WebApp?.initData || '';
