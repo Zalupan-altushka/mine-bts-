@@ -31,7 +31,6 @@ html, .bodyfriendspage {
   align-items: center; /* Выравниваем элементы по центру по горизонтали */
   justify-content: center; /* Выравниваем элементы по центру по вертикали */
   position: relative; /* Для позиционирования Menu */
-  padding-bottom: 15px; /* Учитываем высоту Menu (80px) */
   box-sizing: border-box; /* Важно, чтобы padding не увеличивал общую высоту */
 }
 
