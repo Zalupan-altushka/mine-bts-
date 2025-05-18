@@ -13,19 +13,18 @@
 }
 
 .bodyhomepage {
-  margin: 0;
+  margin: 0; /* Отступ сверху 94px, остальные по умолчанию 0 */
   padding: 0;
-  width: 100vw; /* Занимает всю ширину экрана */
-  min-height: 100vh; /* Минимальная высота равна высоте экрана */
+  flex: 1;
+  min-height: 100vh;
+  width: 100vw;
   background-image: url('../../Most Used/Image/222.jpg');
   background-size: cover;
   background-position: center;
   display: flex;
-  flex-direction: column; /* Размещаем элементы вертикально */
-  align-items: center; /* Выравниваем элементы по центру по горизонтали */
-  justify-content: center; /* Выравниваем элементы по центру по вертикали */
-  position: relative; /* Для позиционирования Menu */
-  box-sizing: border-box; /* Важно, чтобы padding не увеличивал общую высоту */
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
 }
 
 .no-scroll {
