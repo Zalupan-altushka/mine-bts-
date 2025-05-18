@@ -16,8 +16,8 @@
   margin: 0; /* Отступ сверху 94px, остальные по умолчанию 0 */
   padding: 0;
   flex: 1;
-  min-height: 100vh;
-  width: 100vw;
+  min-height: 773px;
+  width: 832px;
   background-image: url('../../Most Used/Image/222.jpg');
   background-size: cover;
   background-position: center;
@@ -25,7 +25,6 @@
   justify-content: flex-start;
   align-items: center;
   flex-direction: column;
-  padding-top: calc(80px + 20px);
 }
 
 
@@ -34,6 +33,7 @@
 }
 
 .points-count {
+  margin-top: 20px;
   font-family: var(--font-family);
   font-size: 40px;
   margin-bottom: 30px;
