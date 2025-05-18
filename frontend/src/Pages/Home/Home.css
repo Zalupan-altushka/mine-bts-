@@ -25,7 +25,7 @@
   align-items: center; /* Выравниваем элементы по центру по горизонтали */
   justify-content: center; /* Выравниваем элементы по центру по вертикали */
   position: relative; /* Для позиционирования Menu */
-  padding-bottom: 60px; /* Учитываем высоту Menu (80px) */
+  padding-bottom: 30px; /* Учитываем высоту Menu (80px) */
   box-sizing: border-box; /* Важно, чтобы padding не увеличивал общую высоту */
 }
 
