@@ -16,21 +16,6 @@ const App = () => {
     const [isActive, setIsActive] = useState(false);
     const [userData, setUserData] = useState(null);
     const [authCheckLoading, setAuthCheckLoading] = useState(true);
-    const [isDesktop, setIsDesktop] = useState(false);
-
-    useEffect(() => {
-      // Определяем, открыто ли приложение на ПК
-      const checkIsDesktop = () => {
-          setIsDesktop(window.innerWidth > 768); // Например, считаем, что больше 768px - это ПК
-      };
-
-      checkIsDesktop();
-      window.addEventListener('resize', checkIsDesktop);
-
-      return () => {
-          window.removeEventListener('resize', checkIsDesktop);
-      };
-    }, []);
 
     useEffect(() => {
         // Установка подтверждения закрытия
@@ -63,25 +48,16 @@ const App = () => {
         };
     }, [location.pathname]);
 
-   useEffect(() => {
-        // Инициализация Web App
-        if (window.Telegram && window.Telegram.WebApp) {
-            setIsActive(window.Telegram.WebApp.isActive);
-
-            // Устанавливаем режим открытия в зависимости от типа устройства
-            if (isDesktop) {
-                const currentHeight = window.Telegram.WebApp.viewportHeight;
-                window.Telegram.WebApp.viewportHeight = currentHeight;
-            } else {
-                // Для мобильных устройств открываем в Fullscreen
-                if (window.Telegram.WebApp.isActive) {
-                    window.Telegram.WebApp.requestFullscreen();
-                    window.Telegram.WebApp.isVerticalSwipesEnabled = false;
-                }
-            }
-        }
-    }, [isDesktop]);
-
+    useEffect(() => {
+      // Проверка активности
+      if (window.Telegram && window.Telegram.WebApp) {
+          setIsActive(window.Telegram.WebApp.isActive);
+          if (window.Telegram.WebApp.isActive) {
+              window.Telegram.WebApp.requestFullscreen();
+              window.Telegram.WebApp.isVerticalSwipesEnabled = false;
+          }
+      }
+    }, []);
 
     useEffect(() => {
         const initData = window.Telegram?.WebApp?.initData || '';
