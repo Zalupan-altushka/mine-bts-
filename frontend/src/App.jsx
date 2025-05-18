@@ -70,9 +70,8 @@ const App = () => {
 
             // Устанавливаем режим открытия в зависимости от типа устройства
             if (isDesktop) {
-                // Для ПК оставляем стандартный режим (который определяется настройками Telegram)
-                // Или, если нужно, можно установить Compact или Fullsize
-                // Например: window.Telegram.WebApp.expand(); // для Fullsize
+                const currentHeight = window.Telegram.WebApp.viewportHeight;
+                window.Telegram.WebApp.viewportHeight = currentHeight;
             } else {
                 // Для мобильных устройств открываем в Fullscreen
                 if (window.Telegram.WebApp.isActive) {
