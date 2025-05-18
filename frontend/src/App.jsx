@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { retrieveLaunchParams } from '@telegram-apps/sdk-react'; // импорт SDK
 import HomePage from './Pages/Home/HomePage.jsx';
 import Friends from './Pages/Friends/Friends.jsx';
 import Tasks from './Pages/Tasks/Tasks.jsx';
@@ -12,7 +13,35 @@ const App = () => {
 
   const [loading, setLoading] = useState(true);
   const [isActive, setIsActive] = useState(false);
- 
+  const [userData, setUserData] = useState(null); // для хранения данных пользователя
+
+  // Получение launch params через SDK
+  useEffect(() => {
+    const { initDataRaw, initData } = retrieveLaunchParams();
+
+    if (initDataRaw) {
+      // Отправляем initDataRaw на сервер для валидации
+      fetch('https://ah-user.netlify.app/.netlify/functions/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ initDataRaw }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === 'ok' && data.userData) {
+            setUserData(data.userData);
+          } else {
+            console.warn('Авторизация не удалась или данные отсутствуют');
+          }
+        })
+        .catch((err) => {
+          console.error('Ошибка при отправке auth-запроса:', err);
+        });
+    }
+  }, []);
+
   useEffect(() => {
     // Установка подтверждения закрытия
     if (window.Telegram && window.Telegram.WebApp) {
@@ -60,10 +89,22 @@ const App = () => {
       {loading && <Loader />}
       <PageTransition location={location}>
         <Routes location={location}>
-          <Route path="/" element={<HomePage isActive={isActive} />} />
-          <Route path="/friends" element={<Friends isActive={isActive} />} />
-          <Route path="/tasks" element={<Tasks isActive={isActive} />} />
-          <Route path="/boost" element={<Boosters isActive={isActive} />} />
+          <Route
+            path="/"
+            element={<HomePage isActive={isActive} userData={userData} />}
+          />
+          <Route
+            path="/friends"
+            element={<Friends isActive={isActive} userData={userData} />}
+          />
+          <Route
+            path="/tasks"
+            element={<Tasks isActive={isActive} userData={userData} />}
+          />
+          <Route
+            path="/boost"
+            element={<Boosters isActive={isActive} userData={userData} />}
+          />
         </Routes>
       </PageTransition>
     </>
@@ -79,4 +120,5 @@ const Main = () => {
 };
 
 export default Main;
+
 
