@@ -77,8 +77,6 @@ function HomePage() {
 
   return (
     <section className='bodyhomepage'>
-      <div className='margin-div'></div>
-      <div className='for-margin-home'></div>
       <span className='points-count'>{points.toFixed(4)}</span>
       <DayCheck onPointsUpdate={(amount) => setPoints(prev => prev + amount)} />
       <Game />
