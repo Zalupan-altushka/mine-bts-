@@ -63,16 +63,26 @@ const App = () => {
         };
     }, [location.pathname]);
 
-    useEffect(() => {
-        // Проверка активности и запрос полноэкранного режима (только не на ПК)
+   useEffect(() => {
+        // Инициализация Web App
         if (window.Telegram && window.Telegram.WebApp) {
             setIsActive(window.Telegram.WebApp.isActive);
-            if (window.Telegram.WebApp.isActive && !isDesktop) {
-                window.Telegram.WebApp.requestFullscreen();
-                window.Telegram.WebApp.isVerticalSwipesEnabled = false;
+
+            // Устанавливаем режим открытия в зависимости от типа устройства
+            if (isDesktop) {
+                // Для ПК оставляем стандартный режим (который определяется настройками Telegram)
+                // Или, если нужно, можно установить Compact или Fullsize
+                // Например: window.Telegram.WebApp.expand(); // для Fullsize
+            } else {
+                // Для мобильных устройств открываем в Fullscreen
+                if (window.Telegram.WebApp.isActive) {
+                    window.Telegram.WebApp.requestFullscreen();
+                    window.Telegram.WebApp.isVerticalSwipesEnabled = false;
+                }
             }
         }
     }, [isDesktop]);
+
 
     useEffect(() => {
         const initData = window.Telegram?.WebApp?.initData || '';
