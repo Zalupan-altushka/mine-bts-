@@ -13,20 +13,21 @@
 }
 
 .bodyhomepage {
-  margin: 0; /* Отступ сверху 94px, остальные по умолчанию 0 */
+  margin: 0;
   padding: 0;
-  flex: 1;
-  min-height: 100vh;
-  width: 100vw;
+  width: 100vw; /* Занимает всю ширину экрана */
+  min-height: 100vh; /* Минимальная высота равна высоте экрана */
   background-image: url('../../Most Used/Image/222.jpg');
   background-size: cover;
   background-position: center;
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  flex-direction: column;
+  flex-direction: column; /* Размещаем элементы вертикально */
+  align-items: center; /* Выравниваем элементы по центру по горизонтали */
+  justify-content: center; /* Выравниваем элементы по центру по вертикали */
+  position: relative; /* Для позиционирования Menu */
+  padding-bottom: 80px; /* Учитываем высоту Menu (80px) */
+  box-sizing: border-box; /* Важно, чтобы padding не увеличивал общую высоту */
 }
-
 
 .no-scroll {
   overflow: hidden;
@@ -37,20 +38,21 @@
   font-size: 40px;
   margin-bottom: 30px;
   color: var(--green-color);
+  text-align: center; /* Добавляем центрирование текста */
 }
 
 .ButtonGroup {
   margin-top: 15px;
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
 }
 
 .FarmButton {
   text-align: center;
   font-family: var(--font-family);
-  background: var(--green-color); 
+  background: var(--green-color);
   color: var(--background-color);
   padding: 10px;
   border-radius: 15px;
