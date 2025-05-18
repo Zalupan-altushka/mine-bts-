@@ -95,6 +95,12 @@ const App = () => {
         }
     }, []);
 
+    useEffect(() => {
+        if (userData) {
+            console.log("Обновленные данные пользователя:", userData);
+        }
+    }, [userData]);
+
     if (authCheckLoading) {
         return <Loader />;
     }
