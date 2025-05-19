@@ -78,7 +78,6 @@ function HomePage() {
   return (
     <section className='bodyhomepage'>
       <span className='points-count'>{points.toFixed(4)}</span>
-      <div className='section-main'>
         <DayCheck onPointsUpdate={(amount) => setPoints(prev => prev + amount)} />
         <Game />
         <BoosterContainer />
@@ -100,7 +99,6 @@ function HomePage() {
             {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
           </button>
         </div>
-      </div>
       <Menu />
     </section>
   );
