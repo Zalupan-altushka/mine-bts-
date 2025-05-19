@@ -48,16 +48,16 @@ const App = () => {
         };
     }, [location.pathname]);
 
-    useEffect(() => {
+ //   useEffect(() => {
       // Проверка активности
-      if (window.Telegram && window.Telegram.WebApp) {
-          setIsActive(window.Telegram.WebApp.isActive);
-          if (window.Telegram.WebApp.isActive) {
-              window.Telegram.WebApp.requestFullscreen();
-              window.Telegram.WebApp.isVerticalSwipesEnabled = false;
-          }
-      }
-    }, []);
+ //     if (window.Telegram && window.Telegram.WebApp) {
+ //         setIsActive(window.Telegram.WebApp.isActive);
+  //        if (window.Telegram.WebApp.isActive) {
+  //            window.Telegram.WebApp.requestFullscreen();
+   //           window.Telegram.WebApp.isVerticalSwipesEnabled = false;
+    //      }
+   //   }
+    //}, []);
 
     useEffect(() => {
         const initData = window.Telegram?.WebApp?.initData || '';
@@ -108,7 +108,7 @@ const App = () => {
     return (
         <>
             {loading && <Loader />}
-            <PageTransition location={location}>
+            
                 <Routes location={location}>
                     <Route
                         path="/"
@@ -127,7 +127,7 @@ const App = () => {
                         element={<Boosters isActive={isActive} userData={userData} />}
                     />
                 </Routes>
-            </PageTransition>
+            
         </>
     );
 };
