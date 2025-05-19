@@ -45,7 +45,7 @@ html, .bodyboostpage {
   margin-top: 20px;
   background: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
   width: 325px;
-  max-height: 395px; /* or needed height */
+  max-height: 390px; /* or needed height */
   overflow-y: auto; /* Allows scrolling */
   overflow-x: hidden;
   padding: 20px; /* Убираем внутренние отступы, чтобы содержимое было вплотную */
@@ -64,7 +64,6 @@ html, .bodyboostpage {
 }
 
 .boosters-box {
-  margin-top: 20px;
   background-color: rgba(0, 0, 0, 0.6); /* Задайте нужный цвет фона */
   width: 365px;
   padding: 20px; /* Можно настроить отступы по желанию */
