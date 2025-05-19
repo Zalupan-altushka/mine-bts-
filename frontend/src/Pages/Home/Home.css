@@ -25,7 +25,6 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  padding-bottom: 80px; /* Добавляем отступ снизу, равный высоте Menu */
   box-sizing: border-box; /* Важно, чтобы padding не увеличивал общую высоту */
 }
 
