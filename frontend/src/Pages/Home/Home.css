@@ -16,7 +16,7 @@
   margin: 0;
   padding: 0;
   flex: 1;
-  min-height: 100vh;
+  min-height: 1170px;
   width: 100vw;
   background-image: url('../../Most Used/Image/222.jpg');
   background-size: cover;
@@ -49,14 +49,14 @@
 }
 
 .FarmButton {
-  margin-top: 20px;
+  margin-top: 15px;
   text-align: center;
   font-family: var(--font-family);
   background: var(--green-color);
   color: var(--background-color);
   padding: 10px;
   border-radius: 15px;
-  width: 100%;
+  width: 360px;
   height: 55px;
   font-size: 16px;
   border: none;
