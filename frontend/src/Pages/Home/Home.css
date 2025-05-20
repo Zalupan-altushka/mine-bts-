@@ -22,7 +22,7 @@
   background-size: cover;
   background-position: center;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   flex-direction: column;
   box-sizing: border-box; /* Важно, чтобы padding не увеличивал общую высоту */
