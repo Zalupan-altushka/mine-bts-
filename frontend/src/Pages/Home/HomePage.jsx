@@ -82,7 +82,6 @@ function HomePage() {
         <Game />
         <BoosterContainer />
         <FriendsConnt />
-        <div className='ButtonGroup'>
           <button
             className='FarmButton'
             onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
@@ -98,7 +97,6 @@ function HomePage() {
             {isButtonDisabled && !isClaimButton && <Timer style={{ marginRight: '8px' }} />}
             {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
           </button>
-        </div>
       <Menu />
     </section>
   );
