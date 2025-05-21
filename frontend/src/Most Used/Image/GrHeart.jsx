@@ -1,5 +1,6 @@
 import React from 'react';
-import Heart from './Heart.gif'; 
+import Heart from './Heart.gif';
+import './CSS/GIF-home.css'
 
 function GrHeart() {
 

@@ -11,3 +11,4 @@ function Thunder() {
 }
 
 export default Thunder;
+

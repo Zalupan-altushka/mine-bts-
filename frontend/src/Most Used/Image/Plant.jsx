@@ -1,5 +1,6 @@
 import React from 'react';
 import SeedPlant from './SeedPlant.gif';
+import './CSS/GIF-home.css'
 
 function Plant() {
 
