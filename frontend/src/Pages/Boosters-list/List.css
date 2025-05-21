@@ -92,7 +92,6 @@
   justify-content: center; 
   align-items: center; 
   flex-grow: 1; 
-  font-size: 20px;
 }
 
 .footer-section-list {
@@ -156,4 +155,32 @@
 .text-power-hr-ton, .text-power-hr-star, .text-power-hr-center, .text-power-hr-bts {
   font-size: 15px;
   color: var(--text-color);
+}
+
+.boosters-list-ton {
+  font-family: var(--font-family);
+  background: linear-gradient(45deg, var(--blue-another-color), var(--container-color));
+  width: 290px; 
+  height: 215px; 
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+  padding: 15px; 
+  border-radius: 25px; 
+}
+
+@media (max-height: 700px) {
+  .boosters-list-ton {
+    width: 250px;
+    height: 200px;
+  }
+  .text-power-hr-ton, .text-power-hr-star, .text-power-hr-center, .text-power-hr-bts {
+    font-size: 12px;
+  }
+  .hight-section-list {
+    font-size: 12px;
+  }
+  .footer-section-list {
+    font-size: 11px;
+  }
 }

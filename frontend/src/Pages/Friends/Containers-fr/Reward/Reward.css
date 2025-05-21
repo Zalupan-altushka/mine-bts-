@@ -38,11 +38,8 @@
 @media (max-height: 700px) {
   .reward-section-fr  {
     height: 70px; /* Меняем высоту кнопки на 20px */
-    width: 300px;
-    margin-top: 10px;
-  }
-  .Container-button {
-    margin-top: 10px;
+    width: 280px;
+    margin-top: 8px;
   }
   .span-reward-fr {
     font-size: 13px;
@@ -55,5 +52,12 @@
   }
   .left-section-reward-fr {
     gap: 5px;
+  }
+}
+
+@media (min-height: 900px) and (max-height: 940px) {
+  .reward-section-fr  {
+    width: 360px;
+    margin-top: 20px;
   }
 }

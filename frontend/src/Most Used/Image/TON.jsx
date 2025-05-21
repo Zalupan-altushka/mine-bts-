@@ -5,7 +5,7 @@ function TON() {
 
   return(
     <div>
-      <img src={currency} alt="Star" style={{ width: '80px', height: '80px' }}/>
+      <img src={currency} alt="Star" className='all-image'/>
     </div>
   );
 }

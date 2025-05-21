@@ -13,6 +13,7 @@
 .friends-container {
   border-radius: 15px;
   width: 320px;
+  height: 103px;
   margin-top: 20px;
   display: flex;
   justify-content: space-between; 
@@ -44,16 +45,29 @@
 
 @media (max-height: 700px) {
   .mid-right-section{
-    font-size: 10px; /* Меняем высоту кнопки на 20px */
+    font-size: 8px; /* Меняем высоту кнопки на 20px */
   }
   .friends-container{
-    margin-top: 10px;
-    height: 40px; /* Меняем высоту кнопки на 20px */
-    width: 300px;
+    margin-top: 8px;
+    height: 35px; /* Меняем высоту кнопки на 20px */
+    width: 280px;
   }
   .invite-home-button{
-    height: 25px;
-    font-size: 10px;
+    height: 20px;
+    font-size: 8px;
     margin-top: 5px;
+  }
+}
+
+@media (min-height: 900px) and (max-height: 940px) {
+  .mid-right-section span {
+    font-size: 19px; /* Меняем высоту кнопки на 20px */
+  }
+  .friends-container{
+    margin-top: 20px;
+    width: 360px;
+  }
+  .invite-home-button{
+    font-size: 16px;
   }
 }

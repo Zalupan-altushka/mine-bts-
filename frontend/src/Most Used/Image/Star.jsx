@@ -5,7 +5,7 @@ function Star() {
 
   return(
     <div>
-      <img src={star} alt="Star" style={{ width: '40px', height: '40px' }}/>
+      <img src={star} alt="Star" className='mini-image'/>
     </div>
   );
 }

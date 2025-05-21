@@ -9,7 +9,6 @@ function Boosters() {
 
   return (
       <section className='bodyboostpage'>
-        <div className='margin-div-boost'></div>
         <BoostersBox />
         <div className='containers-scroll-wrapper'>
           <div className='center-content'>

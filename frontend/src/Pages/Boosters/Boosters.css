@@ -56,102 +56,28 @@ html, .bodyboostpage {
 }
 
 .center-content {
+  justify-content: center;
   display: flex; 
   flex-direction: column; /* Вертикальные элементы */
-  align-items: stretch; /* Расширяет элементы на всю ширину */
+  align-items: center; /* Расширяет элементы на всю ширину */
   height: auto; /* Высота по содержимому */
   width: 100%; /* Полная ширина */
 }
 
-.boosters-box {
-  background-color: rgba(0, 0, 0, 0.6); /* Задайте нужный цвет фона */
-  width: 365px;
-  padding: 20px; /* Можно настроить отступы по желанию */
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  border: 1px solid var(--container-color-two);
-  border-radius: 25px;
-  position: relative;
+
+@media (max-height: 700px) {
+  .containers-scroll-wrapper{
+    margin-top: 10px;
+    width: 280px;
+    max-height: 270px;
+    margin-bottom: 50px;
+  }
 }
 
-/* Расположение height-section-box у верхней части */
-.height-section-box {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  position: relative;
-  padding-bottom: 10px; /* Отступ снизу от height-section-box */
-}
-
-/* left-section-box у левого края внутри height-section-box */
-.left-section-box {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-/* Сделать span вертикально */
-.left-section-box span {
-  flex-direction: column;
-  margin-bottom: 1px; /* Расстояние между двумя span */
-}
-
-/* right-section-box у правого края внутри height-section-box */
-.right-section-box {
-  align-self: flex-start;
-  /* Можно дополнительно задать размер или отступы, если нужно */
-}
-
-/* Расположение middle-section-box под height-section-box */
-.middle-section-box {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
-
-/* center-section-middle по центру в middle-section-box */
-.center-section-middle {
-  font-size: 15px;
-  font-weight: bold;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 10px;
-  margin-bottom: 10px; /* Немного отступа перед кнопкой */
-}
-
-/* Кнопка занимает 100% ширины и расположена у нижнего края */
-.middle-section-box button {
-  background-color: var(--background-color);
-  color: var(--text-color);
-  border: 1px solid var(--text-color);
-  border-radius: 15px;
-  width: 100%;
-  align-self: stretch;
-  padding: 10px;
-  margin-top: auto; /* Выровнять кнопку внизу */
-  box-sizing: border-box;
-}
-
-.two-span{
-  color: #b9bbbc;
-  font-size: 12px;
-}
-
-.first-span-box{
-  font-size: 16px;
-  color: gold;
-  font-weight: bold;
-}
-
-.polosa {
-  position: relative; /* Или relative, если контейнер с позиционированием */
-  top: 0; /* или нужное расположение */
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% + 40px); /* увеличиваем ширину на 40px (по 20px с каждой стороны) */
-  height: 1px; /* толщина полосы */
-  background-color: var(--container-color-two);
+@media (min-height: 900px) and (max-height: 940px) {
+  .containers-scroll-wrapper{
+    margin-top: 20px;
+    width: 360px;
+    max-height: 447px;
+  }
 }

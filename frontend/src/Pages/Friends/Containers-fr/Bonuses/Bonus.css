@@ -57,16 +57,39 @@
 
 @media (max-height: 700px) {
   .right-section-bonus-fr  {
-    height: 130px; /* Меняем высоту кнопки на 20px */
-    width: 300px;
-    margin-top: 10px;
+    height: 100px; /* Меняем высоту кнопки на 20px */
+    width: 280px;
+    margin-top: 8px;
   }
   .block-text {
-    font-size: 10.3px;
+    font-size: 8px;
     margin-bottom: 5px;
   }
   .title-how-it-works {
-    font-size: 11px;
+    font-size: 9px;
     margin-bottom: 10px; 
+  }
+  .left-section-gif-bonus-fr {
+    margin-top: 35px;
+  }
+  .block-text::before {
+    height: 7px;
+    width: 7px;
+  }
+}
+
+@media (min-height: 900px) and (max-height: 940px) {
+  .right-section-bonus-fr  {
+    width: 360px;
+    margin-top: 20px;
+  }
+  .title-how-it-works {
+    font-size: 17px;
+  }
+  .block-text {
+    font-size: 16px;
+  }
+  .left-section-gif-bonus-fr {
+    margin-top: 70px;
   }
 }
