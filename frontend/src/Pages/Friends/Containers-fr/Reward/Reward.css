@@ -34,3 +34,26 @@
   color: var(--container-color-two);
   font-size: 14px;
 }
+
+@media (max-height: 700px) {
+  .reward-section-fr  {
+    height: 70px; /* Меняем высоту кнопки на 20px */
+    width: 300px;
+    margin-top: 10px;
+  }
+  .Container-button {
+    margin-top: 10px;
+  }
+  .span-reward-fr {
+    font-size: 13px;
+  }
+  .span-about-fr {
+    font-size: 10px;
+  }
+  .title-total-frends {
+    font-size: 11px;
+  }
+  .left-section-reward-fr {
+    gap: 5px;
+  }
+}

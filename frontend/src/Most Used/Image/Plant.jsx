@@ -1,13 +1,14 @@
 import React from 'react';
-import SeedPlant from './SeedPlant.gif'; 
+import SeedPlant from './SeedPlant.gif';
 
 function Plant() {
 
   return(
     <div>
-      <img src={SeedPlant} alt="Star" style={{ width: '80px', height: '80px' }}/>
+      <img src={SeedPlant} alt="Star"  className="all-image" />
     </div>
   );
 }
+
 
 export default Plant;

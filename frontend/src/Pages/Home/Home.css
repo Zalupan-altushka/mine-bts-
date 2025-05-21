@@ -18,7 +18,7 @@
   flex: 1;
   min-height: 100vh;
   width: 100vw;
-  background-image: url('../../Most Used/Image/222.jpg');
+  background-image: url('../../Most Used/Image/333.jpg');
   background-size: cover;
   background-position: center;
   display: flex;
@@ -60,4 +60,16 @@
   height: 55px;
   font-size: 16px;
   border: none;
+}
+
+@media (max-height: 700px) {
+  .FarmButton {
+    height: 45px; /* Меняем высоту кнопки на 20px */
+    width: 340px;
+    font-size: 13px;
+  }
+  .points-count {
+    margin-bottom: 10px;
+    font-size: 35px;
+  }
 }

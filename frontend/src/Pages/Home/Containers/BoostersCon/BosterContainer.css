@@ -38,3 +38,19 @@
   background-color: var(--text-color);
   box-shadow: 0 0 15px var(--text-color), 0 0 25px var(--container-color);
 }
+
+@media (max-height: 700px) {
+  .mid-left-section{
+    font-size: 10px; /* Меняем высоту кнопки на 20px */
+  }
+  .boost-container{
+    margin-top: 10px;
+    height: 40px; /* Меняем высоту кнопки на 20px */
+    width: 300px;
+  }
+  .boost-go-button{
+    height: 25px;
+    font-size: 10px;
+    margin-top: 5px;    
+  }
+}

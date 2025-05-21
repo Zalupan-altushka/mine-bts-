@@ -5,7 +5,7 @@ function Fly() {
 
   return(
     <div>
-      <img src={FlyMoney} alt="Star" style={{ width: '100px', height: '100px' }}/>
+      <img src={FlyMoney} alt="Star" className='all-image'/>
     </div>
   );
 }

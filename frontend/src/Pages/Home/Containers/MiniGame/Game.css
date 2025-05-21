@@ -35,3 +35,18 @@
 .second-span-game {
   color: var(--container-color-two);
 }
+
+@media (max-height: 700px) {
+  .mid-section-textabout-game{
+    font-size: 13px; /* Меняем высоту кнопки на 20px */
+  }
+  .container-game{
+    margin-top: 10px;
+    height: 40px; /* Меняем высоту кнопки на 20px */
+    width: 320px;
+  }
+  .Game-button{
+    height: 35px;
+    font-size: 13px;
+  }
+}

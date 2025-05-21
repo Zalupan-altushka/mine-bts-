@@ -1,11 +1,11 @@
 import React from 'react';
-import thunder from './thunder.gif'; 
+import thunder from './thunder.gif';
+import './CSS/GIF-home.css';  
 
 function Thunder() {
-
-  return(
+  return (
     <div>
-      <img src={thunder} alt="Star" style={{ width: '80px', height: '80px' }}/>
+      <img src={thunder} alt="Star" className="all-image" />
     </div>
   );
 }

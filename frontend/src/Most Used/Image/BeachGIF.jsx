@@ -5,7 +5,7 @@ function BeachGIF() {
 
   return(
     <div>
-      <img src={beach} alt="Star" style={{ width: '36px', height: '36px' }}/>
+      <img src={beach} alt="Star" className='mini-image'/>
     </div>
   );
 }

@@ -5,7 +5,7 @@ function GrHeart() {
 
   return(
     <div>
-      <img src={Heart} alt="Star" style={{ width: '36px', height: '36px' }}/>
+      <img src={Heart} alt="Star" className='mini-image'/>
     </div>
   );
 }

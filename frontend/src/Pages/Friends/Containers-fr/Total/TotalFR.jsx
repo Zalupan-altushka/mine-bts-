@@ -13,7 +13,7 @@ function TotalFR() {
         <span className='second-span'>Total friends:</span>
       </div>
       <div className='right-section-total-fr'>
-        <span className='span-count'>0</span>
+        <span className='span-count'><span className='spusk'>0</span></span>
       </div>
     </section>
   );

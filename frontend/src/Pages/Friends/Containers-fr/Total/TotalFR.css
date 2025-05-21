@@ -34,6 +34,7 @@
   display: flex; /* Use flex to center the text */
   align-items: center; /* Center vertically */
   justify-content: center; /* Center horizontally */
+  text-align: center;
   width: 36px; /* Set a fixed width */
   height: 36px; /* Set a fixed height */
   background-color: var(--green-color); /* Set your desired background color */
@@ -41,4 +42,22 @@
   color: var(--background-color); /* Set text color */
   font-weight: bold; /* Optional: make the text bold */
   box-shadow: 0 0 10px var(--green-color), 0 0 10px var(--container-color-two);
+}
+
+@media (max-height: 700px) {
+  .section-total  {
+    height: 40px; /* Меняем высоту кнопки на 20px */
+    width: 320px;
+  }
+  .mid-section-text-fr {
+    font-size: 12px;
+  }
+  .span-count {
+    width: 30px;
+    height: 30px;
+    font-size: 11px;
+  }
+  .spusk {
+    margin-top: 3px;
+  }
 }

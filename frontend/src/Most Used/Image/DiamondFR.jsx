@@ -5,7 +5,7 @@ function DiamondFR() {
 
   return(
     <div>
-      <img src={diamond} alt="Star" style={{ width: '100px', height: '100px' }}/>
+      <img src={diamond} alt="Star" className='all-image'/>
     </div>
   );
 }

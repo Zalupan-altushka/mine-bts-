@@ -62,3 +62,21 @@
   pointer-events: none; /* Отключаем взаимодействие с кнопкой */
   transition: none; /* Убираем переход для неактивной кнопки */
 }
+
+
+@media (max-height: 700px) {
+  .mid-section-textabout{
+    margin-right: 85px;
+    font-size: 13px; /* Меняем высоту кнопки на 20px */
+  }
+  .container-check-day{
+    margin-top: 10px;
+    height: 40px; /* Меняем высоту кнопки на 20px */
+    width: 320px;
+  }
+  .Get-button.disabled, .Get-button{
+    height: 25px;
+    font-size: 10px;
+    margin-top: 5px;    
+  }
+}

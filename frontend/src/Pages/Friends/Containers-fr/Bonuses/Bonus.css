@@ -54,3 +54,19 @@
 .second-span-bonus {
   color: var(--container-color-two);
 }
+
+@media (max-height: 700px) {
+  .right-section-bonus-fr  {
+    height: 130px; /* Меняем высоту кнопки на 20px */
+    width: 300px;
+    margin-top: 10px;
+  }
+  .block-text {
+    font-size: 10.3px;
+    margin-bottom: 5px;
+  }
+  .title-how-it-works {
+    font-size: 11px;
+    margin-bottom: 10px; 
+  }
+}
