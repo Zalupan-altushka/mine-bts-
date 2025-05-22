@@ -75,3 +75,21 @@
     height: 40px;
   }
 }
+
+@media (max-height: 670px) {
+  .section-total  {
+    height: 30px; /* Меняем высоту кнопки на 20px */
+    width: 320px;
+  }
+  .mid-section-text-fr {
+    font-size: 11px;
+  }
+  .span-count {
+    width: 30px;
+    height: 30px;
+    font-size: 11px;
+  }
+  .spusk {
+    margin-top: 3px;
+  }
+}

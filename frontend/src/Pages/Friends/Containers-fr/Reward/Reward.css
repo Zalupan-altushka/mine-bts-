@@ -61,3 +61,23 @@
     margin-top: 20px;
   }
 }
+
+@media (max-height: 670px) {
+  .reward-section-fr  {
+    height: 76px; /* Меняем высоту кнопки на 20px */
+    width: 300px;
+    margin-top: 10px;
+  }
+  .span-reward-fr {
+    font-size: 14px;
+  }
+  .span-about-fr {
+    font-size: 10px;
+  }
+  .title-total-frends {
+    font-size: 12px;
+  }
+  .left-section-reward-fr {
+    gap: 10px;
+  }
+}

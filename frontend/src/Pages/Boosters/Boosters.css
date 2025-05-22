@@ -80,3 +80,11 @@ html, .bodyboostpage {
     max-height: 447px;
   }
 }
+
+@media (max-height: 670px) {
+  .containers-scroll-wrapper{
+    margin-top: 10px;
+    width: 300px;
+    max-height: 270px;
+  }
+}

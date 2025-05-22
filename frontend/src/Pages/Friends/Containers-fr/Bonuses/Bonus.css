@@ -94,3 +94,27 @@
     margin-top: 70px;
   }
 }
+
+@media (max-height: 670px) {
+  .right-section-bonus-fr  {
+    height: 140px; /* Меняем высоту кнопки на 20px */
+    width: 300px;
+    margin-top: 10px;
+  }
+  .block-text {
+    font-size: 10px;
+    margin-bottom: 10px;
+  }
+  .title-how-it-works {
+    font-size: 11px;
+    margin-bottom: 10px; 
+  }
+  .left-section-gif-bonus-fr {
+    margin-top: 60px;
+  }
+  .block-text::before {
+    height: 10px;
+    width: 10px;
+    margin-top: 5px;
+  }
+}

@@ -132,3 +132,26 @@
    font-size: 15px;
   }
 }
+
+@media (max-height: 670px) {
+  .boosters-box {
+    width: 340px;
+    padding: 15px;
+  }
+  .two-span{
+    font-size: 11px;
+  }
+  .first-span-box{
+    font-size: 12px;
+  }
+  .middle-section-box button {
+    font-size: 11px;
+    padding: 8px;
+  }
+  .center-section-middle{
+    font-size: 11px;
+  }
+  .polosa {
+    width: calc(100% + 30px);
+  }
+}
