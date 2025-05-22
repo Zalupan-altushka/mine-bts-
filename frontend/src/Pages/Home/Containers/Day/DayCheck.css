@@ -70,9 +70,8 @@
     font-size: 13px; /* Меняем высоту кнопки на 20px */
   }
   .container-check-day{
-    margin-top: 8px;
     height: 40px; /* Меняем высоту кнопки на 20px */
-    width: 300px;
+    width: 280px;
   }
   .Get-button.disabled, .Get-button{
     height: 25px;

@@ -45,9 +45,9 @@
     font-size: 10px; /* Меняем высоту кнопки на 20px */
   }
   .boost-container{
-    margin-top: 8px;
+    margin-top: 5px;
     height: 35px; /* Меняем высоту кнопки на 20px */
-    width: 280px;
+    width: 260px;
   }
   .boost-go-button{
     height: 20px;

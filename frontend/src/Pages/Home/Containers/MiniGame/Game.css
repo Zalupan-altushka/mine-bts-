@@ -41,9 +41,9 @@
     font-size: 13px; /* Меняем высоту кнопки на 20px */
   }
   .container-game{
-    margin-top: 8px;
+    margin-top: 5px;
     height: 40px; /* Меняем высоту кнопки на 20px */
-    width: 300px;
+    width: 280px;
   }
   .Game-button{
     height: 35px;
