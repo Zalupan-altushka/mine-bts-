@@ -65,7 +65,7 @@ html, .bodyfriendspage {
 .Container-button {
   display: flex;
   flex-direction: column; /* Располагаем элементы вертикально */
-  margin-top: 20px;
+  margin-top: 25px;
   gap: 10px; /* Отступ между элементами */
 }
  
