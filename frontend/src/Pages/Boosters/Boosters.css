@@ -69,8 +69,7 @@ html, .bodyboostpage {
   .containers-scroll-wrapper{
     margin-top: 20px;
     width: 300px;
-    max-height: 420px;
-    margin-bottom: 50px;
+    max-height: 370px;
   }
 }
 
