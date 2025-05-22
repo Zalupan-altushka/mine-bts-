@@ -5,7 +5,7 @@ function CheckIcon() {
 
   return(
     <div>
-      <img src={Check} alt="Star" style={{ width: '20px', height: '20px' }}/>
+      <img src={Check} alt="Star" className='check-icon'/>
     </div>
   );
 }

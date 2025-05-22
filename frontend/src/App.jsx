@@ -48,23 +48,23 @@ const App = () => {
         };
     }, [location.pathname]);
 
-    useEffect(() => {
-      // Проверка активности
-      if (window.Telegram && window.Telegram.WebApp) {
-          setIsActive(window.Telegram.WebApp.isActive);
-          if (window.Telegram.WebApp.isActive) {
-              window.Telegram.WebApp.requestFullscreen();
-              window.Telegram.WebApp.isVerticalSwipesEnabled = false;
-          }
-      }
-    }, []);
+  //  useEffect(() => {
+  //    // Проверка активности
+  //    if (window.Telegram && window.Telegram.WebApp) {
+  //        setIsActive(window.Telegram.WebApp.isActive);
+  //        if (window.Telegram.WebApp.isActive) {
+  //            window.Telegram.WebApp.requestFullscreen();
+  //            window.Telegram.WebApp.isVerticalSwipesEnabled = false;
+  //        }
+  //    }
+   // }, []);
 
     useEffect(() => {
         const initData = window.Telegram?.WebApp?.initData || '';
         const initDataUnsafe = window.Telegram?.WebApp?.initDataUnsafe || {};
 
         if (initData) {
-            // Отправляем данные на Netlify Function для проверкии
+            // Отправляем данные на Netlify Function для проверки
             fetch(AUTH_FUNCTION_URL, {
                 method: 'POST',
                 headers: {

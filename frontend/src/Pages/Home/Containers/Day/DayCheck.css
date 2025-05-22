@@ -66,15 +66,15 @@
 
 @media (min-height: 600px) and (max-height: 700px) {
   .mid-section-textabout{
-    margin-right: 85px;
-    font-size: 13px; /* Меняем высоту кнопки на 20px */
+    margin-right: 70px;
+    font-size: 11px; /* Меняем высоту кнопки на 20px */
   }
   .container-check-day{
-    height: 40px; /* Меняем высоту кнопки на 20px */
-    width: 280px;
+    height: 35px; /* Меняем высоту кнопки на 20px */
+    width: 260px;
   }
   .Get-button.disabled, .Get-button{
-    height: 25px;
+    height: 30px;
     font-size: 10px;
     margin-top: 5px;    
   }

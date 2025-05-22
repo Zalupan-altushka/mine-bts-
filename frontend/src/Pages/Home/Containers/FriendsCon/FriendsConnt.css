@@ -49,14 +49,14 @@
   }
   .friends-container{
     margin-top: 5px;
-    height: 35px; /* Меняем высоту кнопки на 20px */
-    width: 260px;
+    height: 30px; /* Меняем высоту кнопки на 20px */
+    width: 240px;
   }
   .invite-home-button{
     height: 20px;
     font-size: 8px;
     margin-top: 5px;
-    width: 200px;
+    width: 180px;
   }
 }
 
