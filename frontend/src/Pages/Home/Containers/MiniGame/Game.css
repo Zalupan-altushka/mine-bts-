@@ -52,7 +52,7 @@
   }
 }
 
-@media (min-height: 900px) and (max-height: 940px) {
+@media (min-height: 890px) and (max-height: 940px) {
   .mid-section-textabout-game{
     font-size: 19px; /* Меняем высоту кнопки на 20px */
     margin-right: 120px;
