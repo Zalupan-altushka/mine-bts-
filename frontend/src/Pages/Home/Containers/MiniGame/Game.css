@@ -36,19 +36,19 @@
   color: var(--container-color-two);
 }
 
-@media (min-height: 600px) and (max-height: 700px) {
+@media (min-height: 600px) and (max-height: 800px) {
   .mid-section-textabout-game{
-    margin-right: 80px !important;
-    font-size: 11px !important; /* Меняем высоту кнопки на 20px */
+    margin-right: 130px ;
+    font-size: 13px; /* Меняем высоту кнопки на 20px */
   }
   .container-game{
-    margin-top: 5px !important;
-    height: 30px !important; /* Меняем высоту кнопки на 20px */
-    width: 260px !important;
+    margin-top: 10px;
+    height: 35px; /* Меняем высоту кнопки на 20px */
+    width: 320px;
   }
   .Game-button{
-    height: 30px !important;
-    font-size: 11px !important;
+    height: 35px;
+    font-size: 13px;
   }
 }
 

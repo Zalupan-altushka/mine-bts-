@@ -63,20 +63,20 @@
   transition: none; /* Убираем переход для неактивной кнопки */
 }
 
-@media (min-height: 600px) and (max-height: 700px) {
-  .mid-section-textabout {
-    margin-right: 70px !important;
-    font-size: 11px !important;
+
+@media (min-height: 600px) and (max-height: 800px) {
+  .mid-section-textabout{
+    margin-right: 90px;
+    font-size: 13px; /* Меняем высоту кнопки на 20px */
   }
-  .container-check-day {
-    height: 35px !important;
-    width: 260px !important;
+  .container-check-day{
+    height: 40px; /* Меняем высоту кнопки на 20px */
+    width: 320px;
   }
-  .Get-button.disabled,
-  .Get-button {
-    height: 30px !important;
-    font-size: 10px !important;
-    margin-top: 5px !important;
+  .Get-button.disabled, .Get-button{
+    height: 35px;
+    font-size: 10px;
+    margin-top: 5px;    
   }
 }
 
