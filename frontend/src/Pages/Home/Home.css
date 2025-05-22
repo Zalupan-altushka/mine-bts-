@@ -62,7 +62,7 @@
   border: none;
 }
 
-@media (max-height: 700px) {
+@media (min-height: 600px) and (max-height: 700px) {
   .FarmButton {
     height: 40px; /* Меняем высоту кнопки на 20px */
     width: 300px;
@@ -70,8 +70,8 @@
     margin-top: 10px;
   }
   .points-count {
-    margin-bottom: 10px;
-    font-size: 30px;
+    margin-bottom: 5px;
+    font-size: 25px;
   }
 }
 

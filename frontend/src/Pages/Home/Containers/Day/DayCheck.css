@@ -64,7 +64,7 @@
 }
 
 
-@media (max-height: 640px) {
+@media (min-height: 600px) and (max-height: 700px) {
   .mid-section-textabout{
     margin-right: 85px;
     font-size: 13px; /* Меняем высоту кнопки на 20px */
