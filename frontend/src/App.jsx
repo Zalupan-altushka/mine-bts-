@@ -14,6 +14,7 @@ const App = () => {
 
     const [loading, setLoading] = useState(true);
     const [isActive, setIsActive] = useState(false);
+    const [isDesktop, setIsDesktop] = useState(false);
     const [userData, setUserData] = useState(null);
     const [authCheckLoading, setAuthCheckLoading] = useState(true);
 
@@ -48,18 +49,33 @@ const App = () => {
         };
     }, [location.pathname]);
 
-     useEffect(() => {
-        // Проверка активностиии
-        if (window.Telegram && window.Telegram.WebApp) {
-            setIsActive(window.Telegram.WebApp.isActive);
-            if (window.Telegram.WebApp.isActive) {
-                window.Telegram.WebApp.requestFullscreen();
-                window.Telegram.WebApp.isVerticalSwipesEnabled = false;
-            }
-        }
+    useEffect(() => {
+      // Определяем, является ли устройство настольным
+      const checkIfDesktop = () => {
+        setIsDesktop(window.innerWidth > 768); // Пример условия для определения настольного устройства (ширина экрана > 768px)
+      };
+  
+      checkIfDesktop();
+      window.addEventListener('resize', checkIfDesktop); // Обновляем при изменении размера окна
+  
+      return () => window.removeEventListener('resize', checkIfDesktop); // Очищаем при размонтировании компонента
     }, []);
-
-
+  
+    useEffect(() => {
+      // Проверка активности и включение полноэкранного режима (только на мобильных устройствах)
+      if (window.Telegram && window.Telegram.WebApp) {
+        setIsActive(window.Telegram.WebApp.isActive);
+        if (window.Telegram.WebApp.isActive && !isDesktop) {
+          try {
+            window.Telegram.WebApp.requestFullscreen();
+            window.Telegram.WebApp.isVerticalSwipesEnabled = false;
+          } catch (e) {
+            console.warn("Не удалось перейти в полноэкранный режим:", e);
+          }
+        }
+      }
+    }, [isDesktop]); // Зависимость от isDesktop, чтобы эффект срабатывал при изменении типа устройства
+  
     useEffect(() => {
         const initData = window.Telegram?.WebApp?.initData || '';
         const initDataUnsafe = window.Telegram?.WebApp?.initDataUnsafe || {};
