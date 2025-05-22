@@ -65,11 +65,11 @@ html, .bodyboostpage {
 }
 
 
-@media (max-height: 700px) {
+@media (max-height: 800px) {
   .containers-scroll-wrapper{
-    margin-top: 10px;
-    width: 280px;
-    max-height: 270px;
+    margin-top: 20px;
+    width: 300px;
+    max-height: 420px;
     margin-bottom: 50px;
   }
 }

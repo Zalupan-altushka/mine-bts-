@@ -67,11 +67,11 @@
     height: 45px; /* Меняем высоту кнопки на 20px */
     width: 340px;
     font-size: 13px;
-    margin-top: 10px;
+    margin-top: 20px;
   }
   .points-count {
-    margin-bottom: 15px;
-    font-size: 30px;
+    margin-bottom: 20px;
+    font-size: 40px;
   }
 }
 

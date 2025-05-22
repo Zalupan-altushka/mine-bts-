@@ -44,13 +44,13 @@
   box-shadow: 0 0 10px var(--green-color), 0 0 10px var(--container-color-two);
 }
 
-@media (max-height: 700px) {
+@media (max-height: 800px) {
   .section-total  {
-    height: 30px; /* Меняем высоту кнопки на 20px */
-    width: 300px;
+    height: 40px; /* Меняем высоту кнопки на 20px */
+    width: 320px;
   }
   .mid-section-text-fr {
-    font-size: 12px;
+    font-size: 13px;
   }
   .span-count {
     width: 30px;

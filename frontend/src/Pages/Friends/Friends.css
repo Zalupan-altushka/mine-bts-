@@ -69,14 +69,14 @@ html, .bodyfriendspage {
   gap: 10px; /* Отступ между элементами */
 }
  
-@media (max-height: 700px) {
+@media (max-height: 800px) {
   .Invite-button, .get-reward-button  {
     height: 45px ; /* Меняем высоту кнопки на 20px */
-    width: 320px;
+    width: 340px;
     font-size: 13px;
   }
   .Container-button {
-    margin-top: 10px;
+    margin-top: 20px;
   }
 }
 
