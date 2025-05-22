@@ -45,7 +45,7 @@
 
 @media (max-height: 700px) {
   .mid-right-section{
-    font-size: 8px; /* Меняем высоту кнопки на 20px */
+    font-size: 10px; /* Меняем высоту кнопки на 20px */
   }
   .friends-container{
     margin-top: 8px;
