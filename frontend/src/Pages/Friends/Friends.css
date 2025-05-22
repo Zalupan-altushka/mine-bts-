@@ -71,7 +71,7 @@ html, .bodyfriendspage {
  
 @media (max-height: 700px) {
   .Invite-button, .get-reward-button  {
-    height: 45px; /* Меняем высоту кнопки на 20px */
+    height: 45px ; /* Меняем высоту кнопки на 20px */
     width: 320px;
     font-size: 13px;
   }

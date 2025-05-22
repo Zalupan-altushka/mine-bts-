@@ -48,16 +48,17 @@ const App = () => {
         };
     }, [location.pathname]);
 
-    useEffect(() => {
-      // Проверка активности
-      if (window.Telegram && window.Telegram.WebApp) {
-          setIsActive(window.Telegram.WebApp.isActive);
-          if (window.Telegram.WebApp.isActive) {
-              window.Telegram.WebApp.requestFullscreen();
-              window.Telegram.WebApp.isVerticalSwipesEnabled = false;
-          }
-      }
+     useEffect(() => {
+        // Проверка активности
+        if (window.Telegram && window.Telegram.WebApp) {
+            setIsActive(window.Telegram.WebApp.isActive);
+            if (window.Telegram.WebApp.isActive) {
+                window.Telegram.WebApp.requestFullscreen();
+                window.Telegram.WebApp.isVerticalSwipesEnabled = false;
+            }
+        }
     }, []);
+
 
     useEffect(() => {
         const initData = window.Telegram?.WebApp?.initData || '';
