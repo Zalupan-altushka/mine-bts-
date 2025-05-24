@@ -8,7 +8,6 @@ import FriendsConnt from './Containers/FriendsCon/FriendsConnt';
 import Game from './Containers/MiniGame/Game';
 
 const tg = window.Telegram.WebApp;
-const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points'
 
 function HomePage({ userData }) { // Принимаем userData как пропс
   const [points, setPoints] = useState(0); // Инициализируем начальное значение
@@ -96,6 +95,8 @@ function HomePage({ userData }) { // Принимаем userData как проп
     };
 
     const updatePointsInDatabase = async (telegramId, newPoints) => {
+        // Замените URL на адрес вашей Netlify Function, которая обновляет очки в базе данных
+        const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
 
         const response = await fetch(UPDATE_POINTS_URL, {
             method: 'POST',
