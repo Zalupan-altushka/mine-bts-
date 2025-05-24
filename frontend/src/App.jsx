@@ -7,7 +7,7 @@ import Boosters from './Pages/Boosters/Boosters.jsx';
 import PageTransition from './Pages/Transition/PageTransition.jsx';
 import Loader from './Pages/Loader/Loader.jsx';
 
-const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth'; // Замените на свой URL, если он отличается
+const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth';
 
 const App = () => {
     const location = useLocation();
@@ -18,17 +18,16 @@ const App = () => {
     const [authCheckLoading, setAuthCheckLoading] = useState(true);
 
     useEffect(() => {
-        // Telegram WebApp initialization and closing confirmation handling
+        // Установка подтверждения закрытия
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.enableClosingConfirmation();
         }
 
-        // Simulate initial loading with a timer
+        // Таймаут для загрузки
         const timer = setTimeout(() => {
             setLoading(false);
         }, 4000);
 
-        // Cleanup function for component unmount
         return () => {
             clearTimeout(timer);
             if (window.Telegram && window.Telegram.WebApp) {
@@ -38,36 +37,35 @@ const App = () => {
     }, []);
 
     useEffect(() => {
-        // Prevent scrolling on specific routes
+        // Проверка маршрута
         if (['/', '/friends', '/tasks', '/boost'].includes(location.pathname)) {
             document.body.classList.add('no-scroll');
         } else {
             document.body.classList.remove('no-scroll');
         }
-
-        // Cleanup on route change
         return () => {
             document.body.classList.remove('no-scroll');
         };
     }, [location.pathname]);
 
     useEffect(() => {
-        // Check Telegram WebApp activity and request fullscreen
+        // Проверка активностиии
         if (window.Telegram && window.Telegram.WebApp) {
             setIsActive(window.Telegram.WebApp.isActive);
             if (window.Telegram.WebApp.isActive) {
                 window.Telegram.WebApp.requestFullscreen();
-                window.Telegram.WebApp.isVerticalSwipesEnabled = false; // Disable vertical swipes
-            }
+                window.Telegram.WebApp.isVerticalSwipesEnabled = false;
+           }
         }
     }, []);
 
+
     useEffect(() => {
-        // Authenticate user with Telegram initData
         const initData = window.Telegram?.WebApp?.initData || '';
         const initDataUnsafe = window.Telegram?.WebApp?.initDataUnsafe || {};
 
         if (initData) {
+            // Отправляем данные на Netlify Function для проверки
             fetch(AUTH_FUNCTION_URL, {
                 method: 'POST',
                 headers: {
@@ -79,13 +77,15 @@ const App = () => {
                 .then(data => {
                     if (data.isValid) {
                         console.log("Авторизация прошла успешно!");
-                        setUserData(data.userData); // Store the complete user data from Supabase
+                        setUserData(initDataUnsafe.user); // Сохраняем данные пользователя
                     } else {
                         console.error("Ошибка авторизации: Недействительные данные Telegram.");
+                        // Обработка недействительной авторизации
                     }
                 })
                 .catch(error => {
                     console.error("Ошибка при запросе к Netlify Function:", error);
+                    // Обработка ошибки запроса
                 })
                 .finally(() => {
                     setAuthCheckLoading(false);
@@ -97,13 +97,11 @@ const App = () => {
     }, []);
 
     useEffect(() => {
-        // Log updated user data
         if (userData) {
             console.log("Обновленные данные пользователя:", userData);
         }
     }, [userData]);
 
-    // Show loader while authenticating
     if (authCheckLoading) {
         return <Loader />;
     }
@@ -135,4 +133,12 @@ const App = () => {
     );
 };
 
-export default App;
+const Main = () => {
+    return (
+        <Router>
+            <App />
+        </Router>
+    );
+};
+
+export default Main;
