@@ -10,74 +10,74 @@ import Game from './Containers/MiniGame/Game';
 const tg = window.Telegram.WebApp;
 
 function HomePage({ userData }) { // Принимаем userData как пропс
-  const [points, setPoints] = useState(0); // Инициализируем начальное значение
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState(0);
-  const [isClaimButton, setIsClaimButton] = useState(true);
-  const [timerInterval, setTimerInterval] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+    const [points, setPoints] = useState(0); // Инициализируем начальное значение
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Убрали дубликат
+    const [timeRemaining, setTimeRemaining] = useState(0);
+    const [isClaimButton, setIsClaimButton] = useState(true);
+    const [timerInterval, setTimerInterval] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    if (userData && userData.points !== undefined) {
-      setPoints(userData.points);
-      setIsLoading(false); // Данные загружены
-    } else {
-      setIsLoading(true);
-      // Если userData не сразу доступен, попробуйте запросить его снова через некоторое время
-      const retryInterval = setInterval(() => {
+    useEffect(() => {
         if (userData && userData.points !== undefined) {
-          setPoints(userData.points);
-          setIsLoading(false);
-          clearInterval(retryInterval);
+            setPoints(userData.points);
+            setIsLoading(false); // Данные загружены
+        } else {
+            setIsLoading(true);
+            // Если userData не сразу доступен, попробуйте запросить его снова через некоторое время
+            const retryInterval = setInterval(() => {
+                if (userData && userData.points !== undefined) {
+                    setPoints(userData.points);
+                    setIsLoading(false);
+                    clearInterval(retryInterval);
+                }
+            }, 500); // Проверяем каждые 500мс
+
+            // Останавливаем попытки через 5 секунд, если данные так и не пришли
+            setTimeout(() => {
+                clearInterval(retryInterval);
+                if (isLoading) {
+                    console.warn("Не удалось загрузить данные пользователя.");
+                    setIsLoading(false); // Прекращаем загрузку даже если данные не пришли
+                }
+            }, 5000);
         }
-      }, 500); // Проверяем каждые 500мс
+    }, [userData]);
 
-      // Останавливаем попытки через 5 секунд, если данные так и не пришли
-      setTimeout(() => {
-        clearInterval(retryInterval);
-        if (isLoading) {
-          console.warn("Не удалось загрузить данные пользователя.");
-          setIsLoading(false); // Прекращаем загрузку даже если данные не пришли
+
+    // Загрузка таймера
+    useEffect(() => {
+        const endTimeStr = localStorage.getItem('endTime');
+        if (endTimeStr) {
+            const endTime = parseInt(endTimeStr, 10);
+            const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+            setTimeRemaining(remaining);
+            setIsButtonDisabled(remaining > 0);
+            setIsClaimButton(remaining <= 0);
+            if (remaining > 0) {
+                startTimer(remaining);
+            } else {
+                localStorage.removeItem('endTime');
+            }
         }
-      }, 5000);
-    }
-  }, [userData]);
+    }, []);
 
+    const startTimer = (duration) => {
+        const endTime = Date.now() + duration * 1000;
+        localStorage.setItem('endTime', endTime);
+        const interval = setInterval(() => {
+            const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+            setTimeRemaining(remainingTime);
+            if (remainingTime === 0) {
+                clearInterval(interval);
+                localStorage.removeItem('endTime');
+                setIsButtonDisabled(false);
+                setIsClaimButton(true);
+            }
+        }, 1000);
+        setTimerInterval(interval);
+    };
 
-  // Загрузка таймера
-  useEffect(() => {
-    const endTimeStr = localStorage.getItem('endTime');
-    if (endTimeStr) {
-      const endTime = parseInt(endTimeStr, 10);
-      const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-      setTimeRemaining(remaining);
-      setIsButtonDisabled(remaining > 0);
-      setIsClaimButton(remaining <= 0);
-      if (remaining > 0) {
-        startTimer(remaining);
-      } else {
-        localStorage.removeItem('endTime');
-      }
-    }
-  }, []);
-
-  const startTimer = (duration) => {
-    const endTime = Date.now() + duration * 1000;
-    localStorage.setItem('endTime', endTime);
-    const interval = setInterval(() => {
-      const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-      setTimeRemaining(remainingTime);
-      if (remainingTime === 0) {
-        clearInterval(interval);
-        localStorage.removeItem('endTime');
-        setIsButtonDisabled(false);
-        setIsClaimButton(true);
-      }
-    }, 1000);
-    setTimerInterval(interval);
-  };
-
-   const handleMineFor100 = async () => {
+    const handleMineFor100 = async () => {
         setIsButtonDisabled(true);
         const sixHoursInSeconds = 6 * 60 * 60;
         setTimeRemaining(sixHoursInSeconds);
@@ -86,7 +86,7 @@ function HomePage({ userData }) { // Принимаем userData как проп
         // Обновляем очки в базе данных
         try {
             const newPoints = 52.033;  // Или какое-то другое фиксированное значение
-             await updatePointsInDatabase(userData.telegram_id, newPoints);
+            await updatePointsInDatabase(userData.telegram_id, newPoints);
             setPoints(newPoints);  // Обновляем локальный стейт
         } catch (error) {
             console.error("Ошибка при обновлении очков в базе данных:", error);
@@ -96,7 +96,7 @@ function HomePage({ userData }) { // Принимаем userData как проп
 
     const updatePointsInDatabase = async (telegramId, newPoints) => {
         // Замените URL на адрес вашей Netlify Function, которая обновляет очки в базе данных
-        const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
+        const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points'; //  ВАЖНО: Укажите правильный URL
 
         const response = await fetch(UPDATE_POINTS_URL, {
             method: 'POST',
@@ -110,35 +110,37 @@ function HomePage({ userData }) { // Принимаем userData как проп
         });
 
         if (!response.ok) {
+            console.error("HTTP error при обновлении очков:", response.status, response.statusText); // Логируем детали ошибки
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
         if (!data.success) {
+            console.error("Ошибка от Netlify Function:", data.error); // Логируем ошибку от функции
             throw new Error(`Failed to update points in database: ${data.error}`);
         }
     };
 
 
-  const handleClaimPoints = () => {
-      if (!userData) {
-          console.warn("Нет данных пользователя для обновления очков.");
-          return;
-      }
+    const handleClaimPoints = () => {
+        if (!userData) {
+            console.warn("Нет данных пользователя для обновления очков.");
+            return;
+        }
 
-      const bonusPoints = 52.033;
-      const newPoints = points + bonusPoints;
+        const bonusPoints = 52.033;
+        const newPoints = points + bonusPoints;
 
-      updatePointsInDatabase(userData.telegram_id, newPoints) // Pass telegramId
-          .then(() => {
-              setPoints(newPoints);
-              setIsClaimButton(false);
-          })
-          .catch(error => {
-              console.error("Ошибка при обновлении очков:", error);
-              // Добавьте здесь логику обработки ошибок, например, отображение уведомления пользователю
-          });
-  };
+        updatePointsInDatabase(userData.telegram_id, newPoints) // Pass telegramId
+            .then(() => {
+                setPoints(newPoints);
+                setIsClaimButton(false);
+            })
+            .catch(error => {
+                console.error("Ошибка при обновлении очков:", error);
+                // Добавьте здесь логику обработки ошибок, например, отображение уведомления пользователю
+            });
+    };
 
     const formatTime = (seconds) => {
         const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
@@ -148,34 +150,34 @@ function HomePage({ userData }) { // Принимаем userData как проп
     };
 
     if (isLoading) {
-      return <p>Loading...</p>; // Или любой другой индикатор загрузки
+        return <p>Loading...</p>; // Или любой другой индикатор загрузки
     }
 
-  return (
-    <section className='bodyhomepage'>
-      <span className='points-count'>{points.toFixed(4)}</span>
-        <DayCheck onPointsUpdate={(amount) => setPoints(prev => prev + amount)} />
-        <Game />
-        <BoosterContainer />
-        <FriendsConnt />
-          <button
-            className='FarmButton'
-            onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
-            disabled={isButtonDisabled && !isClaimButton}
-            style={{
-              backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
-              color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            {isButtonDisabled && !isClaimButton && <Timer style={{ marginRight: '8px' }} />}
-            {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
-          </button>
-      <Menu />
-    </section>
-  );
+    return (
+        <section className='bodyhomepage'>
+            <span className='points-count'>{points.toFixed(4)}</span>
+            <DayCheck onPointsUpdate={(amount) => setPoints(prev => prev + amount)} />
+            <Game />
+            <BoosterContainer />
+            <FriendsConnt />
+            <button
+                className='FarmButton'
+                onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
+                disabled={isButtonDisabled && !isClaimButton}
+                style={{
+                    backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
+                    color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}
+            >
+                {isButtonDisabled && !isClaimButton && <Timer style={{ marginRight: '8px' }} />}
+                {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
+            </button>
+            <Menu />
+        </section>
+    );
 }
 
 export default HomePage;
