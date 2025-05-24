@@ -8,17 +8,42 @@ import FriendsConnt from './Containers/FriendsCon/FriendsConnt';
 import Game from './Containers/MiniGame/Game';
 
 const tg = window.Telegram.WebApp;
+const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points'
 
-function HomePage() {
-  // Удалена переменная userId
-  const [points, setPoints] = useState(() => {
-    const savedPoints = localStorage.getItem('points');
-    return savedPoints ? parseFloat(savedPoints) : 0.033;
-  });
+function HomePage({ userData }) { // Принимаем userData как пропс
+  const [points, setPoints] = useState(0); // Инициализируем начальное значение
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [isClaimButton, setIsClaimButton] = useState(true);
   const [timerInterval, setTimerInterval] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (userData && userData.points !== undefined) {
+      setPoints(userData.points);
+      setIsLoading(false); // Данные загружены
+    } else {
+      setIsLoading(true);
+      // Если userData не сразу доступен, попробуйте запросить его снова через некоторое время
+      const retryInterval = setInterval(() => {
+        if (userData && userData.points !== undefined) {
+          setPoints(userData.points);
+          setIsLoading(false);
+          clearInterval(retryInterval);
+        }
+      }, 500); // Проверяем каждые 500мс
+
+      // Останавливаем попытки через 5 секунд, если данные так и не пришли
+      setTimeout(() => {
+        clearInterval(retryInterval);
+        if (isLoading) {
+          console.warn("Не удалось загрузить данные пользователя.");
+          setIsLoading(false); // Прекращаем загрузку даже если данные не пришли
+        }
+      }, 5000);
+    }
+  }, [userData]);
+
 
   // Загрузка таймера
   useEffect(() => {
@@ -53,27 +78,77 @@ function HomePage() {
     setTimerInterval(interval);
   };
 
-  const handleMineFor100 = () => {
-    setIsButtonDisabled(true);
-    const sixHoursInSeconds = 6 * 60 * 60;
-    setTimeRemaining(sixHoursInSeconds);
-    startTimer(sixHoursInSeconds);
-  };
+   const handleMineFor100 = async () => {
+        setIsButtonDisabled(true);
+        const sixHoursInSeconds = 6 * 60 * 60;
+        setTimeRemaining(sixHoursInSeconds);
+        startTimer(sixHoursInSeconds);
+
+        // Обновляем очки в базе данных
+        try {
+            const newPoints = 52.033;  // Или какое-то другое фиксированное значение
+             await updatePointsInDatabase(userData.telegram_id, newPoints);
+            setPoints(newPoints);  // Обновляем локальный стейт
+        } catch (error) {
+            console.error("Ошибка при обновлении очков в базе данных:", error);
+            // Обработка ошибки, например, показ уведомления пользователю
+        }
+    };
+
+    const updatePointsInDatabase = async (telegramId, newPoints) => {
+
+        const response = await fetch(UPDATE_POINTS_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                telegramId: telegramId,
+                points: newPoints,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (!data.success) {
+            throw new Error(`Failed to update points in database: ${data.error}`);
+        }
+    };
+
 
   const handleClaimPoints = () => {
-    const bonusPoints = 52.033;
-    const newPoints = points + bonusPoints;
-    setPoints(newPoints);
-    localStorage.setItem('points', newPoints);
-    setIsClaimButton(false);
+      if (!userData) {
+          console.warn("Нет данных пользователя для обновления очков.");
+          return;
+      }
+
+      const bonusPoints = 52.033;
+      const newPoints = points + bonusPoints;
+
+      updatePointsInDatabase(userData.telegram_id, newPoints) // Pass telegramId
+          .then(() => {
+              setPoints(newPoints);
+              setIsClaimButton(false);
+          })
+          .catch(error => {
+              console.error("Ошибка при обновлении очков:", error);
+              // Добавьте здесь логику обработки ошибок, например, отображение уведомления пользователю
+          });
   };
-  
-  const formatTime = (seconds) => {
-    const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
-    const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
-    const s = String(seconds % 60).padStart(2, '0');
-    return `${h}:${m}:${s}`;
-  };
+
+    const formatTime = (seconds) => {
+        const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
+        const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+        const s = String(seconds % 60).padStart(2, '0');
+        return `${h}:${m}:${s}`;
+    };
+
+    if (isLoading) {
+      return <p>Loading...</p>; // Или любой другой индикатор загрузки
+    }
 
   return (
     <section className='bodyhomepage'>
@@ -103,5 +178,3 @@ function HomePage() {
 }
 
 export default HomePage;
-
-

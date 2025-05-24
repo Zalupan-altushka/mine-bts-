@@ -14,21 +14,21 @@ const App = () => {
 
     const [loading, setLoading] = useState(true);
     const [isActive, setIsActive] = useState(false);
-    const [isDesktop, setIsDesktop] = useState(false);
     const [userData, setUserData] = useState(null);
     const [authCheckLoading, setAuthCheckLoading] = useState(true);
 
     useEffect(() => {
-        // Установка подтверждения закрытия
+        // Telegram WebApp initialization and closing confirmation handling
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.enableClosingConfirmation();
         }
 
-        // Таймаут для загрузки
+        // Simulate initial loading with a timer
         const timer = setTimeout(() => {
             setLoading(false);
         }, 4000);
 
+        // Cleanup function for component unmount
         return () => {
             clearTimeout(timer);
             if (window.Telegram && window.Telegram.WebApp) {
@@ -38,50 +38,36 @@ const App = () => {
     }, []);
 
     useEffect(() => {
-        // Проверка маршрута
+        // Prevent scrolling on specific routes
         if (['/', '/friends', '/tasks', '/boost'].includes(location.pathname)) {
             document.body.classList.add('no-scroll');
         } else {
             document.body.classList.remove('no-scroll');
         }
+
+        // Cleanup on route change
         return () => {
             document.body.classList.remove('no-scroll');
         };
     }, [location.pathname]);
 
     useEffect(() => {
-      // Определяем, является ли устройство настольным
-      const checkIfDesktop = () => {
-        setIsDesktop(window.innerWidth > 768); // Пример условия для определения настольного устройства (ширина экрана > 768px)
-      };
-  
-      checkIfDesktop();
-      window.addEventListener('resize', checkIfDesktop); // Обновляем при изменении размера окна
-  
-      return () => window.removeEventListener('resize', checkIfDesktop); // Очищаем при размонтировании компонента
-    }, []);
-  
-    useEffect(() => {
-      // Проверка активности и включение полноэкранного режима (только на мобильных устройствах)
-      if (window.Telegram && window.Telegram.WebApp) {
-        setIsActive(window.Telegram.WebApp.isActive);
-        if (window.Telegram.WebApp.isActive && !isDesktop) {
-          try {
-            window.Telegram.WebApp.requestFullscreen();
-            window.Telegram.WebApp.isVerticalSwipesEnabled = false;
-          } catch (e) {
-            console.warn("Не удалось перейти в полноэкранный режим:", e);
-          }
+        // Check Telegram WebApp activity and request fullscreen
+        if (window.Telegram && window.Telegram.WebApp) {
+            setIsActive(window.Telegram.WebApp.isActive);
+            if (window.Telegram.WebApp.isActive) {
+                window.Telegram.WebApp.requestFullscreen();
+                window.Telegram.WebApp.isVerticalSwipesEnabled = false; // Disable vertical swipes
+            }
         }
-      }
-    }, [isDesktop]); // Зависимость от isDesktop, чтобы эффект срабатывал при изменении типа устройства
-  
+    }, []);
+
     useEffect(() => {
+        // Authenticate user with Telegram initData
         const initData = window.Telegram?.WebApp?.initData || '';
         const initDataUnsafe = window.Telegram?.WebApp?.initDataUnsafe || {};
 
         if (initData) {
-            // Отправляем данные на Netlify Function для проверки
             fetch(AUTH_FUNCTION_URL, {
                 method: 'POST',
                 headers: {
@@ -93,15 +79,13 @@ const App = () => {
                 .then(data => {
                     if (data.isValid) {
                         console.log("Авторизация прошла успешно!");
-                        setUserData(initDataUnsafe.user); // Сохраняем данные пользователя
+                        setUserData(data.userData); // Store the complete user data from Supabase
                     } else {
                         console.error("Ошибка авторизации: Недействительные данные Telegram.");
-                        // Обработка недействительной авторизации
                     }
                 })
                 .catch(error => {
                     console.error("Ошибка при запросе к Netlify Function:", error);
-                    // Обработка ошибки запроса
                 })
                 .finally(() => {
                     setAuthCheckLoading(false);
@@ -113,11 +97,13 @@ const App = () => {
     }, []);
 
     useEffect(() => {
+        // Log updated user data
         if (userData) {
             console.log("Обновленные данные пользователя:", userData);
         }
     }, [userData]);
 
+    // Show loader while authenticating
     if (authCheckLoading) {
         return <Loader />;
     }
@@ -149,12 +135,4 @@ const App = () => {
     );
 };
 
-const Main = () => {
-    return (
-        <Router>
-            <App />
-        </Router>
-    );
-};
-
-export default Main;
+export default App;
