@@ -22,12 +22,18 @@ const App = () => {
         console.log("App.jsx: useEffect triggered");
 
         // Telegram WebApp initialization and closing confirmation handling
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.enableClosingConfirmation();
-            console.log("Telegram WebApp initialized");
-            setTelegramReady(true);
+        if (typeof window.Telegram !== 'undefined' && typeof window.Telegram.WebApp !== 'undefined') {
+            try {
+                window.Telegram.WebApp.enableClosingConfirmation();
+                console.log("Telegram WebApp initialized");
+                setTelegramReady(true);
+            } catch (error) {
+                console.error("App.jsx: Error initializing Telegram WebApp:", error);
+                setTelegramReady(false); // Инициализация не удалась
+            }
         } else {
             console.warn("Telegram WebApp not found");
+            setTelegramReady(false); // Telegram WebApp API не найден
         }
 
         // Simulate initial loading with a timer
@@ -52,7 +58,7 @@ const App = () => {
             document.body.classList.remove('no-scroll');
         }
 
-        // Cleanup on route change
+        // Cleanup function on route change
         return () => {
             document.body.classList.remove('no-scroll');
         };
