@@ -19,13 +19,13 @@ const App = () => {
     const [telegramReady, setTelegramReady] = useState(false); // Track Telegram WebApp readiness
 
     useEffect(() => {
-        console.log("App.jsx: useEffect triggered"); // Add this line
+        console.log("App.jsx: useEffect triggered");
 
         // Telegram WebApp initialization and closing confirmation handling
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.enableClosingConfirmation();
             console.log("Telegram WebApp initialized");
-            setTelegramReady(true); // Set flag to indicate Telegram is ready
+            setTelegramReady(true);
         } else {
             console.warn("Telegram WebApp not found");
         }
@@ -71,19 +71,20 @@ const App = () => {
 
     useEffect(() => {
         // Authenticate user with Telegram initData
-        if (telegramReady) { // Only proceed if Telegram is ready
-            console.log("App.jsx: Auth useEffect triggered"); // Добавлено логирование
+        if (telegramReady) {
+            console.log("App.jsx: Auth useEffect triggered");
 
+            // Get initData right before sending the request
             const initData = window.Telegram?.WebApp?.initData || '';
-            console.log("App.jsx: initData:", initData); // Add this line
+            console.log("App.jsx: initData:", initData);
 
             const initDataUnsafe = window.Telegram?.WebApp?.initDataUnsafe || {};
-             console.log("App.jsx: initDataUnsafe:", initDataUnsafe); // Add this line
+            console.log("App.jsx: initDataUnsafe:", initDataUnsafe);
 
-            console.log("App.jsx: AUTH_FUNCTION_URL:", AUTH_FUNCTION_URL); // Add this line
+            console.log("App.jsx: AUTH_FUNCTION_URL:", AUTH_FUNCTION_URL);
 
             if (initData) {
-                console.log("App.jsx: initData exists, sending request");  // Добавлено логирование
+                console.log("App.jsx: initData exists, sending request");
                 fetch(AUTH_FUNCTION_URL, {
                     method: 'POST',
                     headers: {
@@ -92,29 +93,29 @@ const App = () => {
                     body: JSON.stringify({ initData }),
                 })
                     .then(response => {
-                        console.log("App.jsx: Response status:", response.status); // Log response status
+                        console.log("App.jsx: Response status:", response.status);
                         if (!response.ok) {
                             throw new Error(`HTTP error! status: ${response.status}`);
                         }
                         return response.json();
                     })
                     .then(data => {
-                        console.log("App.jsx: Auth data:", data); // Log auth data
+                        console.log("App.jsx: Auth data:", data);
 
                         if (data.isValid) {
                             console.log("App.jsx: Авторизация прошла успешно!");
-                            setUserData(data.userData); // Store the complete user data from Supabase
+                            setUserData(data.userData);
                         } else {
                             console.error("App.jsx: Ошибка авторизации: Недействительные данные Telegram.");
-                            setUserData(null); // Сбрасываем userData в случае ошибки
+                            setUserData(null);
                         }
                     })
                     .catch(error => {
                         console.error("App.jsx: Ошибка при запросе к Netlify Function:", error);
-                        setUserData(null); // Сбрасываем userData в случае ошибки
+                        setUserData(null);
                     })
                     .finally(() => {
-                        console.log("App.jsx: Auth check complete"); // Добавлено логирование
+                        console.log("App.jsx: Auth check complete");
                         setAuthCheckLoading(false);
                     });
             } else {
@@ -124,7 +125,7 @@ const App = () => {
         } else {
             console.log("App.jsx: Telegram WebApp not ready yet, skipping auth");
         }
-    }, [telegramReady]); // Depend on telegramReady
+    }, [telegramReady]);
 
     // Show loader while authenticating
     if (authCheckLoading) {
