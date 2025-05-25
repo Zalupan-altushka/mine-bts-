@@ -70,15 +70,8 @@ const App = () => {
     useEffect(() => {
         // Authenticate user with Telegram initData
         const initData = window.Telegram?.WebApp?.initData || '';
-        console.log("App.jsx: initData:", initData);
-
-        const initDataUnsafe = window.Telegram?.WebApp?.initDataUnsafe || {};
-        console.log("App.jsx: initDataUnsafe:", initDataUnsafe); // Add this line
-
-        console.log("App.jsx: AUTH_FUNCTION_URL:", AUTH_FUNCTION_URL); // Add this line
 
         if (initData) {
-
             fetch(AUTH_FUNCTION_URL, {
                 method: 'POST',
                 headers: {
