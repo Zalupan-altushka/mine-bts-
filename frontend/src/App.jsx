@@ -91,6 +91,10 @@ const App = () => {
 
             if (initData) {
                 console.log("App.jsx: initData exists, sending request");
+
+                // Log initData just before sending the request
+                console.log("App.jsx: Sending initData:", initData);
+
                 fetch(AUTH_FUNCTION_URL, {
                     method: 'POST',
                     headers: {
