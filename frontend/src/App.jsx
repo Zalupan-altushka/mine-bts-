@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import HomePage from './Pages/Home/HomePage.jsx';
 import Friends from './Pages/Friends/Friends.jsx';
@@ -18,6 +18,8 @@ const App = () => {
     const [authCheckLoading, setAuthCheckLoading] = useState(true);
 
     useEffect(() => {
+        console.log("App.jsx: useEffect triggered"); // Add this line
+
         // Telegram WebApp initialization and closing confirmation handling
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.enableClosingConfirmation();
@@ -68,12 +70,14 @@ const App = () => {
     useEffect(() => {
         // Authenticate user with Telegram initData
         const initData = window.Telegram?.WebApp?.initData || '';
-        const initDataUnsafe = window.Telegram?.WebApp?.initDataUnsafe || {};
+        console.log("App.jsx: initData:", initData);
 
-        console.log("App.jsx: initData:", initData); // Add this line
+        const initDataUnsafe = window.Telegram?.WebApp?.initDataUnsafe || {};
+        console.log("App.jsx: initDataUnsafe:", initDataUnsafe); // Add this line
+
+        console.log("App.jsx: AUTH_FUNCTION_URL:", AUTH_FUNCTION_URL); // Add this line
 
         if (initData) {
-
 
             fetch(AUTH_FUNCTION_URL, {
                 method: 'POST',
