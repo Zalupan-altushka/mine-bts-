@@ -110,20 +110,25 @@ const App = () => {
                             console.log("App.jsx: Авторизация прошла успешно!");
                             setUserData(data.userData);
                             setAuthSuccess(true); // Устанавливаем authSuccess в true
+                            // Задержка перед скрытием Loader
+                            setTimeout(() => {
+                                setAuthCheckLoading(false);
+                            }, 1500);
                         } else {
                             console.error("App.jsx: Ошибка авторизации: Недействительные данные Telegram.");
                             setUserData(null);
                             setAuthSuccess(false); // Устанавливаем authSuccess в false
+                            setAuthCheckLoading(false); // Скрываем Loader сразу
                         }
                     })
                     .catch(error => {
                         console.error("App.jsx: Ошибка при запросе к Netlify Function:", error);
                         setUserData(null);
                         setAuthSuccess(false); // Устанавливаем authSuccess в false
+                        setAuthCheckLoading(false); // Скрываем Loader сразу
                     })
                     .finally(() => {
                         console.log("App.jsx: Auth check complete");
-                        setAuthCheckLoading(false);
                     });
             } else {
                 console.warn("App.jsx: Нет данных инициализации Telegram.");
@@ -142,7 +147,7 @@ const App = () => {
             ) : (
                 <Routes location={location}>
                     <Route
-                        path="*"
+                        path="/"
                         element={
                             <PageTransition location={location}>
                                 <HomePage isActive={isActive} userData={userData} />
