@@ -16,6 +16,7 @@ const App = () => {
     const [isActive, setIsActive] = useState(false);
     const [userData, setUserData] = useState(null);
     const [authCheckLoading, setAuthCheckLoading] = useState(true);
+    const [authSuccess, setAuthSuccess] = useState(false); // Добавляем состояние для успешной авторизации
     const [telegramReady, setTelegramReady] = useState(false); // Track Telegram WebApp readiness
 
     useEffect(() => {
@@ -115,14 +116,17 @@ const App = () => {
                         if (data.isValid) {
                             console.log("App.jsx: Авторизация прошла успешно!");
                             setUserData(data.userData);
+                            setAuthSuccess(true); // Устанавливаем authSuccess в true
                         } else {
                             console.error("App.jsx: Ошибка авторизации: Недействительные данные Telegram.");
                             setUserData(null);
+                            setAuthSuccess(false); // Устанавливаем authSuccess в false
                         }
                     })
                     .catch(error => {
                         console.error("App.jsx: Ошибка при запросе к Netlify Function:", error);
                         setUserData(null);
+                        setAuthSuccess(false); // Устанавливаем authSuccess в false
                     })
                     .finally(() => {
                         console.log("App.jsx: Auth check complete");
@@ -131,40 +135,39 @@ const App = () => {
             } else {
                 console.warn("App.jsx: Нет данных инициализации Telegram.");
                 setAuthCheckLoading(false);
+                setAuthSuccess(false); // Устанавливаем authSuccess в false
             }
         } else {
             console.log("App.jsx: Telegram WebApp not ready yet, skipping auth");
         }
     }, [telegramReady]);
 
-    // Show loader while authenticating
-    if (authCheckLoading) {
-        return <Loader />;
-    }
-
     return (
         <>
-            {loading && <Loader />}
-            <PageTransition location={location}>
-                <Routes location={location}>
-                    <Route
-                        path="/"
-                        element={<HomePage isActive={isActive} userData={userData} />}
-                    />
-                    <Route
-                        path="/friends"
-                        element={<Friends isActive={isActive} userData={userData} />}
-                    />
-                    <Route
-                        path="/tasks"
-                        element={<Tasks isActive={isActive} userData={userData} />}
-                    />
-                    <Route
-                        path="/boost"
-                        element={<Boosters isActive={isActive} userData={userData} />}
-                    />
-                </Routes>
-            </PageTransition>
+            {authCheckLoading ? (
+                <Loader success={authSuccess} /> // Передаем authSuccess в Loader
+            ) : (
+                <PageTransition location={location}>
+                    <Routes location={location}>
+                        <Route
+                            path="/"
+                            element={<HomePage isActive={isActive} userData={userData} />}
+                        />
+                        <Route
+                            path="/friends"
+                            element={<Friends isActive={isActive} userData={userData} />}
+                        />
+                        <Route
+                            path="/tasks"
+                            element={<Tasks isActive={isActive} userData={userData} />}
+                        />
+                        <Route
+                            path="/boost"
+                            element={<Boosters isActive={isActive} userData={userData} />}
+                        />
+                    </Routes>
+                </PageTransition>
+            )}
         </>
     );
 };
