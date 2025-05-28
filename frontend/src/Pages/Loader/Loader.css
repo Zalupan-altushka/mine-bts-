@@ -36,3 +36,29 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+.text-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.welcome-text {
+    color: var(--text-color);
+    font-family: var(--font-family);
+    font-size: 15px; /* Размер шрифта можно настроить */
+    margin-bottom: 5px; /* Отступ между "Welcome!" и "Checking authorization..." */
+}
+
+.status-text {
+    color: var(--text-color);
+    font-family: var(--font-family);
+    font-size: 15px; /* Размер шрифта можно настроить */
+}
+
+.status-text-good {
+    color: var(--green-color);
+    font-family: var(--font-family);
+    font-size: 15px; /* Размер шрифта можно настроить */
+}

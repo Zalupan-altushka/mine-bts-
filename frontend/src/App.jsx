@@ -12,7 +12,6 @@ const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth';
 const App = () => {
     const location = useLocation();
 
-    const [loading, setLoading] = useState(true);
     const [isActive, setIsActive] = useState(false);
     const [userData, setUserData] = useState(null);
     const [authCheckLoading, setAuthCheckLoading] = useState(true);
@@ -37,14 +36,8 @@ const App = () => {
             setTelegramReady(false); // Telegram WebApp API не найден
         }
 
-        // Simulate initial loading with a timer
-        const timer = setTimeout(() => {
-            setLoading(false);
-        }, 4000);
-
         // Cleanup function for component unmount
         return () => {
-            clearTimeout(timer);
             if (window.Telegram && window.Telegram.WebApp) {
                 window.Telegram.WebApp.disableClosingConfirmation();
             }
@@ -147,26 +140,40 @@ const App = () => {
             {authCheckLoading ? (
                 <Loader success={authSuccess} /> // Передаем authSuccess в Loader
             ) : (
-                <PageTransition location={location}>
-                    <Routes location={location}>
-                        <Route
-                            path="/"
-                            element={<HomePage isActive={isActive} userData={userData} />}
-                        />
-                        <Route
-                            path="/friends"
-                            element={<Friends isActive={isActive} userData={userData} />}
-                        />
-                        <Route
-                            path="/tasks"
-                            element={<Tasks isActive={isActive} userData={userData} />}
-                        />
-                        <Route
-                            path="/boost"
-                            element={<Boosters isActive={isActive} userData={userData} />}
-                        />
-                    </Routes>
-                </PageTransition>
+                <Routes location={location}>
+                    <Route
+                        path="*"
+                        element={
+                            <PageTransition location={location}>
+                                <HomePage isActive={isActive} userData={userData} />
+                            </PageTransition>
+                        }
+                    />
+                    <Route
+                        path="/friends"
+                        element={
+                            <PageTransition location={location}>
+                                <Friends isActive={isActive} userData={userData} />
+                            </PageTransition>
+                        }
+                    />
+                    <Route
+                        path="/tasks"
+                        element={
+                            <PageTransition location={location}>
+                                <Tasks isActive={isActive} userData={userData} />
+                            </PageTransition>
+                        }
+                    />
+                    <Route
+                        path="/boost"
+                        element={
+                            <PageTransition location={location}>
+                                <Boosters isActive={isActive} userData={userData} />
+                            </PageTransition>
+                        }
+                    />
+                </Routes>
             )}
         </>
     );

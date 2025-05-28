@@ -5,11 +5,14 @@ const Loader = ({ success }) => {
   return (
     <div className="loader">
       <div className="spinner"></div>
-      {success ? (
-        <p>Success!</p>
-      ) : (
-        <p>Welcome! Checking authorization...</p>
-      )}
+      <div className="text-container">
+        <p className="welcome-text">Welcome!</p>
+        {success ? (
+          <p className="status-text-good">Success!</p>
+        ) : (
+          <p className="status-text">Checking authorization...</p>
+        )}
+      </div>
     </div>
   );
 };
