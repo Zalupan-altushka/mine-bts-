@@ -15,7 +15,6 @@ const App = () => {
     const [isActive, setIsActive] = useState(false);
     const [userData, setUserData] = useState(null);
     const [authCheckLoading, setAuthCheckLoading] = useState(true);
-    const [authSuccess, setAuthSuccess] = useState(false); // Добавляем состояние для успешной авторизации
     const [telegramReady, setTelegramReady] = useState(false); // Track Telegram WebApp readiness
 
     useEffect(() => {
@@ -109,7 +108,6 @@ const App = () => {
                         if (data.isValid) {
                             console.log("App.jsx: Авторизация прошла успешно!");
                             setUserData(data.userData);
-                            setAuthSuccess(true); // Устанавливаем authSuccess в true
                             // Задержка перед скрытием Loader
                             setTimeout(() => {
                                 setAuthCheckLoading(false);
@@ -117,14 +115,12 @@ const App = () => {
                         } else {
                             console.error("App.jsx: Ошибка авторизации: Недействительные данные Telegram.");
                             setUserData(null);
-                            setAuthSuccess(false); // Устанавливаем authSuccess в false
                             setAuthCheckLoading(false); // Скрываем Loader сразу
                         }
                     })
                     .catch(error => {
                         console.error("App.jsx: Ошибка при запросе к Netlify Function:", error);
                         setUserData(null);
-                        setAuthSuccess(false); // Устанавливаем authSuccess в false
                         setAuthCheckLoading(false); // Скрываем Loader сразу
                     })
                     .finally(() => {
@@ -133,7 +129,6 @@ const App = () => {
             } else {
                 console.warn("App.jsx: Нет данных инициализации Telegram.");
                 setAuthCheckLoading(false);
-                setAuthSuccess(false); // Устанавливаем authSuccess в false
             }
         } else {
             console.log("App.jsx: Telegram WebApp not ready yet, skipping auth");
@@ -143,7 +138,7 @@ const App = () => {
     return (
         <>
             {authCheckLoading ? (
-                <Loader success={authSuccess} /> // Передаем authSuccess в Loader
+                <Loader success={userData !== null} /> // Передаем success на основе userData
             ) : (
                 <Routes location={location}>
                     <Route
