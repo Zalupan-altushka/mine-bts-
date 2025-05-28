@@ -113,7 +113,7 @@ const App = () => {
                             // Задержка перед скрытием Loader
                             setTimeout(() => {
                                 setAuthCheckLoading(false);
-                            }, 1500);
+                            }, 2000);
                         } else {
                             console.error("App.jsx: Ошибка авторизации: Недействительные данные Telegram.");
                             setUserData(null);

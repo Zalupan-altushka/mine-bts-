@@ -1,20 +1,21 @@
 import './PageTransition.css'
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import React from 'react';
 
 const PageTransition = ({ children, location }) => {
-  return (
-    <div className="page-transition-container"> {/* Добавьте класс для контейнера */}
-      <TransitionGroup>
-        <CSSTransition
-          key={location.key}
-          classNames="fade"
-          timeout={200}
-        >
-          {children}
-        </CSSTransition>
-      </TransitionGroup>
-    </div>
-  );
+    return (
+        <TransitionGroup component={null}>
+            <CSSTransition
+                key={location.pathname}
+                timeout={200}
+                classNames="fade"
+            >
+                <div className="page-transition-container">
+                    {children}
+                </div>
+            </CSSTransition>
+        </TransitionGroup>
+    );
 };
 
 export default PageTransition;

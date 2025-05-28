@@ -1,7 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Loader.css'; // Импортируем стили для анимации
 
 const Loader = ({ success }) => {
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  useEffect(() => {
+    if (success) {
+      setShowSuccess(true); // Показываем "Success!"
+      const timer = setTimeout(() => {
+        setShowSuccess(false); // Скрываем "Success!" через 2 секунды
+      }, 2000);
+
+      return () => clearTimeout(timer); // Очищаем таймер при размонтировании компонента
+    }
+  }, [success]);
+
   return (
     <div className="loader">
       <div className="spinner"></div>

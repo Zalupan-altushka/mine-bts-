@@ -50,18 +50,18 @@
 .welcome-text {
     color: var(--text-color);
     font-family: var(--font-family);
-    font-size: 15px; /* Размер шрифта можно настроить */
+    font-size: 23px; /* Размер шрифта можно настроить */
     margin-bottom: 5px; /* Отступ между "Welcome!" и "Checking authorization..." */
 }
 
 .status-text {
     color: var(--text-color);
     font-family: var(--font-family);
-    font-size: 15px; /* Размер шрифта можно настроить */
+    font-size: 23px; /* Размер шрифта можно настроить */
 }
 
 .status-text-good {
     color: var(--green-color);
     font-family: var(--font-family);
-    font-size: 15px; /* Размер шрифта можно настроить */
+    font-size: 23px; /* Размер шрифта можно настроить */
 }
