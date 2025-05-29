@@ -20,7 +20,10 @@
   justify-content: center;
   flex-direction: column; /* Располагаем элементы вертикально */
   align-items: center;
-  background-color: var(--background-color);
+  background-image: url('../../Most Used/Image/333.jpg');
+  background-size: cover;
+  background-position: center;
+  backdrop-filter: blur(50px); /* Размытие фона под меню (опционально) */
   z-index: 9999; 
 }
 
