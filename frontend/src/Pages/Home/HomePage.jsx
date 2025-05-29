@@ -9,36 +9,35 @@ import Game from './Containers/MiniGame/Game';
 
 const tg = window.Telegram.WebApp;
 
-function HomePage({ userData }) { // Принимаем userData как пропс
-    const [points, setPoints] = useState(0); // Инициализируем начальное значение
+function HomePage({ userData }) {
+    const [points, setPoints] = useState(0);
+    const [isMining, setIsMining] = useState(false); // Состояние для отслеживания, идет ли майнинг
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [timeRemaining, setTimeRemaining] = useState(0);
-    const [isClaimButton, setIsClaimButton] = useState(true);
     const [timerInterval, setTimerInterval] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [initialLoadComplete, setInitialLoadComplete] = useState(false); // Добавлено состояние для отслеживания начальной загрузки
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     useEffect(() => {
-        console.log("HomePage: useEffect triggered"); // Log when useEffect is triggered
+        console.log("HomePage: useEffect triggered");
         if (userData) {
-            console.log("HomePage: userData received:", userData); // Добавлено логирование
+            console.log("HomePage: userData received:", userData);
             if (userData.points !== undefined) {
-                console.log("HomePage: userData.points:", userData.points); // Log the points
+                console.log("HomePage: userData.points:", userData.points);
                 setPoints(userData.points);
                 setIsLoading(false);
-                setInitialLoadComplete(true); // Устанавливаем, что начальная загрузка завершена
+                setInitialLoadComplete(true);
             } else {
                 console.warn("HomePage: userData.points is undefined");
-                setInitialLoadComplete(true); // Устанавливаем, что начальная загрузка завершена, даже если нет очков
                 setIsLoading(false);
+                setInitialLoadComplete(true);
             }
         } else {
             console.warn("HomePage: userData is null or undefined");
-            setInitialLoadComplete(true); // Устанавливаем, что начальная загрузка завершена, даже если нет userData
             setIsLoading(false);
+            setInitialLoadComplete(true);
         }
     }, [userData]);
-
 
     // Загрузка таймера
     useEffect(() => {
@@ -48,11 +47,12 @@ function HomePage({ userData }) { // Принимаем userData как проп
             const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
             setTimeRemaining(remaining);
             setIsButtonDisabled(remaining > 0);
-            setIsClaimButton(remaining <= 0);
+            setIsMining(remaining > 0); // Устанавливаем isMining в true, если таймер активен
             if (remaining > 0) {
                 startTimer(remaining);
             } else {
                 localStorage.removeItem('endTime');
+                setIsMining(false); // Устанавливаем isMining в false, если таймер истек
             }
         }
     }, []);
@@ -67,32 +67,23 @@ function HomePage({ userData }) { // Принимаем userData как проп
                 clearInterval(interval);
                 localStorage.removeItem('endTime');
                 setIsButtonDisabled(false);
-                setIsClaimButton(true);
+                setIsMining(false); // Устанавливаем isMining в false, когда таймер истек
+                setTimerInterval(null);
             }
         }, 1000);
         setTimerInterval(interval);
     };
 
-    const handleMineFor100 = async () => {
+    const handleMineFor100 = () => {
+        setIsMining(true); // Начинаем майнинг
         setIsButtonDisabled(true);
         const sixHoursInSeconds = 6 * 60 * 60;
         setTimeRemaining(sixHoursInSeconds);
         startTimer(sixHoursInSeconds);
-
-        // Обновляем очки в базе данных
-        try {
-            const newPoints = 52.033;  // Или какое-то другое фиксированное значение
-            await updatePointsInDatabase(userData.telegram_user_id, newPoints); // Используем telegram_user_id
-            setPoints(newPoints);  // Обновляем локальный стейт
-        } catch (error) {
-            console.error("Ошибка при обновлении очков в базе данных:", error);
-            // Обработка ошибки, например, показ уведомления пользователю
-        }
     };
 
     const updatePointsInDatabase = async (telegramId, newPoints) => {
-        // Замените URL на адрес вашей Netlify Function, которая обновляет очки в базе данных
-        const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points'; //  ВАЖНО: Укажите правильный URL
+        const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
 
         const response = await fetch(UPDATE_POINTS_URL, {
             method: 'POST',
@@ -106,17 +97,16 @@ function HomePage({ userData }) { // Принимаем userData как проп
         });
 
         if (!response.ok) {
-            console.error("HTTP error при обновлении очков:", response.status, response.statusText); // Логируем детали ошибки
+            console.error("HTTP error при обновлении очков:", response.status, response.statusText);
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
         if (!data.success) {
-            console.error("Ошибка от Netlify Function:", data.error); // Логируем ошибку от функции
+            console.error("Ошибка от Netlify Function:", data.error);
             throw new Error(`Failed to update points in database: ${data.error}`);
         }
     };
-
 
     const handleClaimPoints = () => {
         if (!userData) {
@@ -130,11 +120,11 @@ function HomePage({ userData }) { // Принимаем userData как проп
         updatePointsInDatabase(userData.telegram_user_id, newPoints) // Pass telegramId
             .then(() => {
                 setPoints(newPoints);
-                setIsClaimButton(false);
+                setIsMining(false); // Заканчиваем майнинг после получения награды
+                setIsButtonDisabled(false);
             })
             .catch(error => {
                 console.error("Ошибка при обновлении очков:", error);
-                // Добавьте здесь логику обработки ошибок, например, отображение уведомления пользователю
             });
     };
 
@@ -146,11 +136,7 @@ function HomePage({ userData }) { // Принимаем userData как проп
     };
 
     if (!initialLoadComplete) {
-        return <p>Loading...</p>; // Отображаем загрузку, пока не завершится начальная загрузка
-    }
-
-    if (!userData) {
-        return <p>Loading user data...</p>; // Отображаем загрузку, пока не загрузятся данные
+        return <p>Loading...</p>;
     }
 
     return (
@@ -162,18 +148,22 @@ function HomePage({ userData }) { // Принимаем userData как проп
             <FriendsConnt />
             <button
                 className='FarmButton'
-                onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
-                disabled={isButtonDisabled && !isClaimButton}
+                onClick={isMining ? handleClaimPoints : handleMineFor100} // Условный вызов функций
+                disabled={isButtonDisabled} // Кнопка заблокирована во время майнинга
                 style={{
-                    backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
-                    color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
+                    backgroundColor: isMining ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
+                    color: isMining ? 'black' : (isButtonDisabled ? 'black' : ''),
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                 }}
             >
-                {isButtonDisabled && !isClaimButton && <Timer style={{ marginRight: '8px' }} />}
-                {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
+                {isMining && <Timer style={{ marginRight: '8px' }} />} {/* Отображаем таймер во время майнинга */}
+                {isMining ? ( // Если идет майнинг, показываем таймер или Claim
+                    timeRemaining > 0 ? formatTime(timeRemaining) : 'Claim 52.033 BTS'
+                ) : (
+                    'Mine 52.033 BTS' // Иначе предлагаем начать майнинг
+                )}
             </button>
             <Menu />
         </section>
