@@ -10,9 +10,7 @@ const PageTransition = ({ children, location }) => {
                 timeout={200}
                 classNames="fade"
             >
-                <div className="page-transition-container">
-                    {children}
-                </div>
+                {children}
             </CSSTransition>
         </TransitionGroup>
     );
