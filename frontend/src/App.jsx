@@ -140,40 +140,35 @@ const App = () => {
             {authCheckLoading ? (
                 <Loader success={userData !== null} />
             ) : (
-                <Routes location={location}>
-                    <Route
-                        path="/"
-                        element={
-                            <PageTransition location={location}>
-                                <HomePage isActive={isActive} userData={userData} />
-                            </PageTransition>
-                        }
-                    />
-                    <Route
-                        path="/friends"
-                        element={
-                            <PageTransition location={location}>
-                                <Friends isActive={isActive} userData={userData} />
-                            </PageTransition>
-                        }
-                    />
-                    <Route
-                        path="/tasks"
-                        element={
-                            <PageTransition location={location}>
-                                <Tasks isActive={isActive} userData={userData} />
-                            </PageTransition>
-                        }
-                    />
-                    <Route
-                        path="/boost"
-                        element={
-                            <PageTransition location={location}>
-                                <Boosters isActive={isActive} userData={userData} />
-                            </PageTransition>
-                        }
-                    />
-                </Routes>
+                <PageTransition location={location}>
+                  <Routes location={location}>
+                      <Route
+                          path="/"
+                          element={
+                                  <HomePage isActive={isActive} userData={userData} />
+                          }
+                      />
+                      <Route
+                          path="/friends"
+                          element={
+                                  <Friends isActive={isActive} userData={userData} />
+                          }
+                      />
+                      <Route
+                          path="/tasks"
+                          element={
+                                  <Tasks isActive={isActive} userData={userData} />
+                          }
+                      />
+                      <Route
+                          path="/boost"
+                          element={
+                                  <Boosters isActive={isActive} userData={userData} />
+                          }
+                      />
+                  </Routes>
+              </PageTransition>
+                
             )}
         </>
     );
