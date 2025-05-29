@@ -18,20 +18,18 @@
   bottom: 0;
   display: flex;
   justify-content: center;
-  flex-direction: column;
   align-items: center;
   background-color: var(--background-color);
   z-index: 9999;
 }
 
 .spinner {
-  border: 8px solid var(--container-color);
-  border-top: 8px solid var(--green-color);
+  border: 12px solid var(--container-color); /* Увеличиваем толщину рамки */
+  border-top: 12px solid var(--green-color); /* Увеличиваем толщину верхней рамки */
   border-radius: 50%;
-  width: 60px;
-  height: 60px;
+  width: 120px; /* Увеличиваем размер */
+  height: 120px; /* Увеличиваем размер */
   animation: spin 1s linear infinite;
-  margin-bottom: 20px;
 }
 
 @keyframes spin {
@@ -42,30 +40,4 @@
   100% {
     transform: rotate(360deg);
   }
-}
-
-.text-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.welcome-text {
-  color: var(--text-color);
-  font-family: var(--font-family);
-  font-size: 23px;
-  margin-bottom: 5px;
-}
-
-.status-text {
-  color: var(--text-color);
-  font-family: var(--font-family);
-  font-size: 23px;
-}
-
-.status-text-good {
-  color: var(--green-color);
-  font-family: var(--font-family);
-  font-size: 23px;
 }
