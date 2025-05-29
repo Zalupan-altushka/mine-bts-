@@ -15,7 +15,8 @@ const App = () => {
     const [isActive, setIsActive] = useState(false);
     const [userData, setUserData] = useState(null);
     const [authCheckLoading, setAuthCheckLoading] = useState(true);
-    const [telegramReady, setTelegramReady] = useState(false); // Track Telegram WebApp readiness
+    const [telegramReady, setTelegramReady] = useState(false);
+    const [animateHomePage, setAnimateHomePage] = useState(false); // Добавляем состояние для анимации HomePage
 
     useEffect(() => {
         console.log("App.jsx: useEffect triggered");
@@ -111,17 +112,20 @@ const App = () => {
                             // Задержка перед скрытием Loader
                             setTimeout(() => {
                                 setAuthCheckLoading(false);
+                                setAnimateHomePage(true); // Разрешаем анимацию HomePage
                             }, 2000);
                         } else {
                             console.error("App.jsx: Ошибка авторизации: Недействительные данные Telegram.");
                             setUserData(null);
                             setAuthCheckLoading(false); // Скрываем Loader сразу
+                            setAnimateHomePage(true); // Разрешаем анимацию HomePage
                         }
                     })
                     .catch(error => {
                         console.error("App.jsx: Ошибка при запросе к Netlify Function:", error);
                         setUserData(null);
                         setAuthCheckLoading(false); // Скрываем Loader сразу
+                        setAnimateHomePage(true); // Разрешаем анимацию HomePage
                     })
                     .finally(() => {
                         console.log("App.jsx: Auth check complete");
@@ -129,6 +133,7 @@ const App = () => {
             } else {
                 console.warn("App.jsx: Нет данных инициализации Telegram.");
                 setAuthCheckLoading(false);
+                setAnimateHomePage(true); // Разрешаем анимацию HomePage
             }
         } else {
             console.log("App.jsx: Telegram WebApp not ready yet, skipping auth");
@@ -138,16 +143,18 @@ const App = () => {
     return (
         <>
             {authCheckLoading ? (
-                <Loader success={userData !== null} /> // Передаем success на основе userData
+                <Loader success={userData !== null} />
             ) : (
                 <Routes location={location}>
                     <Route
                         path="/"
-                        element={
+                        element={animateHomePage ? (
                             <PageTransition location={location}>
                                 <HomePage isActive={isActive} userData={userData} />
                             </PageTransition>
-                        }
+                        ) : (
+                            <HomePage isActive={isActive} userData={userData} />
+                        )}
                     />
                     <Route
                         path="/friends"
