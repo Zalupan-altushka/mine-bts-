@@ -29,13 +29,13 @@ function HomePage({ userData }) { // Принимаем userData как проп
                 setInitialLoadComplete(true); // Устанавливаем, что начальная загрузка завершена
             } else {
                 console.warn("HomePage: userData.points is undefined");
-                setIsLoading(false);
                 setInitialLoadComplete(true); // Устанавливаем, что начальная загрузка завершена, даже если нет очков
+                setIsLoading(false);
             }
         } else {
             console.warn("HomePage: userData is null or undefined");
-            setIsLoading(false);
             setInitialLoadComplete(true); // Устанавливаем, что начальная загрузка завершена, даже если нет userData
+            setIsLoading(false);
         }
     }, [userData]);
 
@@ -82,7 +82,7 @@ function HomePage({ userData }) { // Принимаем userData как проп
         // Обновляем очки в базе данных
         try {
             const newPoints = 52.033;  // Или какое-то другое фиксированное значение
-            await updatePointsInDatabase(userData.telegram_id, newPoints);
+            await updatePointsInDatabase(userData.telegram_user_id, newPoints); // Используем telegram_user_id
             setPoints(newPoints);  // Обновляем локальный стейт
         } catch (error) {
             console.error("Ошибка при обновлении очков в базе данных:", error);
@@ -127,7 +127,7 @@ function HomePage({ userData }) { // Принимаем userData как проп
         const bonusPoints = 52.033;
         const newPoints = points + bonusPoints;
 
-        updatePointsInDatabase(userData.telegram_id, newPoints) // Pass telegramId
+        updatePointsInDatabase(userData.telegram_user_id, newPoints) // Pass telegramId
             .then(() => {
                 setPoints(newPoints);
                 setIsClaimButton(false);
@@ -147,6 +147,10 @@ function HomePage({ userData }) { // Принимаем userData как проп
 
     if (!initialLoadComplete) {
         return <p>Loading...</p>; // Отображаем загрузку, пока не завершится начальная загрузка
+    }
+
+    if (!userData) {
+        return <p>Loading user data...</p>; // Отображаем загрузку, пока не загрузятся данные
     }
 
     return (
