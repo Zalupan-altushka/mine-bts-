@@ -3,13 +3,12 @@ import './DayCheck.css';
 import Moom from '../../../../Most Used/Image/Moom';
 import CheckIcon from '../../../../Most Used/Image/CheckIcon';
 
-function DayCheck({ onPointsUpdate, userData }) {
+function DayCheck({ onPointsUpdate, userData, updatePointsInDatabase }) { // Получаем функцию updatePointsInDatabase
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [timeLeft, setTimeLeft] = useState(0);
     const [dayCheckCount, setDayCheckCount] = useState(0);
 
     useEffect(() => {
-        // console.log("DayCheck: useEffect triggered"); // Отладка
         const storedDayCheckCount = localStorage.getItem('dayCheckCount');
         const lastClaimTime = localStorage.getItem('lastClaimTime');
 
@@ -46,32 +45,6 @@ function DayCheck({ onPointsUpdate, userData }) {
         }
     }, [userData]);
 
-    const updatePointsInDatabase = async (telegramId, newPoints) => {
-        const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
-
-        const response = await fetch(UPDATE_POINTS_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                telegramId: telegramId,
-                points: newPoints,
-            }),
-        });
-
-        if (!response.ok) {
-            console.error("HTTP error при обновлении очков:", response.status, response.statusText);
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        if (!data.success) {
-            console.error("Ошибка от Netlify Function:", data.error);
-            throw new Error(`Failed to update points in database: ${data.error}`);
-        }
-    };
-
     const handleGetButtonClick = async () => {
         if (!userData || !userData.telegram_user_id) {
             console.warn("Нет данных пользователя для обновления очков.");
@@ -91,12 +64,10 @@ function DayCheck({ onPointsUpdate, userData }) {
         // Обновляем очки в базе данных
         try {
             const bonusPoints = 30.033;
-            const newPoints = bonusPoints;
-            await updatePointsInDatabase(userData.telegram_user_id, newPoints + (userData.points || 0));
-            onPointsUpdate(bonusPoints); // Обновляем очки в HomePage
+            await updatePointsInDatabase(userData.telegram_user_id, bonusPoints + (userData.points || 0));
+            onPointsUpdate(bonusPoints);
         } catch (error) {
             console.error("Ошибка при обновлении очков в базе данных:", error);
-            // Обработка ошибки, например, показ уведомления пользователю
         }
     };
 

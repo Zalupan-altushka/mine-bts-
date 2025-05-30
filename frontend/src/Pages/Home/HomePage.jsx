@@ -44,49 +44,6 @@ function HomePage({ userData }) {
         }
     }, [userData]);
 
-    // Загрузка таймера
-    useEffect(() => {
-        const endTimeStr = localStorage.getItem('endTime');
-        if (endTimeStr) {
-            const endTime = parseInt(endTimeStr, 10);
-            const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-            setTimeRemaining(remaining);
-            setIsButtonDisabled(remaining > 0);
-            setIsMining(remaining > 0);
-            if (remaining > 0) {
-                startTimer(remaining);
-            } else {
-                localStorage.removeItem('endTime');
-                setIsMining(false);
-            }
-        }
-    }, []);
-
-    const startTimer = (duration) => {
-        const endTime = Date.now() + duration * 1000;
-        localStorage.setItem('endTime', endTime);
-        const interval = setInterval(() => {
-            const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-            setTimeRemaining(remainingTime);
-            if (remainingTime === 0) {
-                clearInterval(interval);
-                localStorage.removeItem('endTime');
-                setIsButtonDisabled(false);
-                setIsMining(false);
-                setTimerInterval(null);
-            }
-        }, 1000);
-        setTimerInterval(interval);
-    };
-
-    const handleMineFor100 = () => {
-        setIsMining(true);
-        setIsButtonDisabled(true);
-        const oneMinuteInSeconds = 60; //  Изменили на 1 минуту
-        setTimeRemaining(oneMinuteInSeconds);
-        startTimer(oneMinuteInSeconds);
-    };
-
     const updatePointsInDatabase = async (telegramId, newPoints) => {
         const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
 
@@ -111,6 +68,31 @@ function HomePage({ userData }) {
             console.error("Ошибка от Netlify Function:", data.error);
             throw new Error(`Failed to update points in database: ${data.error}`);
         }
+    };
+
+    const handleMineFor100 = () => {
+        setIsMining(true);
+        setIsButtonDisabled(true);
+        const oneMinuteInSeconds = 60;
+        setTimeRemaining(oneMinuteInSeconds);
+        startTimer(oneMinuteInSeconds);
+    };
+
+    const startTimer = (duration) => {
+        const endTime = Date.now() + duration * 1000;
+        localStorage.setItem('endTime', endTime);
+        const interval = setInterval(() => {
+            const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+            setTimeRemaining(remainingTime);
+            if (remainingTime === 0) {
+                clearInterval(interval);
+                localStorage.removeItem('endTime');
+                setIsButtonDisabled(false);
+                setIsMining(false);
+                setTimerInterval(null);
+            }
+        }, 1000);
+        setTimerInterval(interval);
     };
 
     const handleClaimPoints = () => {
@@ -147,7 +129,11 @@ function HomePage({ userData }) {
     return (
         <section className='bodyhomepage'>
             <span className='points-count'>{points.toFixed(4)}</span>
-            <DayCheck onPointsUpdate={onPointsUpdate} userData={userData} />
+            <DayCheck
+                onPointsUpdate={onPointsUpdate}
+                userData={userData}
+                updatePointsInDatabase={updatePointsInDatabase}
+            />
             <Game />
             <BoosterContainer />
             <FriendsConnt />
