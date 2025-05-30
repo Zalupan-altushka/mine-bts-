@@ -1,6 +1,7 @@
+import React, { useEffect, useState, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import './Home.css';
 import Menu from '../../Most Used/Menu/Menu';
-import { useState, useEffect, useCallback } from 'react';
 import Timer from '../../Most Used/Image/Timer';
 import DayCheck from './Containers/Day/DayCheck';
 import BoosterContainer from './Containers/BoostersCon/BoosterContainer';
@@ -11,7 +12,7 @@ const tg = window.Telegram.WebApp;
 
 function HomePage({ userData }) {
     const [points, setPoints] = useState(0);
-    const [isMining, setIsMining] = useState(false); // Состояние для отслеживания, идет ли майнинг
+    const [isMining, setIsMining] = useState(false);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [timeRemaining, setTimeRemaining] = useState(0);
     const [timerInterval, setTimerInterval] = useState(null);
@@ -51,12 +52,12 @@ function HomePage({ userData }) {
             const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
             setTimeRemaining(remaining);
             setIsButtonDisabled(remaining > 0);
-            setIsMining(remaining > 0); // Устанавливаем isMining в true, если таймер активен
+            setIsMining(remaining > 0);
             if (remaining > 0) {
                 startTimer(remaining);
             } else {
                 localStorage.removeItem('endTime');
-                setIsMining(false); // Устанавливаем isMining в false, если таймер истек
+                setIsMining(false);
             }
         }
     }, []);
@@ -71,7 +72,7 @@ function HomePage({ userData }) {
                 clearInterval(interval);
                 localStorage.removeItem('endTime');
                 setIsButtonDisabled(false);
-                setIsMining(false); // Устанавливаем isMining в false, когда таймер истек
+                setIsMining(false);
                 setTimerInterval(null);
             }
         }, 1000);
@@ -79,11 +80,11 @@ function HomePage({ userData }) {
     };
 
     const handleMineFor100 = () => {
-        setIsMining(true); // Начинаем майнинг
+        setIsMining(true);
         setIsButtonDisabled(true);
-        const sixHoursInSeconds = 6 * 60 * 60;
-        setTimeRemaining(sixHoursInSeconds);
-        startTimer(sixHoursInSeconds);
+        const oneMinuteInSeconds = 60; //  Изменили на 1 минуту
+        setTimeRemaining(oneMinuteInSeconds);
+        startTimer(oneMinuteInSeconds);
     };
 
     const updatePointsInDatabase = async (telegramId, newPoints) => {
@@ -124,7 +125,7 @@ function HomePage({ userData }) {
         updatePointsInDatabase(userData.telegram_user_id, newPoints)
             .then(() => {
                 setPoints(newPoints);
-                setIsMining(false); // Заканчиваем майнинг после получения награды
+                setIsMining(false);
                 setIsButtonDisabled(false);
             })
             .catch(error => {
@@ -152,8 +153,8 @@ function HomePage({ userData }) {
             <FriendsConnt />
             <button
                 className='FarmButton'
-                onClick={isMining ? handleClaimPoints : handleMineFor100} // Условный вызов функций
-                disabled={isButtonDisabled} // Кнопка заблокирована во время майнинга
+                onClick={isMining ? handleClaimPoints : handleMineFor100}
+                disabled={isButtonDisabled}
                 style={{
                     backgroundColor: isMining ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
                     color: isMining ? 'black' : (isButtonDisabled ? 'black' : ''),
@@ -162,11 +163,11 @@ function HomePage({ userData }) {
                     justifyContent: 'center',
                 }}
             >
-                {isMining && <Timer style={{ marginRight: '8px' }} />} {/* Отображаем таймер во время майнинга */}
-                {isMining ? ( // Если идет майнинг, показываем таймер или Claim
+                {isMining && <Timer style={{ marginRight: '8px' }} />}
+                {isMining ? (
                     timeRemaining > 0 ? formatTime(timeRemaining) : 'Claim 52.033 BTS'
                 ) : (
-                    'Mine 52.033 BTS' // Иначе предлагаем начать майнинг
+                    'Mine 52.033 BTS'
                 )}
             </button>
             <Menu />
