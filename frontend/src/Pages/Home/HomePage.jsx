@@ -12,8 +12,16 @@ const tg = window.Telegram.WebApp;
 
 function HomePage({ userData }) {
     const [points, setPoints] = useState(0);
-    const [isMining, setIsMining] = useState(false);
-    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [isMining, setIsMining] = useState(() => {
+        // Получаем состояние isMining из localStorage при инициализации
+        const storedIsMining = localStorage.getItem('isMining');
+        return storedIsMining === 'true' ? true : false;
+    });
+    const [isButtonDisabled, setIsButtonDisabled] = useState(() => {
+        // Получаем состояние isButtonDisabled из localStorage
+        const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled');
+        return storedIsButtonDisabled === 'true' ? true : false;
+    });
     const [timeRemaining, setTimeRemaining] = useState(0);
     const [timerInterval, setTimerInterval] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -81,6 +89,8 @@ function HomePage({ userData }) {
     const handleMineFor100 = () => {
         setIsMining(true);
         setIsButtonDisabled(true);
+        localStorage.setItem('isMining', 'true'); // Сохраняем состояние в localStorage
+        localStorage.setItem('isButtonDisabled', 'true'); // Сохраняем состояние в localStorage
         const oneMinuteInSeconds = 60;
         setTimeRemaining(oneMinuteInSeconds);
         startTimer(oneMinuteInSeconds);
@@ -97,6 +107,8 @@ function HomePage({ userData }) {
                 localStorage.removeItem('endTime');
                 setIsButtonDisabled(false);
                 setIsMining(false);
+                localStorage.setItem('isMining', 'false'); // Сохраняем состояние в localStorage
+                localStorage.setItem('isButtonDisabled', 'false'); // Сохраняем состояние в localStorage
                 setTimerInterval(null);
             }
         }, 1000);
@@ -117,11 +129,25 @@ function HomePage({ userData }) {
                 setPoints(newPoints);
                 setIsMining(false);
                 setIsButtonDisabled(false);
+                localStorage.setItem('isMining', 'false'); // Сохраняем состояние в localStorage
+                localStorage.setItem('isButtonDisabled', 'false'); // Сохраняем состояние в localStorage
             })
             .catch(error => {
                 console.error("Ошибка при обновлении очков:", error);
             });
     };
+
+    useEffect(() => {
+        // Загрузка таймера при инициализации HomePage
+        const endTimeStr = localStorage.getItem('endTime');
+        if (endTimeStr) {
+            const endTime = parseInt(endTimeStr, 10);
+            const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+            setTimeRemaining(remaining);
+            setIsButtonDisabled(remaining > 0);
+            setIsMining(remaining > 0);
+        }
+    }, []);
 
     const formatTime = (seconds) => {
         const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
