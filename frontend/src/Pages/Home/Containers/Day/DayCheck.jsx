@@ -3,27 +3,15 @@ import './DayCheck.css';
 import Moom from '../../../../Most Used/Image/Moom';
 import CheckIcon from '../../../../Most Used/Image/CheckIcon';
 
-function DayCheck({ onPointsUpdate, userData, updatePointsInDatabase }) { // Получаем функцию updatePointsInDatabase
+function DayCheck({ onPointsUpdate, userData, updatePointsInDatabase }) {
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [timeLeft, setTimeLeft] = useState(0);
-    const [dayCheckCount, setDayCheckCount] = useState(0);
+    const [dayCheckCount, setDayCheckCount] = useState(() => {
+        return parseInt(localStorage.getItem('dayCheckCount') || '0', 10);
+    });
 
     useEffect(() => {
-        const storedDayCheckCount = localStorage.getItem('dayCheckCount');
-        const lastClaimTime = localStorage.getItem('lastClaimTime');
-
-        if (lastClaimTime) {
-            const timeSinceLastClaim = Date.now() - parseInt(lastClaimTime, 10);
-            if (timeSinceLastClaim > 24 * 60 * 60 * 1000) {
-                setDayCheckCount(0);
-                localStorage.setItem('dayCheckCount', 0);
-            } else if (storedDayCheckCount) {
-                setDayCheckCount(parseInt(storedDayCheckCount, 10));
-            }
-        } else {
-            setDayCheckCount(0);
-        }
-
+        // Восстанавливаем состояние таймера при монтировании компонента
         const storedTime = localStorage.getItem('nextClaimTime');
         if (storedTime) {
             const remainingTime = parseInt(storedTime, 10) - Date.now();
@@ -41,6 +29,10 @@ function DayCheck({ onPointsUpdate, userData, updatePointsInDatabase }) { // П�
                     });
                 }, 1000);
                 return () => clearInterval(interval);
+            } else {
+                localStorage.removeItem('nextClaimTime'); // Удаляем устаревший таймер
+                setIsButtonDisabled(false);
+                setTimeLeft(0);
             }
         }
     }, [userData]);
@@ -56,11 +48,6 @@ function DayCheck({ onPointsUpdate, userData, updatePointsInDatabase }) { // П�
         localStorage.setItem('nextClaimTime', nextClaimTime);
         setTimeLeft(12 * 60 * 60 * 1000);
 
-        const newDayCheckCount = dayCheckCount + 1;
-        setDayCheckCount(newDayCheckCount);
-        localStorage.setItem('dayCheckCount', newDayCheckCount);
-        localStorage.setItem('lastClaimTime', Date.now());
-
         // Обновляем очки в базе данных
         try {
             const bonusPoints = 30.033;
@@ -69,6 +56,12 @@ function DayCheck({ onPointsUpdate, userData, updatePointsInDatabase }) { // П�
         } catch (error) {
             console.error("Ошибка при обновлении очков в базе данных:", error);
         }
+
+        // Обновляем счетчик и сохраняем в localStorage
+        const newDayCheckCount = dayCheckCount + 1;
+        setDayCheckCount(newDayCheckCount);
+        localStorage.setItem('dayCheckCount', newDayCheckCount.toString());
+        localStorage.setItem('lastClaimTime', Date.now().toString());
     };
 
     const formatTimeLeft = (time) => {

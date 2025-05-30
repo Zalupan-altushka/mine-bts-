@@ -47,26 +47,34 @@ function HomePage({ userData }) {
     const updatePointsInDatabase = async (telegramId, newPoints) => {
         const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
 
-        const response = await fetch(UPDATE_POINTS_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                telegramId: telegramId,
-                points: newPoints,
-            }),
-        });
+        try {
+            const response = await fetch(UPDATE_POINTS_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    telegramId: telegramId,
+                    points: newPoints,
+                }),
+            });
 
-        if (!response.ok) {
-            console.error("HTTP error при обновлении очков:", response.status, response.statusText);
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+            if (!response.ok) {
+                console.error("HTTP error при обновлении очков:", response.status, response.statusText);
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
 
-        const data = await response.json();
-        if (!data.success) {
-            console.error("Ошибка от Netlify Function:", data.error);
-            throw new Error(`Failed to update points in database: ${data.error}`);
+            const data = await response.json();
+            if (!data.success) {
+                console.error("Ошибка от Netlify Function:", data.error);
+                throw new Error(`Failed to update points in database: ${data.error}`);
+            }
+
+            console.log("Очки успешно обновлены в базе данных!");
+
+        } catch (error) {
+            console.error("Ошибка при обновлении очков:", error);
+            throw error; // Re-throw the error to be caught by the calling function
         }
     };
 
