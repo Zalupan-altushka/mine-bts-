@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import './Home.css';
 import Menu from '../../Most Used/Menu/Menu';
 import Timer from '../../Most Used/Image/Timer';
@@ -26,14 +25,17 @@ function HomePage({ userData }) {
         const endTimeStr = localStorage.getItem('endTime');
         if (endTimeStr) {
             const endTime = parseInt(endTimeStr, 10);
-            const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-            return remaining;
+            if (!isNaN(endTime)) {
+                const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+                return remaining;
+            }
         }
         return 0;
     });
     const [timerInterval, setTimerInterval] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+    const timerRef = useRef(null);  // Добавили ref для setInterval
 
     const onPointsUpdate = useCallback((amount) => {
         setPoints(prev => prev + amount);
@@ -97,8 +99,8 @@ function HomePage({ userData }) {
     const handleMineFor100 = () => {
         setIsMining(true);
         setIsButtonDisabled(true);
-        localStorage.setItem('isMining', 'true'); // Сохраняем состояние в localStorage
-        localStorage.setItem('isButtonDisabled', 'true'); // Сохраняем состояние в localStorage
+        localStorage.setItem('isMining', 'true');
+        localStorage.setItem('isButtonDisabled', 'true');
         const oneMinuteInSeconds = 60;
         setTimeRemaining(oneMinuteInSeconds);
         startTimer(oneMinuteInSeconds);
@@ -106,22 +108,21 @@ function HomePage({ userData }) {
 
     const startTimer = (duration) => {
         const endTime = Date.now() + duration * 1000;
-        localStorage.setItem('endTime', endTime.toString()); // Store as string
-        const interval = setInterval(() => {
+        localStorage.setItem('endTime', endTime.toString());
+        timerRef.current = setInterval(() => {  // Используем ref для setInterval
             const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
             setTimeRemaining(remainingTime);
-            if (remainingTime <= 0) { // Corrected condition
-                clearInterval(interval);
+            if (remainingTime <= 0) {
+                clearInterval(timerRef.current); // Используем ref для clearInterval
                 localStorage.removeItem('endTime');
                 setIsButtonDisabled(false);
                 setIsMining(false);
-                localStorage.setItem('isMining', 'false'); // Сохраняем состояние в localStorage
-                localStorage.setItem('isButtonDisabled', 'false'); // Сохраняем состояние в localStorage
-                setTimeRemaining(0);  // Reset timeRemaining
-                setTimerInterval(null);
+                localStorage.setItem('isMining', 'false');
+                localStorage.setItem('isButtonDisabled', 'false');
+                setTimeRemaining(0);
+                timerRef.current = null; // Reset the ref
             }
         }, 1000);
-        setTimerInterval(interval);
     };
 
     const handleClaimPoints = () => {
@@ -138,44 +139,51 @@ function HomePage({ userData }) {
                 setPoints(newPoints);
                 setIsMining(false);
                 setIsButtonDisabled(false);
-                localStorage.setItem('isMining', 'false'); // Сохраняем состояние в localStorage
-                localStorage.setItem('isButtonDisabled', 'false'); // Сохраняем состояние в localStorage
+                localStorage.setItem('isMining', 'false');
+                localStorage.setItem('isButtonDisabled', 'false');
             })
             .catch(error => {
                 console.error("Ошибка при обновлении очков:", error);
             });
     };
 
-     useEffect(() => {
+    useEffect(() => {
         // Загрузка таймера при инициализации HomePage
         const endTimeStr = localStorage.getItem('endTime');
         if (endTimeStr) {
             const endTime = parseInt(endTimeStr, 10);
-            if (!isNaN(endTime)) { // Проверка на корректность парсинга
-              const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-              setTimeRemaining(remaining);
-              setIsButtonDisabled(remaining > 0);
-              setIsMining(remaining > 0);
-              if (remaining > 0) {
-                startTimer(remaining);
-              } else {
+            if (!isNaN(endTime)) {
+                const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+                setTimeRemaining(remaining);
+                setIsButtonDisabled(remaining > 0);
+                setIsMining(remaining > 0);
+                if (remaining > 0) {
+                    startTimer(remaining);
+                } else {
+                    localStorage.removeItem('endTime');
+                    setIsButtonDisabled(false);
+                    setIsMining(false);
+                    localStorage.setItem('isMining', 'false');
+                    localStorage.setItem('isButtonDisabled', 'false');
+                    setTimeRemaining(0);
+                }
+            } else {
+                // Обработка ошибки, если endTime не является числом
                 localStorage.removeItem('endTime');
                 setIsButtonDisabled(false);
                 setIsMining(false);
                 localStorage.setItem('isMining', 'false');
                 localStorage.setItem('isButtonDisabled', 'false');
-                setTimeRemaining(0);  // Reset timeRemaining
-              }
-            } else {
-              // Обработка ошибки, если endTime не является числом
-              localStorage.removeItem('endTime');
-              setIsButtonDisabled(false);
-              setIsMining(false);
-              localStorage.setItem('isMining', 'false');
-              localStorage.setItem('isButtonDisabled', 'false');
-              setTimeRemaining(0);
+                setTimeRemaining(0);
             }
         }
+        // Clean up the interval on unmount or when dependencies change
+        return () => {
+            if (timerRef.current) {
+                clearInterval(timerRef.current);
+                timerRef.current = null; // Reset the ref
+            }
+        };
     }, []);
 
     const formatTime = (seconds) => {
