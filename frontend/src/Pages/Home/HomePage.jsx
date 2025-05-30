@@ -1,6 +1,6 @@
 import './Home.css';
 import Menu from '../../Most Used/Menu/Menu';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Timer from '../../Most Used/Image/Timer';
 import DayCheck from './Containers/Day/DayCheck';
 import BoosterContainer from './Containers/BoostersCon/BoosterContainer';
@@ -17,6 +17,10 @@ function HomePage({ userData }) {
     const [timerInterval, setTimerInterval] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+
+    const onPointsUpdate = useCallback((amount) => {
+        setPoints(prev => prev + amount);
+    }, []);
 
     useEffect(() => {
         console.log("HomePage: useEffect triggered");
@@ -109,7 +113,7 @@ function HomePage({ userData }) {
     };
 
     const handleClaimPoints = () => {
-        if (!userData) {
+        if (!userData || !userData.telegram_user_id) {
             console.warn("Нет данных пользователя для обновления очков.");
             return;
         }
@@ -117,7 +121,7 @@ function HomePage({ userData }) {
         const bonusPoints = 52.033;
         const newPoints = points + bonusPoints;
 
-        updatePointsInDatabase(userData.telegram_user_id, newPoints) // Pass telegramId
+        updatePointsInDatabase(userData.telegram_user_id, newPoints)
             .then(() => {
                 setPoints(newPoints);
                 setIsMining(false); // Заканчиваем майнинг после получения награды
@@ -142,7 +146,7 @@ function HomePage({ userData }) {
     return (
         <section className='bodyhomepage'>
             <span className='points-count'>{points.toFixed(4)}</span>
-            <DayCheck onPointsUpdate={(amount) => setPoints(prev => prev + amount)} />
+            <DayCheck onPointsUpdate={onPointsUpdate} userData={userData} />
             <Game />
             <BoosterContainer />
             <FriendsConnt />

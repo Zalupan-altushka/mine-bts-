@@ -72,7 +72,7 @@ function DayCheck({ onPointsUpdate, userData }) { // Получаем userData �
 };
 
   const handleGetButtonClick = async () => {
-    if (!userData) {
+    if (!userData || !userData.telegram_user_id) {
       console.warn("Нет данных пользователя для обновления очков.");
       return;
     }
@@ -89,9 +89,10 @@ function DayCheck({ onPointsUpdate, userData }) { // Получаем userData �
 
     // Обновляем очки в базе данных
     try {
-      const newPoints = 30.033;
-      await updatePointsInDatabase(userData.telegram_user_id, newPoints + userData.points);
-      onPointsUpdate(30.033); // Обновляем очки в HomePage
+      const bonusPoints = 30.033;
+      const newPoints = bonusPoints + userData.points;
+      await updatePointsInDatabase(userData.telegram_user_id, newPoints);
+      onPointsUpdate(bonusPoints); // Обновляем очки в HomePage
     } catch (error) {
       console.error("Ошибка при обновлении очков в базе данных:", error);
       // Обработка ошибки, например, показ уведомления пользователю
