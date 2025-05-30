@@ -22,7 +22,15 @@ function HomePage({ userData }) {
         const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled');
         return storedIsButtonDisabled === 'true' ? true : false;
     });
-    const [timeRemaining, setTimeRemaining] = useState(0);
+    const [timeRemaining, setTimeRemaining] = useState(() => {
+        const endTimeStr = localStorage.getItem('endTime');
+        if (endTimeStr) {
+            const endTime = parseInt(endTimeStr, 10);
+            const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+            return remaining;
+        }
+        return 0;
+    });
     const [timerInterval, setTimerInterval] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
@@ -98,17 +106,18 @@ function HomePage({ userData }) {
 
     const startTimer = (duration) => {
         const endTime = Date.now() + duration * 1000;
-        localStorage.setItem('endTime', endTime);
+        localStorage.setItem('endTime', endTime.toString()); // Store as string
         const interval = setInterval(() => {
             const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
             setTimeRemaining(remainingTime);
-            if (remainingTime === 0) {
+            if (remainingTime <= 0) { // Corrected condition
                 clearInterval(interval);
                 localStorage.removeItem('endTime');
                 setIsButtonDisabled(false);
                 setIsMining(false);
                 localStorage.setItem('isMining', 'false'); // Сохраняем состояние в localStorage
                 localStorage.setItem('isButtonDisabled', 'false'); // Сохраняем состояние в localStorage
+                setTimeRemaining(0);  // Reset timeRemaining
                 setTimerInterval(null);
             }
         }, 1000);
@@ -137,15 +146,35 @@ function HomePage({ userData }) {
             });
     };
 
-    useEffect(() => {
+     useEffect(() => {
         // Загрузка таймера при инициализации HomePage
         const endTimeStr = localStorage.getItem('endTime');
         if (endTimeStr) {
             const endTime = parseInt(endTimeStr, 10);
-            const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-            setTimeRemaining(remaining);
-            setIsButtonDisabled(remaining > 0);
-            setIsMining(remaining > 0);
+            if (!isNaN(endTime)) { // Проверка на корректность парсинга
+              const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+              setTimeRemaining(remaining);
+              setIsButtonDisabled(remaining > 0);
+              setIsMining(remaining > 0);
+              if (remaining > 0) {
+                startTimer(remaining);
+              } else {
+                localStorage.removeItem('endTime');
+                setIsButtonDisabled(false);
+                setIsMining(false);
+                localStorage.setItem('isMining', 'false');
+                localStorage.setItem('isButtonDisabled', 'false');
+                setTimeRemaining(0);  // Reset timeRemaining
+              }
+            } else {
+              // Обработка ошибки, если endTime не является числом
+              localStorage.removeItem('endTime');
+              setIsButtonDisabled(false);
+              setIsMining(false);
+              localStorage.setItem('isMining', 'false');
+              localStorage.setItem('isButtonDisabled', 'false');
+              setTimeRemaining(0);
+            }
         }
     }, []);
 
