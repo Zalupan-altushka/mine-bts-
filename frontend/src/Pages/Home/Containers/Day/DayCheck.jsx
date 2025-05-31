@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './DayCheck.css';
-import Moom from '../../Most Used/Image/Moom';
-import CheckIcon from '../../Most Used/Image/CheckIcon';
+import CheckIcon from '../../../../Most Used/Image/CheckIcon';
+import Moom from '../../../../Most Used/Image/Moom';
 
 function DayCheck({ onPointsUpdate, updatePointsInDatabase, userData }) {
   
@@ -65,7 +65,7 @@ function DayCheck({ onPointsUpdate, updatePointsInDatabase, userData }) {
         const minutes = Math.floor((time / (1000 * 60)) % 60);
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
     };
-    
+
     return (
         <div className='container-check-day'>
             <div className='left-section-gif'>
