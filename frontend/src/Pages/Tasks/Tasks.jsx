@@ -5,9 +5,7 @@ import Menu from '../../Most Used/Menu/Menu';
 function Tasks() {
  
   return (
-      <section className='bodytaskspage'>
-        <div className='margin-div-tasks'></div>
-        
+      <section className='bodytaskspage'>        
         <Menu />
       </section>
   );

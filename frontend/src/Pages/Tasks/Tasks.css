@@ -20,47 +20,20 @@ html, .bodytaskspage {
 
 .bodytaskspage {
   margin: 0;
-  height: 100vh;
+  padding: 0;
+  flex: 1;
+  min-height: 100vh;
   width: 100vw;
   background-image: url('../../Most Used/Image/333.jpg');
   background-size: cover;
   background-position: center;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   flex-direction: column;
+  box-sizing: border-box; /* Важно, чтобы padding не увеличивал общую высоту */
 }
 
 .no-scroll {
   overflow: hidden;
-}
-
-.button-container-tasks {
-  font-family: var(--font-family);
-  border-radius: 25px;
-  background-color: #0f0f0f;
-  margin-top: 80px;
-  display: flex; 
-}
-.button-container-tasks button {
-  font-size: 14px;
-  width: 120px;
-  height: 40px;
-  flex: 1; 
-  border: none; 
-  padding: 10px; 
-  cursor: pointer; 
-  background-color: #0f0f0f; 
-  color: var(--text-color); 
-  transition: background-color 0.3s ease, color 0.3s ease; 
-}
-
-.button-container-tasks button.active {
-  background-color: var(--green-color); 
-  color: var(--background-color); 
-}
-
-.button-container-tasks button:not(.active) {
-  background-color: #0f0f0f; 
-  color: var(--text-color); 
 }
