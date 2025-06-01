@@ -1,6 +1,6 @@
 import './Home.css';
 import Menu from '../../Most Used/Menu/Menu';
-import { useState, useEffect } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Timer from '../../Most Used/Image/Timer';
 import DayCheck from './Containers/Day/DayCheck';
 import BoosterContainer from './Containers/BoostersCon/BoosterContainer';
