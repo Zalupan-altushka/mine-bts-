@@ -43,7 +43,7 @@ function DayCheck({ updatePointsInDatabase, userData }) {
         }
 
         setIsButtonDisabled(true);
-        const oneMinuteInMilliseconds = 60 * 1000; // Изменил на 1 минуту
+        const oneMinuteInMilliseconds = 60 * 1000;
         const nextClaimTime = Date.now() + oneMinuteInMilliseconds;
         localStorage.setItem('nextClaimTime', nextClaimTime);
         setTimeLeft(oneMinuteInMilliseconds);
