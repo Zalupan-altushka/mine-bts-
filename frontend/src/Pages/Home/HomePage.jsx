@@ -1,11 +1,12 @@
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import './Home.css';
 import Menu from '../../Most Used/Menu/Menu';
-import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Timer from '../../Most Used/Image/Timer';
 import DayCheck from './Containers/Day/DayCheck';
-import BoosterContainer from './Containers/BoostersCon/BoosterContainer';
-import FriendsConnt from './Containers/FriendsCon/FriendsConnt';
-import Game from './Containers/MiniGame/Game';
+import BoosterContainer from '../../Most Used/BoostersCon/BoosterContainer';
+import FriendsConnt from '../../Most Used/FriendsCon/FriendsConnt';
+import Game from '../../Most Used/MiniGame/Game';
 
 const tg = window.Telegram.WebApp;
 
@@ -75,7 +76,7 @@ function HomePage() {
                 console.log('HomePage: User data fetched successfully:', data.userData);
                 setUserData(data.userData);
                 setPoints(data.userData.points || 0);
-                localStorage.setItem('points', data.userData.points || 0);
+                localStorage.setItem('points', (data.userData.points || 0).toString()); // Сохраняем points как строку
                 setInitialLoadComplete(true);
             } else {
                 console.warn('HomePage: User data is missing in response');
@@ -130,10 +131,10 @@ function HomePage() {
     const handleMineFor100 = () => {
         setIsMining(true);
         setIsButtonDisabled(true);
-        setIsClaimButton(false); // Кнопка Claim теперь недоступна
+        setIsClaimButton(false);
         localStorage.setItem('isMining', 'true');
         localStorage.setItem('isButtonDisabled', 'true');
-        localStorage.setItem('isClaimButton', 'false'); // Сохраняем состояние Claim Button
+        localStorage.setItem('isClaimButton', 'false');
         const oneMinuteInSeconds = 60;
         setTimeRemaining(oneMinuteInSeconds);
         startTimer(oneMinuteInSeconds);
@@ -152,10 +153,10 @@ function HomePage() {
                 localStorage.removeItem('endTime');
                 setIsButtonDisabled(false);
                 setIsMining(false);
-                setIsClaimButton(true); // Кнопка Claim теперь доступна
+                setIsClaimButton(true);
                 localStorage.setItem('isMining', 'false');
                 localStorage.setItem('isButtonDisabled', 'false');
-                localStorage.setItem('isClaimButton', 'true'); // Сохраняем состояние Claim Button
+                localStorage.setItem('isClaimButton', 'true');
                 setTimeRemaining(0);
                 setTimerInterval(null);
             }
@@ -173,10 +174,10 @@ function HomePage() {
 
                 setIsMining(false);
                 setIsButtonDisabled(false);
-                setIsClaimButton(false); // Кнопка Claim теперь недоступна после клейма
+                setIsClaimButton(false);
                 localStorage.setItem('isMining', 'false');
                 localStorage.setItem('isButtonDisabled', 'false');
-                localStorage.setItem('isClaimButton', 'false'); // Сохраняем состояние Claim Button
+                localStorage.setItem('isClaimButton', 'false');
             })
             .catch((error) => {
                 console.error('Ошибка при обновлении очков:', error);
@@ -192,7 +193,7 @@ function HomePage() {
                 setTimeRemaining(remaining);
                 setIsButtonDisabled(remaining > 0);
                 setIsMining(remaining > 0);
-                setIsClaimButton(remaining <= 0); // Правильно инициализируем isClaimButton
+                setIsClaimButton(remaining <= 0);
 
                 if (remaining > 0) {
                     startTimer(remaining);
@@ -240,7 +241,7 @@ function HomePage() {
             <button
                 className='FarmButton'
                 onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
-                disabled={isButtonDisabled} // Теперь используем только isButtonDisabled
+                disabled={isButtonDisabled}
                 style={{
                     backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
                     color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
@@ -249,7 +250,7 @@ function HomePage() {
                     justifyContent: 'center',
                 }}
             >
-                {isButtonDisabled && !isClaimButton && <Timer style={{ marginRight: '8px' }} />}
+                {isButtonDisabled && isMining && <Timer style={{ marginRight: '8px' }} />}
                 {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
             </button>
             <Menu />
