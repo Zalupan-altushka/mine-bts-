@@ -4,9 +4,9 @@ import './Home.css';
 import Menu from '../../Most Used/Menu/Menu';
 import Timer from '../../Most Used/Image/Timer';
 import DayCheck from './Containers/Day/DayCheck';
-import BoosterContainer from '../../Most Used/BoostersCon/BoosterContainer';
-import FriendsConnt from '../../Most Used/FriendsCon/FriendsConnt';
-import Game from '../../Most Used/MiniGame/Game';
+import BoosterContainer from './Containers/BoostersCon/BoosterContainer';
+import FriendsConnt from './Containers/FriendsCon/FriendsConnt';
+import Game from './Containers/MiniGame/Game';
 
 const tg = window.Telegram.WebApp;
 

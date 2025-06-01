@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import './DayCheck.css';
-import Moom from '../../Most Used/Image/Moom';
-import CheckIcon from '../../Most Used/Image/CheckIcon';
+import Moom from '../../../../Most Used/Image/Moom';
+import CheckIcon from '../../../../Most Used/Image/CheckIcon';
+
 
 function DayCheck({ onPointsUpdate, updatePointsInDatabase, userData }) {
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
