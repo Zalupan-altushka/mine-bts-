@@ -10,96 +10,177 @@ import Game from './Containers/MiniGame/Game';
 const tg = window.Telegram.WebApp;
 
 function HomePage() {
-  // Удалена переменная userId
-  const [points, setPoints] = useState(() => {
-    const savedPoints = localStorage.getItem('points');
-    return savedPoints ? parseFloat(savedPoints) : 0.033;
-  });
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState(0);
-  const [isClaimButton, setIsClaimButton] = useState(true);
-  const [timerInterval, setTimerInterval] = useState(null);
+    const [points, setPoints] = useState(0);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [timeRemaining, setTimeRemaining] = useState(0);
+    const [isClaimButton, setIsClaimButton] = useState(true);
+    const [timerInterval, setTimerInterval] = useState(null);
+    const [userData, setUserData] = useState(null); // Добавлено состояние для хранения userData
 
-  // Загрузка таймера
-  useEffect(() => {
-    const endTimeStr = localStorage.getItem('endTime');
-    if (endTimeStr) {
-      const endTime = parseInt(endTimeStr, 10);
-      const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-      setTimeRemaining(remaining);
-      setIsButtonDisabled(remaining > 0);
-      setIsClaimButton(remaining <= 0);
-      if (remaining > 0) {
-        startTimer(remaining);
-      } else {
-        localStorage.removeItem('endTime');
-      }
-    }
-  }, []);
+    useEffect(() => {
+        // Получаем userId из Telegram WebApp
+        const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+        if (userId) {
+            // Загружаем данные пользователя
+            fetchUserData(userId);
+        } else {
+            console.warn("User ID not found in Telegram WebApp");
+        }
 
-  const startTimer = (duration) => {
-    const endTime = Date.now() + duration * 1000;
-    localStorage.setItem('endTime', endTime);
-    const interval = setInterval(() => {
-      const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-      setTimeRemaining(remainingTime);
-      if (remainingTime === 0) {
-        clearInterval(interval);
-        localStorage.removeItem('endTime');
-        setIsButtonDisabled(false);
-        setIsClaimButton(true);
-      }
-    }, 1000);
-    setTimerInterval(interval);
-  };
+        // Загрузка таймера
+        const endTimeStr = localStorage.getItem('endTime');
+        if (endTimeStr) {
+            const endTime = parseInt(endTimeStr, 10);
+            const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+            setTimeRemaining(remaining);
+            setIsButtonDisabled(remaining > 0);
+            setIsClaimButton(remaining <= 0);
+            if (remaining > 0) {
+                startTimer(remaining);
+            } else {
+                localStorage.removeItem('endTime');
+            }
+        }
+    }, []);
 
-  const handleMineFor100 = () => {
-    setIsButtonDisabled(true);
-    const sixHoursInSeconds = 6 * 60 * 60;
-    setTimeRemaining(sixHoursInSeconds);
-    startTimer(sixHoursInSeconds);
-  };
+    const fetchUserData = async (userId) => {
+        const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth';
+        try {
+            const response = await fetch(AUTH_FUNCTION_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ initData: window.Telegram?.WebApp?.initData }),
+            });
 
-  const handleClaimPoints = () => {
-    const bonusPoints = 52.033;
-    const newPoints = points + bonusPoints;
-    setPoints(newPoints);
-    localStorage.setItem('points', newPoints);
-    setIsClaimButton(false);
-  };
-  
-  const formatTime = (seconds) => {
-    const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
-    const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
-    const s = String(seconds % 60).padStart(2, '0');
-    return `${h}:${m}:${s}`;
-  };
+            if (!response.ok) {
+                console.error("Ошибка при получении данных пользователя:", response.status);
+                return;
+            }
 
-  return (
-    <section className='bodyhomepage'>
-      <span className='points-count'>{points.toFixed(4)}</span>
-        <DayCheck onPointsUpdate={(amount) => setPoints(prev => prev + amount)} />
-        <Game />
-        <BoosterContainer />
-        <FriendsConnt />
-          <button
-            className='FarmButton'
-            onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
-            disabled={isButtonDisabled && !isClaimButton}
-            style={{
-              backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
-              color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            {isButtonDisabled && !isClaimButton && <Timer style={{ marginRight: '8px' }} />}
-            {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
-          </button>
-      <Menu />
-    </section>
-  );
+            const data = await response.json();
+            if (data.isValid && data.userData) {
+                setUserData(data.userData); // Сохраняем данные пользователя
+                setPoints(data.userData.points || 0); // Устанавливаем начальное значение очков
+                localStorage.setItem('points', (data.userData.points || 0).toString());
+            } else {
+                console.warn("Не удалось получить данные пользователя");
+            }
+        } catch (error) {
+            console.error("Ошибка при запросе данных пользователя:", error);
+        }
+    };
+
+    const startTimer = (duration) => {
+        const endTime = Date.now() + duration * 1000;
+        localStorage.setItem('endTime', endTime);
+        const interval = setInterval(() => {
+            const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+            setTimeRemaining(remainingTime);
+            if (remainingTime === 0) {
+                clearInterval(interval);
+                localStorage.removeItem('endTime');
+                setIsButtonDisabled(false);
+                setIsClaimButton(true);
+            }
+        }, 1000);
+        setTimerInterval(interval);
+    };
+
+    const handleMineFor100 = () => {
+        setIsButtonDisabled(true);
+        const sixHoursInSeconds = 6 * 60 * 60;
+        setTimeRemaining(sixHoursInSeconds);
+        startTimer(sixHoursInSeconds);
+    };
+
+    const updatePointsInDatabase = async (newPoints) => {
+        const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
+        const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+
+        if (!userId) {
+            console.warn("User ID not found, cannot update points.");
+            return;
+        }
+
+        try {
+            const response = await fetch(UPDATE_POINTS_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    telegramId: userId,
+                    points: newPoints,
+                }),
+            });
+
+            if (!response.ok) {
+                console.error("HTTP error при обновлении очков:", response.status, response.statusText);
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            if (!data.success) {
+                console.error("Ошибка от Netlify Function:", data.error);
+                throw new Error(`Failed to update points in database: ${data.error}`);
+            }
+
+            console.log("Очки успешно обновлены в базе данных!");
+            // Обновляем состояние и localStorage только после успешного обновления в БД
+            setPoints(newPoints);
+            localStorage.setItem('points', newPoints.toString());
+        } catch (error) {
+            console.error("Ошибка при обновлении очков:", error);
+        }
+    };
+
+    const handleClaimPoints = async () => {
+        const bonusPoints = 52.033;
+        const newPoints = points + bonusPoints;
+
+        // Отправляем очки в базу данных
+        await updatePointsInDatabase(newPoints);
+
+        // Обновляем состояние и localStorage
+        setPoints(newPoints);
+        localStorage.setItem('points', newPoints.toString());
+        setIsClaimButton(false);
+    };
+
+    const formatTime = (seconds) => {
+        const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
+        const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+        const s = String(seconds % 60).padStart(2, '0');
+        return `${h}:${m}:${s}`;
+    };
+
+    return (
+        <section className='bodyhomepage'>
+            <span className='points-count'>{points.toFixed(4)}</span>
+            <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
+            <Game />
+            <BoosterContainer />
+            <FriendsConnt />
+            <button
+                className='FarmButton'
+                onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
+                disabled={isButtonDisabled && !isClaimButton}
+                style={{
+                    backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
+                    color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}
+            >
+                {isButtonDisabled && !isClaimButton && <Timer style={{ marginRight: '8px' }} />}
+                {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
+            </button>
+            <Menu />
+        </section>
+    );
 }
 
 export default HomePage;
