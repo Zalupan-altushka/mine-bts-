@@ -90,9 +90,9 @@ function HomePage() {
 
     const handleMineFor100 = () => {
         setIsButtonDisabled(true);
-        const sixHoursInSeconds = 6 * 60 * 60;
-        setTimeRemaining(sixHoursInSeconds);
-        startTimer(sixHoursInSeconds);
+        const oneMinuteInSeconds =  60; //Таймер изменен на 1 минуту
+        setTimeRemaining(oneMinuteInSeconds);
+        startTimer(oneMinuteInSeconds);
     };
 
     const updatePointsInDatabase = async (newPoints) => {
