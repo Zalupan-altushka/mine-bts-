@@ -15,12 +15,28 @@ function HomePage() {
         const storedIsMining = localStorage.getItem('isMining');
         return storedIsMining === 'true' ? true : false;
     });
-    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-    const [timeRemaining, setTimeRemaining] = useState(0);
-    const [isClaimButton, setIsClaimButton] = useState(true);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(() => {
+        const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled');
+        return storedIsButtonDisabled === 'true' ? true : false;
+    });
+    const [timeRemaining, setTimeRemaining] = useState(() => {
+        const endTimeStr = localStorage.getItem('endTime');
+        if (endTimeStr) {
+            const endTime = parseInt(endTimeStr, 10);
+            if (!isNaN(endTime)) {
+                const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+                return remaining;
+            }
+        }
+        return 0;
+    });
+    const [isClaimButton, setIsClaimButton] = useState(() => {
+        const storedIsClaimButton = localStorage.getItem('isClaimButton');
+        return storedIsClaimButton === 'true' ? true : false;
+    });
     const [timerInterval, setTimerInterval] = useState(null);
     const [userData, setUserData] = useState(null);
-    // Убрали isLoading
+    const timerRef = useRef(null);
 
     const onPointsUpdate = useCallback((amount) => {
         setPoints(prev => prev + amount);
@@ -34,7 +50,7 @@ function HomePage() {
             fetchUserData(userId);
         } else {
             console.warn("User ID not found in Telegram WebApp");
-            //setIsLoading(false); // Убрали setIsloading
+            //setIsLoading(false);
         }
     }, []);
 
@@ -51,22 +67,19 @@ function HomePage() {
 
             if (!response.ok) {
                 console.error("Ошибка при получении данных пользователя:", response.status);
-                //setIsLoading(false); //  При ошибке также убираем loader
                 return;
             }
 
             const data = await response.json();
             if (data.isValid && data.userData) {
-                setUserData(data.userData); // Сохраняем данные пользователя
-                setPoints(data.userData.points || 0); // Устанавливаем начальное значение очков
-                localStorage.setItem('points', (data.userData.points || 0).toString());
+                setUserData(data.userData);
+                setPoints(Math.floor(data.userData.points || 0)); //  Округляем до целого числа
+                localStorage.setItem('points', Math.floor(data.userData.points || 0).toString()); //  Сохраняем округленным
             } else {
                 console.warn("Не удалось получить данные пользователя");
             }
         } catch (error) {
             console.error("Ошибка при запросе данных пользователя:", error);
-        } finally {
-            //setIsLoading(false); // Убираем loader в любом случае (успех или ошибка)
         }
     };
 
@@ -78,12 +91,13 @@ function HomePage() {
         timerRef.current = setInterval(() => {
             const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
             setTimeRemaining(remainingTime);
-            if (remainingTime === 0) {
+            if (remainingTime <= 0) {
                 clearInterval(timerRef.current);
                 localStorage.removeItem('endTime');
                 setIsButtonDisabled(false);
                 setIsMining(false);
                 setIsClaimButton(true);
+                localStorage.setItem('isButtonDisabled', 'false'); //обязательно это
             }
         }, 1000);
         setTimerInterval(interval);
@@ -96,7 +110,7 @@ function HomePage() {
         localStorage.setItem('isMining', 'true');
         localStorage.setItem('isButtonDisabled', 'true');
         localStorage.setItem('isClaimButton', 'false');
-        const oneMinuteInSeconds = 60; //Таймер изменен на 1 минуту
+        const oneMinuteInSeconds = 60;
         setTimeRemaining(oneMinuteInSeconds);
         startTimer(oneMinuteInSeconds);
     };
@@ -135,23 +149,23 @@ function HomePage() {
 
             console.log("Очки успешно обновлены в базе данных!");
             // Обновляем состояние и localStorage только после успешного обновления в БД
-            setPoints(newPoints);
-            localStorage.setItem('points', newPoints.toString());
+            setPoints(Math.floor(newPoints)); // Округляем
+            localStorage.setItem('points', Math.floor(newPoints).toString());// Округляем
         } catch (error) {
             console.error("Ошибка при обновлении очков:", error);
         }
     };
 
     const handleClaimPoints = async () => {
-        const bonusPoints = 100; // Изменено: 100 очков
-        const newPoints = parseFloat(points) + bonusPoints;
+        const bonusPoints = 100;
+        const newPoints = points + bonusPoints;
 
         // Отправляем очки в базу данных
         await updatePointsInDatabase(newPoints);
 
         // Обновляем состояние и localStorage
-        setPoints(newPoints);
-        localStorage.setItem('points', newPoints.toString());
+        setPoints(Math.floor(newPoints)); // Округляем
+        localStorage.setItem('points', Math.floor(newPoints).toString()); // Округляем
         setIsClaimButton(false);
     };
 
@@ -164,7 +178,7 @@ function HomePage() {
 
     return (
         <section className='bodyhomepage'>
-            <span className='points-count'>{points.toFixed(4)}</span>
+            <span className='points-count'>{points}</span> {/* Отображаем только целые числа */}
             <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
             <Game />
             <BoosterContainer />
