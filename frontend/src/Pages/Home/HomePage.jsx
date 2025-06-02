@@ -19,8 +19,8 @@ function HomePage() {
     const [timeRemaining, setTimeRemaining] = useState(0);
     const [isClaimButton, setIsClaimButton] = useState(true);
     const [timerInterval, setTimerInterval] = useState(null);
-    const [userData, setUserData] = useState(null); // Добавлено состояние для хранения userData
-    const [isLoading, setIsLoading] = useState(true); // Добавлено состояние для индикации загрузки
+    const [userData, setUserData] = useState(null);
+    // Убрали isLoading
 
     const onPointsUpdate = useCallback((amount) => {
         setPoints(prev => prev + amount);
@@ -34,7 +34,7 @@ function HomePage() {
             fetchUserData(userId);
         } else {
             console.warn("User ID not found in Telegram WebApp");
-            setIsLoading(false); // Устанавливаем isLoading в false, если userId не найден
+            //setIsLoading(false); // Убрали setIsloading
         }
     }, []);
 
@@ -51,7 +51,7 @@ function HomePage() {
 
             if (!response.ok) {
                 console.error("Ошибка при получении данных пользователя:", response.status);
-                setIsLoading(false); //  При ошибке также убираем loader
+                //setIsLoading(false); //  При ошибке также убираем loader
                 return;
             }
 
@@ -66,7 +66,7 @@ function HomePage() {
         } catch (error) {
             console.error("Ошибка при запросе данных пользователя:", error);
         } finally {
-            setIsLoading(false); // Убираем loader в любом случае (успех или ошибка)
+            //setIsLoading(false); // Убираем loader в любом случае (успех или ошибка)
         }
     };
 
@@ -96,7 +96,7 @@ function HomePage() {
         localStorage.setItem('isMining', 'true');
         localStorage.setItem('isButtonDisabled', 'true');
         localStorage.setItem('isClaimButton', 'false');
-        const oneMinuteInSeconds = 60; //Таймер изменен на 1 минуту
+        const oneMinuteInSeconds = 60;
         setTimeRemaining(oneMinuteInSeconds);
         startTimer(oneMinuteInSeconds);
     };
@@ -161,10 +161,6 @@ function HomePage() {
         const s = String(seconds % 60).padStart(2, '0');
         return `${h}:${m}:${s}`;
     };
-
-    if (isLoading) {
-        return <p>Loading...</p>; // Отображаем индикатор загрузки, пока данные загружаются
-    }
 
     return (
         <section className='bodyhomepage'>
