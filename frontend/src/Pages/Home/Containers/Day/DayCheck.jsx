@@ -11,6 +11,8 @@ function DayCheck({ updatePointsInDatabase, userData }) {
     });
 
     useEffect(() => {
+        if (!userData) return; //  Добавлена проверка userData
+
         const storedTime = localStorage.getItem('nextClaimTime');
         if (storedTime) {
             const remainingTime = parseInt(storedTime, 10) - Date.now();
@@ -69,6 +71,7 @@ function DayCheck({ updatePointsInDatabase, userData }) {
     };
 
     return (
+        userData &&  //  Добавлена проверка userData
         <div className='container-check-day'>
             <div className='left-section-gif'>
                 <Moom />
