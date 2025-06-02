@@ -54,9 +54,9 @@ function DayCheck({ updatePointsInDatabase, userData }) {
         localStorage.setItem('lastClaimTime', Date.now().toString());
 
         try {
-            const bonusPoints = 30.033;
+            const bonusPoints = 30; // Изменено: 30 очков
             const newPoints = (userData.points || 0) + bonusPoints;
-            await updatePointsInDatabase(newPoints);  // Correctly call updatePointsInDatabase
+            await updatePointsInDatabase(newPoints);
         } catch (error) {
             console.error("Ошибка при обновлении очков в базе данных:", error);
         }

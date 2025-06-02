@@ -96,7 +96,7 @@ function HomePage() {
         localStorage.setItem('isMining', 'true');
         localStorage.setItem('isButtonDisabled', 'true');
         localStorage.setItem('isClaimButton', 'false');
-        const oneMinuteInSeconds = 60;
+        const oneMinuteInSeconds = 60; //Таймер изменен на 1 минуту
         setTimeRemaining(oneMinuteInSeconds);
         startTimer(oneMinuteInSeconds);
     };
@@ -143,8 +143,8 @@ function HomePage() {
     };
 
     const handleClaimPoints = async () => {
-        const bonusPoints = 52.033;
-        const newPoints = points + bonusPoints;
+        const bonusPoints = 100; // Изменено: 100 очков
+        const newPoints = parseFloat(points) + bonusPoints;
 
         // Отправляем очки в базу данных
         await updatePointsInDatabase(newPoints);
