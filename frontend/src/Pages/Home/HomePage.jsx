@@ -1,45 +1,40 @@
+import React, { useEffect, useState, useCallback } from 'react';
 import './Home.css';
 import Menu from '../../Most Used/Menu/Menu';
-import { useState, useEffect } from 'react';
 import Timer from '../../Most Used/Image/Timer';
 import DayCheck from './Containers/Day/DayCheck';
-import BoosterContainer from './Containers/BoostersCon/BoosterContainer';
-import FriendsConnt from './Containers/FriendsCon/FriendsConnt';
+import BoosterContainer from '../../Most Used/BoostersCon/BoosterContainer';
+import FriendsConnt from '../../Most Used/FriendsCon/FriendsConnt';
 import Game from './Containers/MiniGame/Game';
 
 const tg = window.Telegram.WebApp;
 
 function HomePage() {
     const [points, setPoints] = useState(0);
+    const [isMining, setIsMining] = useState(() => {
+        const storedIsMining = localStorage.getItem('isMining');
+        return storedIsMining === 'true' ? true : false;
+    });
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [timeRemaining, setTimeRemaining] = useState(0);
     const [isClaimButton, setIsClaimButton] = useState(true);
     const [timerInterval, setTimerInterval] = useState(null);
     const [userData, setUserData] = useState(null); // Добавлено состояние для хранения userData
+    const [isLoading, setIsLoading] = useState(true); // Добавлено состояние для индикации загрузки
+
+    const onPointsUpdate = useCallback((amount) => {
+        setPoints(prev => prev + amount);
+    }, []);
 
     useEffect(() => {
-        // Получаем userId из Telegram WebApp
+        console.log('HomePage: useEffect triggered');
         const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
         if (userId) {
-            // Загружаем данные пользователя
+            console.log('HomePage: User ID from Telegram WebApp:', userId);
             fetchUserData(userId);
         } else {
             console.warn("User ID not found in Telegram WebApp");
-        }
-
-        // Загрузка таймера
-        const endTimeStr = localStorage.getItem('endTime');
-        if (endTimeStr) {
-            const endTime = parseInt(endTimeStr, 10);
-            const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-            setTimeRemaining(remaining);
-            setIsButtonDisabled(remaining > 0);
-            setIsClaimButton(remaining <= 0);
-            if (remaining > 0) {
-                startTimer(remaining);
-            } else {
-                localStorage.removeItem('endTime');
-            }
+            setIsLoading(false); // Устанавливаем isLoading в false, если userId не найден
         }
     }, []);
 
@@ -56,6 +51,7 @@ function HomePage() {
 
             if (!response.ok) {
                 console.error("Ошибка при получении данных пользователя:", response.status);
+                setIsLoading(false); //  При ошибке также убираем loader
                 return;
             }
 
@@ -69,19 +65,24 @@ function HomePage() {
             }
         } catch (error) {
             console.error("Ошибка при запросе данных пользователя:", error);
+        } finally {
+            setIsLoading(false); // Убираем loader в любом случае (успех или ошибка)
         }
     };
 
     const startTimer = (duration) => {
         const endTime = Date.now() + duration * 1000;
-        localStorage.setItem('endTime', endTime);
-        const interval = setInterval(() => {
+        localStorage.setItem('endTime', endTime.toString());
+        setIsButtonDisabled(true);
+        localStorage.setItem('isButtonDisabled', 'true');
+        timerRef.current = setInterval(() => {
             const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
             setTimeRemaining(remainingTime);
             if (remainingTime === 0) {
-                clearInterval(interval);
+                clearInterval(timerRef.current);
                 localStorage.removeItem('endTime');
                 setIsButtonDisabled(false);
+                setIsMining(false);
                 setIsClaimButton(true);
             }
         }, 1000);
@@ -89,10 +90,15 @@ function HomePage() {
     };
 
     const handleMineFor100 = () => {
+        setIsMining(true);
         setIsButtonDisabled(true);
-        const sixHoursInSeconds = 6 * 60 * 60;
-        setTimeRemaining(sixHoursInSeconds);
-        startTimer(sixHoursInSeconds);
+        setIsClaimButton(false);
+        localStorage.setItem('isMining', 'true');
+        localStorage.setItem('isButtonDisabled', 'true');
+        localStorage.setItem('isClaimButton', 'false');
+        const oneMinuteInSeconds = 60; //Таймер изменен на 1 минуту
+        setTimeRemaining(oneMinuteInSeconds);
+        startTimer(oneMinuteInSeconds);
     };
 
     const updatePointsInDatabase = async (newPoints) => {
@@ -156,6 +162,10 @@ function HomePage() {
         return `${h}:${m}:${s}`;
     };
 
+    if (isLoading) {
+        return <p>Loading...</p>; // Отображаем индикатор загрузки, пока данные загружаются
+    }
+
     return (
         <section className='bodyhomepage'>
             <span className='points-count'>{points.toFixed(4)}</span>
@@ -175,7 +185,7 @@ function HomePage() {
                     justifyContent: 'center',
                 }}
             >
-                {isButtonDisabled && !isClaimButton && <Timer style={{ marginRight: '8px' }} />}
+                {isButtonDisabled && isMining && <Timer style={{ marginRight: '8px' }} />}
                 {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
             </button>
             <Menu />
