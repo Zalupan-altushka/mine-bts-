@@ -11,7 +11,10 @@ function DayCheck({ updatePointsInDatabase, userData }) {
     });
 
     useEffect(() => {
-        if (!userData) return; //  Добавлена проверка userData
+        if (!userData) {
+            setIsButtonDisabled(true); //  Отключаем кнопку, если нет данных пользователя
+            return;
+        }
 
         const storedTime = localStorage.getItem('nextClaimTime');
         if (storedTime) {
@@ -35,6 +38,8 @@ function DayCheck({ updatePointsInDatabase, userData }) {
                 setIsButtonDisabled(false);
                 setTimeLeft(0);
             }
+        } else {
+          setIsButtonDisabled(false);
         }
     }, [userData]);
 
@@ -71,27 +76,28 @@ function DayCheck({ updatePointsInDatabase, userData }) {
     };
 
     return (
-        userData &&  //  Добавлена проверка userData
-        <div className='container-check-day'>
-            <div className='left-section-gif'>
-                <Moom />
+        userData && ( //  Отображаем, если userData есть
+            <div className='container-check-day'>
+                <div className='left-section-gif'>
+                    <Moom />
+                </div>
+                <div className='mid-section-textabout'>
+                    <span className='first-span'>{dayCheckCount} day-check</span>
+                    <span className='second-span'>
+                        {isButtonDisabled ? `Next claim in ${formatTimeLeft(timeLeft)}` : 'Claim available!'}
+                    </span>
+                </div>
+                <div className='right-section-button'>
+                    <button
+                        className={`Get-button ${isButtonDisabled ? 'disabled' : ''}`}
+                        onClick={handleGetButtonClick}
+                        disabled={isButtonDisabled}
+                    >
+                        {isButtonDisabled ? <CheckIcon /> : 'Get'}
+                    </button>
+                </div>
             </div>
-            <div className='mid-section-textabout'>
-                <span className='first-span'>{dayCheckCount} day-check</span>
-                <span className='second-span'>
-                    {isButtonDisabled ? `Next claim in ${formatTimeLeft(timeLeft)}` : 'Claim available!'}
-                </span>
-            </div>
-            <div className='right-section-button'>
-                <button
-                    className={`Get-button ${isButtonDisabled ? 'disabled' : ''}`}
-                    onClick={handleGetButtonClick}
-                    disabled={isButtonDisabled}
-                >
-                    {isButtonDisabled ? <CheckIcon /> : 'Get'}
-                </button>
-            </div>
-        </div>
+        )
     );
 }
 
