@@ -12,7 +12,7 @@ function DayCheck({ updatePointsInDatabase, userData }) {
 
     useEffect(() => {
         if (!userData) {
-            setIsButtonDisabled(true); // Отключаем кнопку, если нет данных пользователя
+            setIsButtonDisabled(true);
             return;
         }
 
@@ -48,13 +48,11 @@ function DayCheck({ updatePointsInDatabase, userData }) {
             console.warn("Нет данных пользователя для обновления очков.");
             return;
         }
-        console.log("handleGetButtonClick: userData", userData);
-        console.log("handleGetButtonClick: before updatePointsInDatabase, points:", userData.points);
 
         setIsButtonDisabled(true);
         const oneMinuteInMilliseconds = 60 * 1000;
         const nextClaimTime = Date.now() + oneMinuteInMilliseconds;
-        localStorage.setItem('nextClaimTime', nextClaimTime);
+        localStorage.setItem('nextClaimTime', nextClaimTime.toString());
         setTimeLeft(oneMinuteInMilliseconds);
 
         const newDayCheckCount = dayCheckCount + 1;
@@ -65,7 +63,6 @@ function DayCheck({ updatePointsInDatabase, userData }) {
         try {
             const bonusPoints = 30;
             const newPoints = (userData.points || 0) + bonusPoints;
-            console.log("handleGetButtonClick: newPoints to update:", newPoints);
             await updatePointsInDatabase(newPoints);
         } catch (error) {
             console.error("Ошибка при обновлении очков в базе данных:", error);
@@ -79,28 +76,26 @@ function DayCheck({ updatePointsInDatabase, userData }) {
     };
 
     return (
-        userData && (
-            <div className='container-check-day'>
-                <div className='left-section-gif'>
-                    <Moom />
-                </div>
-                <div className='mid-section-textabout'>
-                    <span className='first-span'>{dayCheckCount} day-check</span>
-                    <span className='second-span'>
-                        {isButtonDisabled ? `Next claim in ${formatTimeLeft(timeLeft)}` : 'Claim available!'}
-                    </span>
-                </div>
-                <div className='right-section-button'>
-                    <button
-                        className={`Get-button ${isButtonDisabled ? 'disabled' : ''}`}
-                        onClick={handleGetButtonClick}
-                        disabled={isButtonDisabled}
-                    >
-                        {isButtonDisabled ? <CheckIcon /> : 'Get'}
-                    </button>
-                </div>
+        <div className='container-check-day'>
+            <div className='left-section-gif'>
+                <Moom />
             </div>
-        )
+            <div className='mid-section-textabout'>
+                <span className='first-span'>{dayCheckCount} day-check</span>
+                <span className='second-span'>
+                    {isButtonDisabled ? `Next claim in ${formatTimeLeft(timeLeft)}` : 'Claim available!'}
+                </span>
+            </div>
+            <div className='right-section-button'>
+                <button
+                    className={`Get-button ${isButtonDisabled ? 'disabled' : ''}`}
+                    onClick={handleGetButtonClick}
+                    disabled={isButtonDisabled}
+                >
+                    {isButtonDisabled ? <CheckIcon /> : 'Get'}
+                </button>
+            </div>
+        </div>
     );
 }
 
