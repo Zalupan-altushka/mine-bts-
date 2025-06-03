@@ -14,27 +14,10 @@ function HomePage() {
         const storedPoints = localStorage.getItem('points');
         return storedPoints ? parseInt(storedPoints, 10) : 0;
     });
-    const [isMining, setIsMining] = useState(() => {
-        const storedIsMining = localStorage.getItem('isMining') === 'true';
-        return storedIsMining;
-    });
-    const [isButtonDisabled, setIsButtonDisabled] = useState(() => {
-        return localStorage.getItem('isButtonDisabled') === 'true';
-    });
-    const [timeRemaining, setTimeRemaining] = useState(() => {
-        const endTimeStr = localStorage.getItem('endTime');
-        if (endTimeStr) {
-            const endTime = parseInt(endTimeStr, 10);
-            if (!isNaN(endTime)) {
-                const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-                return remaining;
-            }
-        }
-        return 0;
-    });
-    const [isClaimButton, setIsClaimButton] = useState(() => {
-        return localStorage.getItem('isClaimButton') === 'true';
-    });
+    const [isMining, setIsMining] = useState(false);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [timeRemaining, setTimeRemaining] = useState(0);
+    const [isClaimButton, setIsClaimButton] = useState(true);
     const [timerInterval, setTimerInterval] = useState(null);
     const [userData, setUserData] = useState(null);
     const timerRef = useRef(null);
@@ -104,8 +87,12 @@ function HomePage() {
                 setTimeRemaining(storedTimeRemaining);
             }
         }
+       setTimeRemaining(storedTimeRemaining);
 
         if (storedTimeRemaining > 0 && storedIsButtonDisabled) {
+                if (timerRef.current) {
+                  clearInterval(timerRef.current)
+                }
                 const interval = setInterval(() => {
                     const remainingTime = Math.max(0, Math.floor((parseInt(localStorage.getItem('endTime'), 10) - Date.now()) / 1000));
                     setTimeRemaining(remainingTime);

@@ -4,7 +4,10 @@ import Moom from '../../../../Most Used/Image/Moom';
 import CheckIcon from '../../../../Most Used/Image/CheckIcon';
 
 function DayCheck({ updatePointsInDatabase, userData }) {
-    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(() => {
+        const storedTime = localStorage.getItem('nextClaimTime');
+        return storedTime ? parseInt(storedTime, 10) > Date.now() : false;
+    });
     const [timeLeft, setTimeLeft] = useState(0);
     const [dayCheckCount, setDayCheckCount] = useState(() => {
         return parseInt(localStorage.getItem('dayCheckCount') || '0', 10);
