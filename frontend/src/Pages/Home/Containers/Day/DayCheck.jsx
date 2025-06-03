@@ -12,7 +12,7 @@ function DayCheck({ updatePointsInDatabase, userData }) {
 
     useEffect(() => {
         if (!userData) {
-            setIsButtonDisabled(true); //  Отключаем кнопку, если нет данных пользователя
+            setIsButtonDisabled(true); // Отключаем кнопку, если нет данных пользователя
             return;
         }
 
@@ -39,7 +39,7 @@ function DayCheck({ updatePointsInDatabase, userData }) {
                 setTimeLeft(0);
             }
         } else {
-          setIsButtonDisabled(false);
+            setIsButtonDisabled(false);
         }
     }, [userData]);
 
@@ -48,6 +48,8 @@ function DayCheck({ updatePointsInDatabase, userData }) {
             console.warn("Нет данных пользователя для обновления очков.");
             return;
         }
+        console.log("handleGetButtonClick: userData", userData);
+        console.log("handleGetButtonClick: before updatePointsInDatabase, points:", userData.points);
 
         setIsButtonDisabled(true);
         const oneMinuteInMilliseconds = 60 * 1000;
@@ -63,6 +65,7 @@ function DayCheck({ updatePointsInDatabase, userData }) {
         try {
             const bonusPoints = 30;
             const newPoints = (userData.points || 0) + bonusPoints;
+            console.log("handleGetButtonClick: newPoints to update:", newPoints);
             await updatePointsInDatabase(newPoints);
         } catch (error) {
             console.error("Ошибка при обновлении очков в базе данных:", error);
@@ -76,7 +79,7 @@ function DayCheck({ updatePointsInDatabase, userData }) {
     };
 
     return (
-        userData && ( //  Отображаем, если userData есть
+        userData && (
             <div className='container-check-day'>
                 <div className='left-section-gif'>
                     <Moom />
