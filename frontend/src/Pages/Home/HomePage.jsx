@@ -19,6 +19,8 @@ function HomePage() {
     const [timeRemaining, setTimeRemaining] = useState(0);
     const [isClaimButton, setIsClaimButton] = useState(true);
     const timerRef = useRef(null);
+    const [userData, setUserData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true); // Добавлено состояние загрузки
 
     const handleClaimPoints = async () => {
         const bonusPoints = 100;
@@ -27,7 +29,7 @@ function HomePage() {
         setPoints(Math.floor(newPoints));
         localStorage.setItem('points', Math.floor(newPoints).toString());
         setIsClaimButton(false);
-        localStorage.setItem('isClaimButton', 'false'); // Обновляем localStorage
+        localStorage.setItem('isClaimButton', 'false');
     };
 
     const handleMineFor100 = () => {
@@ -41,7 +43,7 @@ function HomePage() {
     };
 
     const startTimer = (duration) => {
-        clearInterval(timerRef.current); // Clear any existing interval
+        clearInterval(timerRef.current);
         const endTime = Date.now() + duration * 1000;
         localStorage.setItem('endTime', endTime.toString());
 
@@ -136,32 +138,44 @@ function HomePage() {
         if (storedTimeRemaining > 0) {
             startTimer(storedTimeRemaining);
         }
-
+        setIsLoading(false); //Данные загружены
     }, []);
+
+    const renderContent = () => {
+        if (isLoading) {
+            return <p>Loading...</p>; // Или любой другой индикатор загрузки
+        }
+
+        return (
+            <>
+                <span className='points-count'>{points}</span>
+                <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
+                <Game />
+                <BoosterContainer />
+                <FriendsConnt />
+                <button
+                    className='FarmButton'
+                    onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
+                    disabled={isButtonDisabled}
+                    style={{
+                        backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
+                        color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    {isButtonDisabled && isMining && <Timer style={{ marginRight: '8px' }} />}
+                    {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
+                </button>
+                <Menu />
+            </>
+        );
+    };
 
     return (
         <section className='bodyhomepage'>
-            <span className='points-count'>{points}</span>
-            <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
-            <Game />
-            <BoosterContainer />
-            <FriendsConnt />
-            <button
-                className='FarmButton'
-                onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
-                disabled={isButtonDisabled}
-                style={{
-                    backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
-                    color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                }}
-            >
-                {isButtonDisabled && isMining && <Timer style={{ marginRight: '8px' }} />}
-                {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
-            </button>
-            <Menu />
+            {renderContent()}
         </section>
     );
 }
