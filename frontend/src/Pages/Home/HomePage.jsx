@@ -28,6 +28,7 @@ function HomePage() {
         setPoints(Math.floor(newPoints));
         localStorage.setItem('points', Math.floor(newPoints).toString());
         setIsClaimButton(false);
+        localStorage.setItem('isClaimButton', 'false');
     };
 
     const handleMineFor100 = () => {
@@ -38,7 +39,8 @@ function HomePage() {
         localStorage.setItem('isMining', 'true');
         setIsButtonDisabled(true);
         localStorage.setItem('isButtonDisabled', 'true');
-        setIsClaimButton(false); // Disable Claim button when mining
+        setIsClaimButton(false);
+        localStorage.setItem('isClaimButton', 'false');
     };
 
     const startTimer = (duration) => {
