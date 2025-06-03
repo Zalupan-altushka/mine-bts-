@@ -40,6 +40,26 @@ function HomePage() {
         setPoints(prev => prev + amount);
     }, []);
 
+    // Функция для отправки логов на сервер
+    const sendLogToServer = async (message) => {
+        const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
+        try {
+            const response = await fetch(UPDATE_POINTS_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ logMessage: message }), // Отправляем сообщение в теле запроса
+            });
+
+            if (!response.ok) {
+                console.error("Ошибка при отправке лога на сервер:", response.status);
+            }
+        } catch (error) {
+            console.error("Ошибка при отправке лога на сервер:", error);
+        }
+    };
+
     useEffect(() => {
         console.log('HomePage: useEffect triggered');
         const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
@@ -116,6 +136,7 @@ function HomePage() {
     };
 
     const handleMineFor100 = () => {
+        sendLogToServer("handleMineFor100 triggered");
         const oneMinuteInSeconds = 60;
         setTimeRemaining(oneMinuteInSeconds);
         startTimer(oneMinuteInSeconds);
@@ -135,8 +156,7 @@ function HomePage() {
             console.warn("User ID not found, cannot update points.");
             return;
         }
-
-        console.log("updatePointsInDatabase: telegramId", userId, "points:", newPoints);
+         sendLogToServer(`updatePointsInDatabase: telegramId ${userId}, points: ${newPoints}`);
         try {
             const response = await fetch(UPDATE_POINTS_URL, {
                 method: 'POST',

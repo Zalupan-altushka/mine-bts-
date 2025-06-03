@@ -9,7 +9,25 @@ function DayCheck({ updatePointsInDatabase, userData }) {
     const [dayCheckCount, setDayCheckCount] = useState(() => {
         return parseInt(localStorage.getItem('dayCheckCount') || '0', 10);
     });
+      // Функция для отправки логов на сервер
+      const sendLogToServer = async (message) => {
+        const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
+        try {
+            const response = await fetch(UPDATE_POINTS_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ logMessage: message }), // Отправляем сообщение в теле запроса
+            });
 
+            if (!response.ok) {
+                console.error("Ошибка при отправке лога на сервер:", response.status);
+            }
+        } catch (error) {
+            console.error("Ошибка при отправке лога на сервер:", error);
+        }
+    };
     useEffect(() => {
         if (!userData) {
             setIsButtonDisabled(true);
@@ -48,6 +66,9 @@ function DayCheck({ updatePointsInDatabase, userData }) {
             console.warn("Нет данных пользователя для обновления очков.");
             return;
         }
+        sendLogToServer(`handleGetButtonClick: userData ${JSON.stringify(userData)}`);
+        console.log("handleGetButtonClick: userData", userData);
+        console.log("handleGetButtonClick: before updatePointsInDatabase, points:", userData.points);
 
         setIsButtonDisabled(true);
         const oneMinuteInMilliseconds = 60 * 1000;
@@ -63,6 +84,7 @@ function DayCheck({ updatePointsInDatabase, userData }) {
         try {
             const bonusPoints = 30;
             const newPoints = (userData.points || 0) + bonusPoints;
+            sendLogToServer(`handleGetButtonClick: newPoints to update: ${newPoints}`);
             await updatePointsInDatabase(newPoints);
         } catch (error) {
             console.error("Ошибка при обновлении очков в базе данных:", error);
