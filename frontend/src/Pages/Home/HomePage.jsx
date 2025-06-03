@@ -18,22 +18,122 @@ function HomePage() {
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [timeRemaining, setTimeRemaining] = useState(0);
     const [isClaimButton, setIsClaimButton] = useState(true);
-    const [timerInterval, setTimerInterval] = useState(null);
     const [userData, setUserData] = useState(null);
     const timerRef = useRef(null);
 
-    const onPointsUpdate = useCallback((amount) => {
-        setPoints(prev => prev + amount);
+    const handleClaimPoints = async () => {
+        const bonusPoints = 100;
+        const newPoints = points + bonusPoints;
+        await updatePointsInDatabase(newPoints);
+        setPoints(Math.floor(newPoints));
+        localStorage.setItem('points', Math.floor(newPoints).toString());
+        setIsClaimButton(false);
+    };
+
+    const handleMineFor100 = () => {
+        const oneMinuteInSeconds = 60;
+        setTimeRemaining(oneMinuteInSeconds);
+        startTimer(oneMinuteInSeconds);
+        setIsMining(true);
+        localStorage.setItem('isMining', 'true');
+        setIsButtonDisabled(true);
+        localStorage.setItem('isButtonDisabled', 'true');
+        setIsClaimButton(false); // Disable Claim button when mining
+    };
+
+    const startTimer = (duration) => {
+        clearInterval(timerRef.current);
+        const endTime = Date.now() + duration * 1000;
+        localStorage.setItem('endTime', endTime.toString());
+
+        timerRef.current = setInterval(() => {
+            const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+            setTimeRemaining(remainingTime);
+            if (remainingTime <= 0) {
+                clearInterval(timerRef.current);
+                localStorage.removeItem('endTime');
+                localStorage.setItem('isButtonDisabled', 'false');
+                localStorage.setItem('isMining', 'false');
+                localStorage.setItem('isClaimButton', 'true');
+                setIsButtonDisabled(false);
+                setIsMining(false);
+                setIsClaimButton(true);
+                setTimeRemaining(0);
+            }
+        }, 1000);
+    };
+
+    const updatePointsInDatabase = async (newPoints) => {
+        const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
+        const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+
+        if (!userId) {
+            console.warn("User ID not found, cannot update points.");
+            return;
+        }
+
+        try {
+            const response = await fetch(UPDATE_POINTS_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    telegramId: userId,
+                    points: newPoints,
+                }),
+            });
+
+            if (!response.ok) {
+                console.error("HTTP error при обновлении очков:", response.status, response.statusText);
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            if (!data.success) {
+                console.error("Ошибка от Netlify Function:", data.error);
+                throw new Error(`Failed to update points in database: ${data.error}`);
+            }
+
+            setPoints(Math.floor(newPoints));
+            localStorage.setItem('points', Math.floor(newPoints).toString());
+        } catch (error) {
+            console.error("Ошибка при обновлении очков:", error);
+        }
+    };
+
+    const formatTime = (seconds) => {
+        const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
+        const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+        const s = String(seconds % 60).padStart(2, '0');
+        return `${h}:${m}:${s}`;
+    };
+
+    useEffect(() => {
+        // Загрузка начального состояния из localStorage
+        const storedIsMining = localStorage.getItem('isMining') === 'true';
+        const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
+        const storedIsClaimButton = localStorage.getItem('isClaimButton') === 'true';
+        const storedEndTime = localStorage.getItem('endTime');
+
+        setIsMining(storedIsMining);
+        setIsButtonDisabled(storedIsButtonDisabled);
+        setIsClaimButton(storedIsClaimButton);
+
+        if (storedEndTime && storedIsButtonDisabled) {
+            const endTime = parseInt(storedEndTime, 10);
+            const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+            setTimeRemaining(remainingTime);
+            if (remainingTime > 0) {
+                startTimer(remainingTime);
+            }
+        }
     }, []);
 
     useEffect(() => {
-        console.log('HomePage: useEffect triggered');
         const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
         if (userId) {
-            console.log('HomePage: User ID from Telegram WebApp:', userId);
             fetchUserData(userId);
-        } else {
-            console.warn("User ID not found in Telegram WebApp");
         }
     }, []);
 
@@ -58,157 +158,13 @@ function HomePage() {
                 setUserData(data.userData);
                 const initialPoints = Math.floor(data.userData.points || 0);
                 setPoints(initialPoints);
-                localStorage.setItem('points', initialPoints.toString()); //Сохраняем очки в LocalStorage
+                localStorage.setItem('points', initialPoints.toString());
             } else {
                 console.warn("Не удалось получить данные пользователя");
             }
         } catch (error) {
             console.error("Ошибка при запросе данных пользователя:", error);
         }
-    };
-
-    useEffect(() => {
-        //Загружаем состояние
-        const storedIsMining = localStorage.getItem('isMining') === 'true';
-        const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
-        const storedIsClaimButton = localStorage.getItem('isClaimButton') === 'true';
-
-        setIsMining(storedIsMining);
-        setIsButtonDisabled(storedIsButtonDisabled);
-        setIsClaimButton(storedIsClaimButton);
-
-        let storedTimeRemaining = 0;
-
-        const endTimeStr = localStorage.getItem('endTime');
-        if (endTimeStr) {
-            const endTime = parseInt(endTimeStr, 10);
-            if (!isNaN(endTime)) {
-                storedTimeRemaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-                setTimeRemaining(storedTimeRemaining);
-            }
-        }
-       setTimeRemaining(storedTimeRemaining);
-
-        if (storedTimeRemaining > 0 && storedIsButtonDisabled) {
-                if (timerRef.current) {
-                  clearInterval(timerRef.current)
-                }
-                const interval = setInterval(() => {
-                    const remainingTime = Math.max(0, Math.floor((parseInt(localStorage.getItem('endTime'), 10) - Date.now()) / 1000));
-                    setTimeRemaining(remainingTime);
-
-                    if (remainingTime <= 0) {
-                        clearInterval(interval);
-                        localStorage.removeItem('endTime');
-                        localStorage.setItem('isButtonDisabled', 'false');
-                        localStorage.setItem('isMining', 'false');
-                        localStorage.setItem('isClaimButton', 'true');
-                        setIsButtonDisabled(false);
-                        setIsMining(false);
-                        setIsClaimButton(true);
-                        setTimeRemaining(0);
-                    }
-                }, 1000);
-                timerRef.current = interval;
-        }
-    }, []);
-
-    const startTimer = (duration) => {
-        clearInterval(timerRef.current);
-        const endTime = Date.now() + duration * 1000;
-        console.log("startTimer: endTime", endTime);
-        localStorage.setItem('endTime', endTime.toString());
-        localStorage.setItem('isButtonDisabled', 'true');
-        setIsButtonDisabled(true);
-        setIsMining(true);
-
-        const interval = setInterval(() => {
-            const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-            console.log("startTimer: remainingTime", remainingTime);
-            setTimeRemaining(remainingTime);
-            if (remainingTime <= 0) {
-                clearInterval(interval);
-                localStorage.removeItem('endTime');
-                localStorage.setItem('isButtonDisabled', 'false');
-                localStorage.setItem('isMining', 'false');
-                localStorage.setItem('isClaimButton', 'true');
-
-                setIsButtonDisabled(false);
-                setIsMining(false);
-                setIsClaimButton(true);
-                setTimeRemaining(0); // Reset timeRemaining
-            }
-        }, 1000);
-        timerRef.current = interval;
-    };
-
-    const handleMineFor100 = () => {
-        const oneMinuteInSeconds = 60;
-        setTimeRemaining(oneMinuteInSeconds);
-        startTimer(oneMinuteInSeconds);
-        setIsMining(true);
-        localStorage.setItem('isMining', 'true');
-        localStorage.setItem('isButtonDisabled', 'true');
-        localStorage.setItem('isClaimButton', 'false');
-        setIsButtonDisabled(true);
-        setIsClaimButton(false);
-    };
-
-    const updatePointsInDatabase = async (newPoints) => {
-        const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
-        const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
-
-        if (!userId) {
-            console.warn("User ID not found, cannot update points.");
-            return;
-        }
-
-        console.log("updatePointsInDatabase: telegramId", userId, "points:", newPoints);
-        try {
-            const response = await fetch(UPDATE_POINTS_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    telegramId: userId,
-                    points: newPoints,
-                }),
-            });
-
-            if (!response.ok) {
-                console.error("HTTP error при обновлении очков:", response.status, response.statusText);
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            if (!data.success) {
-                console.error("Ошибка от Netlify Function:", data.error);
-                throw new Error(`Failed to update points in database: ${data.error}`);
-            }
-
-            console.log("Очки успешно обновлены в базе данных!");
-            setPoints(Math.floor(newPoints));
-            localStorage.setItem('points', Math.floor(newPoints).toString());
-        } catch (error) {
-            console.error("Ошибка при обновлении очков:", error);
-        }
-    };
-
-    const handleClaimPoints = async () => {
-        const bonusPoints = 100;
-        const newPoints = points + bonusPoints;
-        await updatePointsInDatabase(newPoints);
-        setPoints(Math.floor(newPoints));
-        localStorage.setItem('points', Math.floor(newPoints).toString());
-        setIsClaimButton(false);
-    };
-
-    const formatTime = (seconds) => {
-        const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
-        const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
-        const s = String(seconds % 60).padStart(2, '0');
-        return `${h}:${m}:${s}`;
     };
 
     return (
@@ -221,7 +177,7 @@ function HomePage() {
             <button
                 className='FarmButton'
                 onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
-                disabled={isButtonDisabled && !isClaimButton}
+                disabled={isButtonDisabled}
                 style={{
                     backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
                     color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
