@@ -10,7 +10,10 @@ import Game from './Containers/MiniGame/Game';
 const tg = window.Telegram.WebApp;
 
 function HomePage() {
-    const [points, setPoints] = useState(0);
+    const [points, setPoints] = useState(() => {
+        const storedPoints = localStorage.getItem('points');
+        return storedPoints ? parseInt(storedPoints, 10) : 0;
+    });
     const [isMining, setIsMining] = useState(() => {
         const storedIsMining = localStorage.getItem('isMining') === 'true';
         return storedIsMining;
@@ -39,26 +42,6 @@ function HomePage() {
     const onPointsUpdate = useCallback((amount) => {
         setPoints(prev => prev + amount);
     }, []);
-
-    // Функция для отправки логов на сервер
-    const sendLogToServer = async (message) => {
-        const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
-        try {
-            const response = await fetch(UPDATE_POINTS_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ logMessage: message }), // Отправляем сообщение в теле запроса
-            });
-
-            if (!response.ok) {
-                console.error("Ошибка при отправке лога на сервер:", response.status);
-            }
-        } catch (error) {
-            console.error("Ошибка при отправке лога на сервер:", error);
-        }
-    };
 
     useEffect(() => {
         console.log('HomePage: useEffect triggered');
@@ -90,8 +73,9 @@ function HomePage() {
             const data = await response.json();
             if (data.isValid && data.userData) {
                 setUserData(data.userData);
-                setPoints(Math.floor(data.userData.points || 0));
-                localStorage.setItem('points', Math.floor(data.userData.points || 0).toString());
+                const initialPoints = Math.floor(data.userData.points || 0);
+                setPoints(initialPoints);
+                localStorage.setItem('points', initialPoints.toString()); //Сохраняем очки в LocalStorage
             } else {
                 console.warn("Не удалось получить данные пользователя");
             }
@@ -101,10 +85,46 @@ function HomePage() {
     };
 
     useEffect(() => {
-        if (timeRemaining > 0) {
-            startTimer(timeRemaining);
+        //Загружаем состояние
+        const storedIsMining = localStorage.getItem('isMining') === 'true';
+        const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
+        const storedIsClaimButton = localStorage.getItem('isClaimButton') === 'true';
+
+        setIsMining(storedIsMining);
+        setIsButtonDisabled(storedIsButtonDisabled);
+        setIsClaimButton(storedIsClaimButton);
+
+        let storedTimeRemaining = 0;
+
+        const endTimeStr = localStorage.getItem('endTime');
+        if (endTimeStr) {
+            const endTime = parseInt(endTimeStr, 10);
+            if (!isNaN(endTime)) {
+                storedTimeRemaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+                setTimeRemaining(storedTimeRemaining);
+            }
         }
-    }, [timeRemaining]);
+
+        if (storedTimeRemaining > 0 && storedIsButtonDisabled) {
+                const interval = setInterval(() => {
+                    const remainingTime = Math.max(0, Math.floor((parseInt(localStorage.getItem('endTime'), 10) - Date.now()) / 1000));
+                    setTimeRemaining(remainingTime);
+
+                    if (remainingTime <= 0) {
+                        clearInterval(interval);
+                        localStorage.removeItem('endTime');
+                        localStorage.setItem('isButtonDisabled', 'false');
+                        localStorage.setItem('isMining', 'false');
+                        localStorage.setItem('isClaimButton', 'true');
+                        setIsButtonDisabled(false);
+                        setIsMining(false);
+                        setIsClaimButton(true);
+                        setTimeRemaining(0);
+                    }
+                }, 1000);
+                timerRef.current = interval;
+        }
+    }, []);
 
     const startTimer = (duration) => {
         clearInterval(timerRef.current);
@@ -136,7 +156,6 @@ function HomePage() {
     };
 
     const handleMineFor100 = () => {
-        sendLogToServer("handleMineFor100 triggered");
         const oneMinuteInSeconds = 60;
         setTimeRemaining(oneMinuteInSeconds);
         startTimer(oneMinuteInSeconds);
@@ -156,7 +175,8 @@ function HomePage() {
             console.warn("User ID not found, cannot update points.");
             return;
         }
-         sendLogToServer(`updatePointsInDatabase: telegramId ${userId}, points: ${newPoints}`);
+
+        console.log("updatePointsInDatabase: telegramId", userId, "points:", newPoints);
         try {
             const response = await fetch(UPDATE_POINTS_URL, {
                 method: 'POST',
