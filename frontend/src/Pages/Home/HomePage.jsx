@@ -10,11 +10,125 @@ import Game from './Containers/MiniGame/Game';
 const tg = window.Telegram.WebApp;
 
 function HomePage() {
-    const [points, setPoints] = useState(() => {
-        const storedPoints = localStorage.getItem('points');
-        return storedPoints ? parseInt(storedPoints, 10) : 0;
+    const [points, setPoints] = useState(0);
+    const [isMining, setIsMining] = useState(() => {
+        const storedIsMining = localStorage.getItem('isMining') === 'true';
+        return storedIsMining;
     });
+    const [isButtonDisabled, setIsButtonDisabled] = useState(() => {
+        return localStorage.getItem('isButtonDisabled') === 'true';
+    });
+    const [timeRemaining, setTimeRemaining] = useState(() => {
+        const endTimeStr = localStorage.getItem('endTime');
+        if (endTimeStr) {
+            const endTime = parseInt(endTimeStr, 10);
+            if (!isNaN(endTime)) {
+                const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+                return remaining;
+            }
+        }
+        return 0;
+    });
+    const [isClaimButton, setIsClaimButton] = useState(() => {
+        return localStorage.getItem('isClaimButton') === 'true';
+    });
+    const [timerInterval, setTimerInterval] = useState(null);
     const [userData, setUserData] = useState(null);
+    const timerRef = useRef(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const onPointsUpdate = useCallback((amount) => {
+        setPoints(prev => prev + amount);
+    }, []);
+
+    useEffect(() => {
+        console.log('HomePage: useEffect triggered');
+        const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+        if (userId) {
+            console.log('HomePage: User ID from Telegram WebApp:', userId);
+            fetchUserData(userId);
+        } else {
+            console.warn("User ID not found in Telegram WebApp");
+            setIsLoading(false);
+        }
+    }, []);
+
+    const fetchUserData = async (userId) => {
+        const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth';
+        try {
+            const response = await fetch(AUTH_FUNCTION_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ initData: window.Telegram?.WebApp?.initData }),
+            });
+
+            if (!response.ok) {
+                console.error("Ошибка при получении данных пользователя:", response.status);
+                return;
+            }
+
+            const data = await response.json();
+            if (data.isValid && data.userData) {
+                setUserData(data.userData);
+                setPoints(Math.floor(data.userData.points || 0));
+                localStorage.setItem('points', Math.floor(data.userData.points || 0).toString());
+            } else {
+                console.warn("Не удалось получить данные пользователя");
+            }
+        } catch (error) {
+            console.error("Ошибка при запросе данных пользователя:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => { // Добавили useEffect для обработки таймера при загрузке и обновлениях
+        if (timeRemaining > 0) {
+            startTimer(timeRemaining);
+        }
+    }, [timeRemaining]);
+
+    const startTimer = (duration) => {
+        clearInterval(timerRef.current); // Очищаем предыдущий интервал
+        const endTime = Date.now() + duration * 1000;
+        localStorage.setItem('endTime', endTime.toString());
+        localStorage.setItem('isButtonDisabled', 'true');
+        setIsButtonDisabled(true);
+        setIsMining(true);
+
+        const interval = setInterval(() => {
+            const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+            setTimeRemaining(remainingTime);
+            if (remainingTime <= 0) {
+                clearInterval(interval);
+                localStorage.removeItem('endTime');
+                localStorage.setItem('isButtonDisabled', 'false');
+                localStorage.setItem('isMining', 'false');
+                localStorage.setItem('isClaimButton', 'true');
+
+                setIsButtonDisabled(false);
+                setIsMining(false);
+                setIsClaimButton(true);
+                setTimeRemaining(0); // Reset timeRemaining
+            }
+        }, 1000);
+        timerRef.current = interval;
+    };
+
+    const handleMineFor100 = () => {
+        const oneMinuteInSeconds = 60;
+        setTimeRemaining(oneMinuteInSeconds);
+        startTimer(oneMinuteInSeconds);
+        setIsMining(true);
+        localStorage.setItem('isMining', 'true');
+        localStorage.setItem('isButtonDisabled', 'true');
+        localStorage.setItem('isClaimButton', 'false');
+        setIsButtonDisabled(true);
+        setIsClaimButton(false);
+
+    };
 
     const updatePointsInDatabase = async (newPoints) => {
         const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
@@ -48,6 +162,7 @@ function HomePage() {
                 throw new Error(`Failed to update points in database: ${data.error}`);
             }
 
+            console.log("Очки успешно обновлены в базе данных!");
             setPoints(Math.floor(newPoints));
             localStorage.setItem('points', Math.floor(newPoints).toString());
         } catch (error) {
@@ -55,25 +170,54 @@ function HomePage() {
         }
     };
 
-    useEffect(() => {
-        const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
-        if (userId) {
-            fetchUserData(userId);
-        }
-    }, []);
+    const handleClaimPoints = async () => {
+        const bonusPoints = 100;
+        const newPoints = points + bonusPoints;
+        await updatePointsInDatabase(newPoints);
+        setPoints(Math.floor(newPoints));
+        localStorage.setItem('points', Math.floor(newPoints).toString());
+        setIsClaimButton(false);
+    };
+
+    const formatTime = (seconds) => {
+        const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
+        const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+        const s = String(seconds % 60).padStart(2, '0');
+        return `${h}:${m}:${s}`;
+    };
 
     return (
-        <>
-            <span className='points-count'>{points}</span>
-            <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
-            <Game />
-            <BoosterContainer />
-            <FriendsConnt />
-            <button className='FarmButton'>
-                Mine 52.033 BTS
-            </button>
-            <Menu />
-        </>
+        <section className='bodyhomepage'>
+            {isLoading ? (
+                <p>Loading...</p>
+            ) : (
+                userData && (
+                    <>
+                        <span className='points-count'>{points}</span>
+                        <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
+                        <Game />
+                        <BoosterContainer />
+                        <FriendsConnt />
+                        <button
+                            className='FarmButton'
+                            onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
+                            disabled={isButtonDisabled && !isClaimButton}
+                            style={{
+                                backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
+                                color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}
+                        >
+                            {isButtonDisabled && isMining && <Timer style={{ marginRight: '8px' }} />}
+                            {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
+                        </button>
+                        <Menu />
+                    </>
+                )
+            )}
+        </section>
     );
 }
 
