@@ -51,7 +51,7 @@ function HomePage({ userData }) {
     };
 
     const handleClaimPoints = async () => {
-        const bonusPoints = 52.033;
+        const bonusPoints = 50;
         const newPoints = points + bonusPoints;
         await updatePointsInDatabase(newPoints);
         setPoints(Math.floor(newPoints));
