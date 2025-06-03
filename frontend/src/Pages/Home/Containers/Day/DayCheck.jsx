@@ -4,10 +4,7 @@ import Moom from '../../../../Most Used/Image/Moom';
 import CheckIcon from '../../../../Most Used/Image/CheckIcon';
 
 function DayCheck({ updatePointsInDatabase, userData }) {
-    const [isButtonDisabled, setIsButtonDisabled] = useState(() => {
-        const storedTime = localStorage.getItem('nextClaimTime');
-        return storedTime ? parseInt(storedTime, 10) > Date.now() : false;
-    });
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [timeLeft, setTimeLeft] = useState(0);
     const [dayCheckCount, setDayCheckCount] = useState(() => {
         return parseInt(localStorage.getItem('dayCheckCount') || '0', 10);
@@ -15,7 +12,7 @@ function DayCheck({ updatePointsInDatabase, userData }) {
 
     useEffect(() => {
         if (!userData) {
-            setIsButtonDisabled(true);
+            setIsButtonDisabled(true); // Отключаем кнопку, если нет данных пользователя
             return;
         }
 
@@ -51,11 +48,13 @@ function DayCheck({ updatePointsInDatabase, userData }) {
             console.warn("Нет данных пользователя для обновления очков.");
             return;
         }
+        console.log("handleGetButtonClick: userData", userData);
+        console.log("handleGetButtonClick: before updatePointsInDatabase, points:", userData.points);
 
         setIsButtonDisabled(true);
         const oneMinuteInMilliseconds = 60 * 1000;
         const nextClaimTime = Date.now() + oneMinuteInMilliseconds;
-        localStorage.setItem('nextClaimTime', nextClaimTime.toString());
+        localStorage.setItem('nextClaimTime', nextClaimTime);
         setTimeLeft(oneMinuteInMilliseconds);
 
         const newDayCheckCount = dayCheckCount + 1;
@@ -66,6 +65,7 @@ function DayCheck({ updatePointsInDatabase, userData }) {
         try {
             const bonusPoints = 30;
             const newPoints = (userData.points || 0) + bonusPoints;
+            console.log("handleGetButtonClick: newPoints to update:", newPoints);
             await updatePointsInDatabase(newPoints);
         } catch (error) {
             console.error("Ошибка при обновлении очков в базе данных:", error);
@@ -79,26 +79,28 @@ function DayCheck({ updatePointsInDatabase, userData }) {
     };
 
     return (
-        <div className='container-check-day'>
-            <div className='left-section-gif'>
-                <Moom />
+        userData && (
+            <div className='container-check-day'>
+                <div className='left-section-gif'>
+                    <Moom />
+                </div>
+                <div className='mid-section-textabout'>
+                    <span className='first-span'>{dayCheckCount} day-check</span>
+                    <span className='second-span'>
+                        {isButtonDisabled ? `Next claim in ${formatTimeLeft(timeLeft)}` : 'Claim available!'}
+                    </span>
+                </div>
+                <div className='right-section-button'>
+                    <button
+                        className={`Get-button ${isButtonDisabled ? 'disabled' : ''}`}
+                        onClick={handleGetButtonClick}
+                        disabled={isButtonDisabled}
+                    >
+                        {isButtonDisabled ? <CheckIcon /> : 'Get'}
+                    </button>
+                </div>
             </div>
-            <div className='mid-section-textabout'>
-                <span className='first-span'>{dayCheckCount} day-check</span>
-                <span className='second-span'>
-                    {isButtonDisabled ? `Next claim in ${formatTimeLeft(timeLeft)}` : 'Claim available!'}
-                </span>
-            </div>
-            <div className='right-section-button'>
-                <button
-                    className={`Get-button ${isButtonDisabled ? 'disabled' : ''}`}
-                    onClick={handleGetButtonClick}
-                    disabled={isButtonDisabled}
-                >
-                    {isButtonDisabled ? <CheckIcon /> : 'Get'}
-                </button>
-            </div>
-        </div>
+        )
     );
 }
 
