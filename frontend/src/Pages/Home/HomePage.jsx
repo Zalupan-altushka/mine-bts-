@@ -1,6 +1,6 @@
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import './Home.css';
 import Menu from '../../Most Used/Menu/Menu';
-import { useState, useEffect } from 'react';
 import Timer from '../../Most Used/Image/Timer';
 import DayCheck from './Containers/Day/DayCheck';
 import BoosterContainer from './Containers/BoostersCon/BoosterContainer';
@@ -10,142 +10,157 @@ import Game from './Containers/MiniGame/Game';
 const tg = window.Telegram.WebApp;
 
 function HomePage({ userData }) {
-  const [points, setPoints] = useState(() => {
-    const savedPoints = localStorage.getItem('points');
-    return savedPoints ? parseFloat(savedPoints) : 0.033;
-  });
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState(0);
-  const [isClaimButton, setIsClaimButton] = useState(true);
-  const [timerInterval, setTimerInterval] = useState(null);
+    const [points, setPoints] = useState(() => {
+        const storedPoints = localStorage.getItem('points');
+        return storedPoints ? parseInt(storedPoints, 10) : 0;
+    });
+    const [isMining, setIsMining] = useState(false);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [timeRemaining, setTimeRemaining] = useState(0);
+    const [isClaimButton, setIsClaimButton] = useState(true);
+    const timerRef = useRef(null);
 
-  // Загрузка таймера
-  useEffect(() => {
-    const endTimeStr = localStorage.getItem('endTime');
-    if (endTimeStr) {
-      const endTime = parseInt(endTimeStr, 10);
-      const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-      setTimeRemaining(remaining);
-      setIsButtonDisabled(remaining > 0);
-      setIsClaimButton(remaining <= 0);
-      if (remaining > 0) {
-        startTimer(remaining);
-      } else {
-        localStorage.removeItem('endTime');
-      }
-    }
-  }, []);
+    const handleClaimPoints = async () => {
+        const bonusPoints = 52.033;
+        const newPoints = points + bonusPoints;
+        await updatePointsInDatabase(newPoints);
+        setPoints(Math.floor(newPoints));
+        localStorage.setItem('points', Math.floor(newPoints).toString());
+        setIsClaimButton(false);
+    };
 
-  const startTimer = (duration) => {
-    const endTime = Date.now() + duration * 1000;
-    localStorage.setItem('endTime', endTime);
-    const interval = setInterval(() => {
-      const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-      setTimeRemaining(remainingTime);
-      if (remainingTime === 0) {
-        clearInterval(interval);
-        localStorage.removeItem('endTime');
-        setIsButtonDisabled(false);
-        setIsClaimButton(true);
-      }
-    }, 1000);
-    setTimerInterval(interval);
-  };
+    const handleMineFor100 = () => {
+        const oneMinuteInSeconds = 60;
+        setTimeRemaining(oneMinuteInSeconds);
+        startTimer(oneMinuteInSeconds);
+        setIsMining(true);
+        localStorage.setItem('isMining', 'true');
+        setIsButtonDisabled(true);
+        localStorage.setItem('isButtonDisabled', 'true');
+        setIsClaimButton(false); // Disable Claim button when mining
+    };
 
-  const handleMineFor100 = () => {
-    setIsButtonDisabled(true);
-    const sixHoursInSeconds = 6 * 60 * 60;
-    setTimeRemaining(sixHoursInSeconds);
-    startTimer(sixHoursInSeconds);
-  };
+    const startTimer = (duration) => {
+        clearInterval(timerRef.current);
+        const endTime = Date.now() + duration * 1000;
+        localStorage.setItem('endTime', endTime.toString());
 
-  const updatePointsInDatabase = async (newPoints) => {
-    const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
-    const userId = userData?.telegram_id;
+        timerRef.current = setInterval(() => {
+            const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+            setTimeRemaining(remainingTime);
+            if (remainingTime <= 0) {
+                clearInterval(timerRef.current);
+                localStorage.removeItem('endTime');
+                localStorage.setItem('isButtonDisabled', 'false');
+                localStorage.setItem('isMining', 'false');
+                localStorage.setItem('isClaimButton', 'true');
+                setIsButtonDisabled(false);
+                setIsMining(false);
+                setIsClaimButton(true);
+                setTimeRemaining(0);
+            }
+        }, 1000);
+    };
 
-    if (!userId) {
-      console.warn("User ID not found, cannot update points.");
-      return;
-    }
+    const updatePointsInDatabase = async (newPoints) => {
+        const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
+        const userId = userData?.telegram_id;
 
-    try {
-      const response = await fetch(UPDATE_POINTS_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          telegramId: userId,
-          points: newPoints,
-        }),
-      });
+        if (!userId) {
+            console.warn("User ID not found, cannot update points.");
+            return;
+        }
 
-      if (!response.ok) {
-        console.error("HTTP error при обновлении очков:", response.status, response.statusText);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+        try {
+            const response = await fetch(UPDATE_POINTS_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    telegramId: userId,
+                    points: newPoints,
+                }),
+            });
 
-      const data = await response.json();
-      if (!data.success) {
-        console.error("Ошибка от Netlify Function:", data.error);
-        throw new Error(`Failed to update points in database: ${data.error}`);
-      }
+            if (!response.ok) {
+                console.error("HTTP error при обновлении очков:", response.status, response.statusText);
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
 
-      console.log("Очки успешно обновлены в базе данных!");
-    } catch (error) {
-      console.error("Ошибка при обновлении очков:", error);
-    }
-  };
+            const data = await response.json();
+            if (!data.success) {
+                console.error("Ошибка от Netlify Function:", data.error);
+                throw new Error(`Failed to update points in database: ${data.error}`);
+            }
 
-  const handleClaimPoints = async () => {
-    const bonusPoints = 52.033;
-    const newPoints = points + bonusPoints;
-    setPoints(newPoints);
-    localStorage.setItem('points', newPoints);
-    setIsClaimButton(false);
-    await updatePointsInDatabase(newPoints);
-  };
+            console.log("Очки успешно обновлены в базе данных!");
+        } catch (error) {
+            console.error("Ошибка при обновлении очков:", error);
+        }
+    };
 
-  const formatTime = (seconds) => {
-    const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
-    const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
-    const s = String(seconds % 60).padStart(2, '0');
-    return `${h}:${m}:${s}`;
-  };
+    const formatTime = (seconds) => {
+        const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
+        const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+        const s = String(seconds % 60).padStart(2, '0');
+        return `${h}:${m}:${s}`;
+    };
 
-  useEffect(() => {
-    if (userData) {
-      const initialPoints = userData.points || 0.033;
-      setPoints(initialPoints);
-      localStorage.setItem('points', initialPoints);
-    }
-  }, [userData]);
+    useEffect(() => {
+        // Загрузка начального состояния из localStorage
+        const storedIsMining = localStorage.getItem('isMining') === 'true';
+        const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
+        const storedIsClaimButton = localStorage.getItem('isClaimButton') === 'true';
+        const storedEndTime = localStorage.getItem('endTime');
 
-  return (
-    <section className='bodyhomepage'>
-      <span className='points-count'>{points.toFixed(4)}</span>
-      <DayCheck onPointsUpdate={(amount) => setPoints(prev => prev + amount)} />
-      <Game />
-      <BoosterContainer />
-      <FriendsConnt />
-      <button
-        className='FarmButton'
-        onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
-        disabled={isButtonDisabled && !isClaimButton}
-        style={{
-          backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
-          color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        {isButtonDisabled && !isClaimButton && <Timer style={{ marginRight: '8px' }} />}
-        {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
-      </button>
-      <Menu />
-    </section>
-  );
+        setIsMining(storedIsMining);
+        setIsButtonDisabled(storedIsButtonDisabled);
+        setIsClaimButton(storedIsClaimButton);
+
+        if (storedEndTime && storedIsButtonDisabled) {
+            const endTime = parseInt(storedEndTime, 10);
+            const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+            setTimeRemaining(remainingTime);
+            if (remainingTime > 0) {
+                startTimer(remainingTime);
+            }
+        }
+    }, []);
+
+    useEffect(() => {
+        if (userData) {
+            const initialPoints = userData.points || 0;
+            setPoints(initialPoints);
+            localStorage.setItem('points', initialPoints.toString());
+        }
+    }, [userData]);
+
+    return (
+        <section className='bodyhomepage'>
+            <span className='points-count'>{points.toFixed(4)}</span>
+            <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
+            <Game />
+            <BoosterContainer />
+            <FriendsConnt />
+            <button
+                className='FarmButton'
+                onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
+                disabled={isButtonDisabled}
+                style={{
+                    backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
+                    color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}
+            >
+                {isButtonDisabled && isMining && <Timer style={{ marginRight: '8px' }} />}
+                {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
+            </button>
+            <Menu />
+        </section>
+    );
 }
 
 export default HomePage;
