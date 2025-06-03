@@ -9,8 +9,7 @@ import Game from './Containers/MiniGame/Game';
 
 const tg = window.Telegram.WebApp;
 
-function HomePage() {
-  // Удалена переменная userId
+function HomePage({ userData }) {
   const [points, setPoints] = useState(() => {
     const savedPoints = localStorage.getItem('points');
     return savedPoints ? parseFloat(savedPoints) : 0.033;
@@ -60,14 +59,53 @@ function HomePage() {
     startTimer(sixHoursInSeconds);
   };
 
-  const handleClaimPoints = () => {
+  const updatePointsInDatabase = async (newPoints) => {
+    const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
+    const userId = userData?.telegram_id;
+
+    if (!userId) {
+      console.warn("User ID not found, cannot update points.");
+      return;
+    }
+
+    try {
+      const response = await fetch(UPDATE_POINTS_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          telegramId: userId,
+          points: newPoints,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error("HTTP error при обновлении очков:", response.status, response.statusText);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (!data.success) {
+        console.error("Ошибка от Netlify Function:", data.error);
+        throw new Error(`Failed to update points in database: ${data.error}`);
+      }
+
+      console.log("Очки успешно обновлены в базе данных!");
+    } catch (error) {
+      console.error("Ошибка при обновлении очков:", error);
+    }
+  };
+
+  const handleClaimPoints = async () => {
     const bonusPoints = 52.033;
     const newPoints = points + bonusPoints;
     setPoints(newPoints);
     localStorage.setItem('points', newPoints);
     setIsClaimButton(false);
+    await updatePointsInDatabase(newPoints);
   };
-  
+
   const formatTime = (seconds) => {
     const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
     const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
@@ -75,28 +113,36 @@ function HomePage() {
     return `${h}:${m}:${s}`;
   };
 
+  useEffect(() => {
+    if (userData) {
+      const initialPoints = userData.points || 0.033;
+      setPoints(initialPoints);
+      localStorage.setItem('points', initialPoints);
+    }
+  }, [userData]);
+
   return (
     <section className='bodyhomepage'>
       <span className='points-count'>{points.toFixed(4)}</span>
-        <DayCheck onPointsUpdate={(amount) => setPoints(prev => prev + amount)} />
-        <Game />
-        <BoosterContainer />
-        <FriendsConnt />
-          <button
-            className='FarmButton'
-            onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
-            disabled={isButtonDisabled && !isClaimButton}
-            style={{
-              backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
-              color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            {isButtonDisabled && !isClaimButton && <Timer style={{ marginRight: '8px' }} />}
-            {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
-          </button>
+      <DayCheck onPointsUpdate={(amount) => setPoints(prev => prev + amount)} />
+      <Game />
+      <BoosterContainer />
+      <FriendsConnt />
+      <button
+        className='FarmButton'
+        onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
+        disabled={isButtonDisabled && !isClaimButton}
+        style={{
+          backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
+          color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {isButtonDisabled && !isClaimButton && <Timer style={{ marginRight: '8px' }} />}
+        {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
+      </button>
       <Menu />
     </section>
   );
