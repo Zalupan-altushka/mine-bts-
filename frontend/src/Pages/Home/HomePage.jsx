@@ -60,9 +60,9 @@ function HomePage({ userData }) {
     };
 
     const handleMineFor100 = () => {
-        const oneMinuteInSeconds = 60;
-        setTimeRemaining(oneMinuteInSeconds);
-        startTimer(oneMinuteInSeconds);
+        const sixHoursInSeconds = 6 * 60 * 60; // 6 hours in seconds
+        setTimeRemaining(sixHoursInSeconds);
+        startTimer(sixHoursInSeconds);
         setIsMining(true);
         localStorage.setItem('isMining', 'true');
         setIsButtonDisabled(true);
@@ -131,9 +131,10 @@ function HomePage({ userData }) {
     };
 
     const formatTime = (seconds) => {
-        const m = String(Math.floor(seconds / 60)).padStart(2, '0');
-        const s = String(seconds % 60).padStart(2, '0');
-        return `${m}:${s}`;
+        const hours = String(Math.floor(seconds / 3600)).padStart(2, '0');
+        const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+        const secs = String(seconds % 60).padStart(2, '0');
+        return `${hours}:${minutes}:${secs}`;
     };
 
     useEffect(() => {
@@ -174,7 +175,7 @@ function HomePage({ userData }) {
 
     return (
         <section className='bodyhomepage'>
-            <span className='points-count'>{points.toFixed(4)}</span>
+            <span className='points-count'>{points}</span>
             <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
             <Game />
             <BoosterContainer />
