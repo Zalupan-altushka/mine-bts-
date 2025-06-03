@@ -18,18 +18,128 @@ function HomePage() {
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [timeRemaining, setTimeRemaining] = useState(0);
     const [isClaimButton, setIsClaimButton] = useState(true);
-    const timerRef = useRef(null);
+    const [timerInterval, setTimerInterval] = useState(null);
     const [userData, setUserData] = useState(null);
-    const [isLoading, setIsLoading] = useState(true); // Добавлено состояние загрузки
+    const timerRef = useRef(null);
 
-    const handleClaimPoints = async () => {
-        const bonusPoints = 100;
-        const newPoints = points + bonusPoints;
-        await updatePointsInDatabase(newPoints);
-        setPoints(Math.floor(newPoints));
-        localStorage.setItem('points', Math.floor(newPoints).toString());
-        setIsClaimButton(false);
-        localStorage.setItem('isClaimButton', 'false');
+    const onPointsUpdate = useCallback((amount) => {
+        setPoints(prev => prev + amount);
+    }, []);
+
+    useEffect(() => {
+        console.log('HomePage: useEffect triggered');
+        const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+        if (userId) {
+            console.log('HomePage: User ID from Telegram WebApp:', userId);
+            fetchUserData(userId);
+        } else {
+            console.warn("User ID not found in Telegram WebApp");
+        }
+    }, []);
+
+    const fetchUserData = async (userId) => {
+        const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth';
+        try {
+            const response = await fetch(AUTH_FUNCTION_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ initData: window.Telegram?.WebApp?.initData }),
+            });
+
+            if (!response.ok) {
+                console.error("Ошибка при получении данных пользователя:", response.status);
+                return;
+            }
+
+            const data = await response.json();
+            if (data.isValid && data.userData) {
+                setUserData(data.userData);
+                const initialPoints = Math.floor(data.userData.points || 0);
+                setPoints(initialPoints);
+                localStorage.setItem('points', initialPoints.toString()); //Сохраняем очки в LocalStorage
+            } else {
+                console.warn("Не удалось получить данные пользователя");
+            }
+        } catch (error) {
+            console.error("Ошибка при запросе данных пользователя:", error);
+        }
+    };
+
+    useEffect(() => {
+        //Загружаем состояние
+        const storedIsMining = localStorage.getItem('isMining') === 'true';
+        const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
+        const storedIsClaimButton = localStorage.getItem('isClaimButton') === 'true';
+
+        setIsMining(storedIsMining);
+        setIsButtonDisabled(storedIsButtonDisabled);
+        setIsClaimButton(storedIsClaimButton);
+
+        let storedTimeRemaining = 0;
+
+        const endTimeStr = localStorage.getItem('endTime');
+        if (endTimeStr) {
+            const endTime = parseInt(endTimeStr, 10);
+            if (!isNaN(endTime)) {
+                storedTimeRemaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+                setTimeRemaining(storedTimeRemaining);
+            }
+        }
+       setTimeRemaining(storedTimeRemaining);
+
+        if (storedTimeRemaining > 0 && storedIsButtonDisabled) {
+                if (timerRef.current) {
+                  clearInterval(timerRef.current)
+                }
+                const interval = setInterval(() => {
+                    const remainingTime = Math.max(0, Math.floor((parseInt(localStorage.getItem('endTime'), 10) - Date.now()) / 1000));
+                    setTimeRemaining(remainingTime);
+
+                    if (remainingTime <= 0) {
+                        clearInterval(interval);
+                        localStorage.removeItem('endTime');
+                        localStorage.setItem('isButtonDisabled', 'false');
+                        localStorage.setItem('isMining', 'false');
+                        localStorage.setItem('isClaimButton', 'true');
+                        setIsButtonDisabled(false);
+                        setIsMining(false);
+                        setIsClaimButton(true);
+                        setTimeRemaining(0);
+                    }
+                }, 1000);
+                timerRef.current = interval;
+        }
+    }, []);
+
+    const startTimer = (duration) => {
+        clearInterval(timerRef.current);
+        const endTime = Date.now() + duration * 1000;
+        console.log("startTimer: endTime", endTime);
+        localStorage.setItem('endTime', endTime.toString());
+        localStorage.setItem('isButtonDisabled', 'true');
+        setIsButtonDisabled(true);
+        setIsMining(true);
+
+        const interval = setInterval(() => {
+            const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+            console.log("startTimer: remainingTime", remainingTime);
+            setTimeRemaining(remainingTime);
+            if (remainingTime <= 0) {
+                clearInterval(interval);
+                localStorage.removeItem('endTime');
+                localStorage.setItem('isButtonDisabled', 'false');
+                localStorage.setItem('isMining', 'false');
+                localStorage.setItem('isClaimButton', 'true');
+
+                setIsButtonDisabled(false);
+                setIsMining(false);
+                setIsClaimButton(true);
+                setTimeRemaining(0); // Reset timeRemaining
+            }
+        }, 1000);
+        timerRef.current = interval;
     };
 
     const handleMineFor100 = () => {
@@ -38,30 +148,10 @@ function HomePage() {
         startTimer(oneMinuteInSeconds);
         setIsMining(true);
         localStorage.setItem('isMining', 'true');
-        setIsButtonDisabled(true);
         localStorage.setItem('isButtonDisabled', 'true');
-    };
-
-    const startTimer = (duration) => {
-        clearInterval(timerRef.current);
-        const endTime = Date.now() + duration * 1000;
-        localStorage.setItem('endTime', endTime.toString());
-
-        timerRef.current = setInterval(() => {
-            const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-            setTimeRemaining(remainingTime);
-            if (remainingTime <= 0) {
-                clearInterval(timerRef.current);
-                localStorage.removeItem('endTime');
-                localStorage.setItem('isButtonDisabled', 'false');
-                localStorage.setItem('isMining', 'false');
-                localStorage.setItem('isClaimButton', 'true');
-                setIsButtonDisabled(false);
-                setIsMining(false);
-                setIsClaimButton(true);
-                setTimeRemaining(0);
-            }
-        }, 1000);
+        localStorage.setItem('isClaimButton', 'false');
+        setIsButtonDisabled(true);
+        setIsClaimButton(false);
     };
 
     const updatePointsInDatabase = async (newPoints) => {
@@ -73,6 +163,7 @@ function HomePage() {
             return;
         }
 
+        console.log("updatePointsInDatabase: telegramId", userId, "points:", newPoints);
         try {
             const response = await fetch(UPDATE_POINTS_URL, {
                 method: 'POST',
@@ -96,11 +187,21 @@ function HomePage() {
                 throw new Error(`Failed to update points in database: ${data.error}`);
             }
 
+            console.log("Очки успешно обновлены в базе данных!");
             setPoints(Math.floor(newPoints));
             localStorage.setItem('points', Math.floor(newPoints).toString());
         } catch (error) {
             console.error("Ошибка при обновлении очков:", error);
         }
+    };
+
+    const handleClaimPoints = async () => {
+        const bonusPoints = 100;
+        const newPoints = points + bonusPoints;
+        await updatePointsInDatabase(newPoints);
+        setPoints(Math.floor(newPoints));
+        localStorage.setItem('points', Math.floor(newPoints).toString());
+        setIsClaimButton(false);
     };
 
     const formatTime = (seconds) => {
@@ -110,72 +211,29 @@ function HomePage() {
         return `${h}:${m}:${s}`;
     };
 
-    useEffect(() => {
-        const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
-        if (userId) {
-            fetchUserData(userId);
-        }
-    }, []);
-
-    useEffect(() => {
-        const storedIsMining = localStorage.getItem('isMining') === 'true';
-        const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
-        const storedIsClaimButton = localStorage.getItem('isClaimButton') === 'true';
-        setIsMining(storedIsMining);
-        setIsButtonDisabled(storedIsButtonDisabled);
-        setIsClaimButton(storedIsClaimButton);
-
-        let storedTimeRemaining = 0;
-
-        const endTimeStr = localStorage.getItem('endTime');
-        if (endTimeStr) {
-            const endTime = parseInt(endTimeStr, 10);
-            if (!isNaN(endTime)) {
-                storedTimeRemaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-                setTimeRemaining(storedTimeRemaining);
-            }
-        }
-        if (storedTimeRemaining > 0) {
-            startTimer(storedTimeRemaining);
-        }
-        setIsLoading(false); //Данные загружены
-    }, []);
-
-    const renderContent = () => {
-        if (isLoading) {
-            return <p>Loading...</p>; // Или любой другой индикатор загрузки
-        }
-
-        return (
-            <>
-                <span className='points-count'>{points}</span>
-                <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
-                <Game />
-                <BoosterContainer />
-                <FriendsConnt />
-                <button
-                    className='FarmButton'
-                    onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
-                    disabled={isButtonDisabled}
-                    style={{
-                        backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
-                        color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                >
-                    {isButtonDisabled && isMining && <Timer style={{ marginRight: '8px' }} />}
-                    {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
-                </button>
-                <Menu />
-            </>
-        );
-    };
-
     return (
         <section className='bodyhomepage'>
-            {renderContent()}
+            <span className='points-count'>{points}</span>
+            <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
+            <Game />
+            <BoosterContainer />
+            <FriendsConnt />
+            <button
+                className='FarmButton'
+                onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
+                disabled={isButtonDisabled && !isClaimButton}
+                style={{
+                    backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
+                    color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}
+            >
+                {isButtonDisabled && isMining && <Timer style={{ marginRight: '8px' }} />}
+                {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
+            </button>
+            <Menu />
         </section>
     );
 }
