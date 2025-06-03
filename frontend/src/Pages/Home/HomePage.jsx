@@ -186,31 +186,27 @@ function HomePage() {
 
     return (
         <section className='bodyhomepage'>
-            {userData && (
-                <>
-                    <span className='points-count'>{points}</span>
-                    <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
-                    <Game />
-                    <BoosterContainer />
-                    <FriendsConnt />
-                    <button
-                        className='FarmButton'
-                        onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
-                        disabled={isButtonDisabled && !isClaimButton}
-                        style={{
-                            backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
-                            color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        {isButtonDisabled && isMining && <Timer style={{ marginRight: '8px' }} />}
-                        {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
-                    </button>
-                    <Menu />
-                </>
-            )}
+            <span className='points-count'>{points}</span>
+            <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
+            <Game />
+            <BoosterContainer />
+            <FriendsConnt />
+            <button
+                className='FarmButton'
+                onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
+                disabled={isButtonDisabled && !isClaimButton}
+                style={{
+                    backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
+                    color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}
+            >
+                {isButtonDisabled && isMining && <Timer style={{ marginRight: '8px' }} />}
+                {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
+            </button>
+            <Menu />
         </section>
     );
 }
