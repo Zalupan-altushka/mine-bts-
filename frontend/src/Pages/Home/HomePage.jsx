@@ -10,32 +10,17 @@ import Game from './Containers/MiniGame/Game';
 const tg = window.Telegram.WebApp;
 
 function HomePage() {
-    const [points, setPoints] = useState(0);
-    const [isMining, setIsMining] = useState(() => {
-        const storedIsMining = localStorage.getItem('isMining') === 'true';
-        return storedIsMining;
+    const [points, setPoints] = useState(() => {
+        const storedPoints = localStorage.getItem('points');
+        return storedPoints ? parseInt(storedPoints, 10) : 0;
     });
-    const [isButtonDisabled, setIsButtonDisabled] = useState(() => {
-        return localStorage.getItem('isButtonDisabled') === 'true';
-    });
-    const [timeRemaining, setTimeRemaining] = useState(() => {
-        const endTimeStr = localStorage.getItem('endTime');
-        if (endTimeStr) {
-            const endTime = parseInt(endTimeStr, 10);
-            if (!isNaN(endTime)) {
-                const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-                return remaining;
-            }
-        }
-        return 0;
-    });
-    const [isClaimButton, setIsClaimButton] = useState(() => {
-        return localStorage.getItem('isClaimButton') === 'true';
-    });
+    const [isMining, setIsMining] = useState(false);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [timeRemaining, setTimeRemaining] = useState(0);
+    const [isClaimButton, setIsClaimButton] = useState(true);
     const [timerInterval, setTimerInterval] = useState(null);
     const [userData, setUserData] = useState(null);
     const timerRef = useRef(null);
-    const [isLoading, setIsLoading] = useState(true);
 
     const onPointsUpdate = useCallback((amount) => {
         setPoints(prev => prev + amount);
@@ -49,7 +34,6 @@ function HomePage() {
             fetchUserData(userId);
         } else {
             console.warn("User ID not found in Telegram WebApp");
-            setIsLoading(false);
         }
     }, []);
 
@@ -72,27 +56,67 @@ function HomePage() {
             const data = await response.json();
             if (data.isValid && data.userData) {
                 setUserData(data.userData);
-                setPoints(Math.floor(data.userData.points || 0));
-                localStorage.setItem('points', Math.floor(data.userData.points || 0).toString());
+                const initialPoints = Math.floor(data.userData.points || 0);
+                setPoints(initialPoints);
+                localStorage.setItem('points', initialPoints.toString()); //Сохраняем очки в LocalStorage
             } else {
                 console.warn("Не удалось получить данные пользователя");
             }
         } catch (error) {
             console.error("Ошибка при запросе данных пользователя:", error);
-        } finally {
-            setIsLoading(false);
         }
     };
 
-    useEffect(() => { // Добавили useEffect для обработки таймера при загрузке и обновлениях
-        if (timeRemaining > 0) {
-            startTimer(timeRemaining);
+    useEffect(() => {
+        //Загружаем состояние
+        const storedIsMining = localStorage.getItem('isMining') === 'true';
+        const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
+        const storedIsClaimButton = localStorage.getItem('isClaimButton') === 'true';
+
+        setIsMining(storedIsMining);
+        setIsButtonDisabled(storedIsButtonDisabled);
+        setIsClaimButton(storedIsClaimButton);
+
+        let storedTimeRemaining = 0;
+
+        const endTimeStr = localStorage.getItem('endTime');
+        if (endTimeStr) {
+            const endTime = parseInt(endTimeStr, 10);
+            if (!isNaN(endTime)) {
+                storedTimeRemaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+                setTimeRemaining(storedTimeRemaining);
+            }
         }
-    }, [timeRemaining]);
+       setTimeRemaining(storedTimeRemaining);
+
+        if (storedTimeRemaining > 0 && storedIsButtonDisabled) {
+                if (timerRef.current) {
+                  clearInterval(timerRef.current)
+                }
+                const interval = setInterval(() => {
+                    const remainingTime = Math.max(0, Math.floor((parseInt(localStorage.getItem('endTime'), 10) - Date.now()) / 1000));
+                    setTimeRemaining(remainingTime);
+
+                    if (remainingTime <= 0) {
+                        clearInterval(interval);
+                        localStorage.removeItem('endTime');
+                        localStorage.setItem('isButtonDisabled', 'false');
+                        localStorage.setItem('isMining', 'false');
+                        localStorage.setItem('isClaimButton', 'true');
+                        setIsButtonDisabled(false);
+                        setIsMining(false);
+                        setIsClaimButton(true);
+                        setTimeRemaining(0);
+                    }
+                }, 1000);
+                timerRef.current = interval;
+        }
+    }, []);
 
     const startTimer = (duration) => {
-        clearInterval(timerRef.current); // Очищаем предыдущий интервал
+        clearInterval(timerRef.current);
         const endTime = Date.now() + duration * 1000;
+        console.log("startTimer: endTime", endTime);
         localStorage.setItem('endTime', endTime.toString());
         localStorage.setItem('isButtonDisabled', 'true');
         setIsButtonDisabled(true);
@@ -100,6 +124,7 @@ function HomePage() {
 
         const interval = setInterval(() => {
             const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+            console.log("startTimer: remainingTime", remainingTime);
             setTimeRemaining(remainingTime);
             if (remainingTime <= 0) {
                 clearInterval(interval);
@@ -127,7 +152,6 @@ function HomePage() {
         localStorage.setItem('isClaimButton', 'false');
         setIsButtonDisabled(true);
         setIsClaimButton(false);
-
     };
 
     const updatePointsInDatabase = async (newPoints) => {
@@ -139,6 +163,7 @@ function HomePage() {
             return;
         }
 
+        console.log("updatePointsInDatabase: telegramId", userId, "points:", newPoints);
         try {
             const response = await fetch(UPDATE_POINTS_URL, {
                 method: 'POST',
@@ -188,35 +213,27 @@ function HomePage() {
 
     return (
         <section className='bodyhomepage'>
-            {isLoading ? (
-                <p>Loading...</p>
-            ) : (
-                userData && (
-                    <>
-                        <span className='points-count'>{points}</span>
-                        <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
-                        <Game />
-                        <BoosterContainer />
-                        <FriendsConnt />
-                        <button
-                            className='FarmButton'
-                            onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
-                            disabled={isButtonDisabled && !isClaimButton}
-                            style={{
-                                backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
-                                color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                            }}
-                        >
-                            {isButtonDisabled && isMining && <Timer style={{ marginRight: '8px' }} />}
-                            {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
-                        </button>
-                        <Menu />
-                    </>
-                )
-            )}
+            <span className='points-count'>{points}</span>
+            <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
+            <Game />
+            <BoosterContainer />
+            <FriendsConnt />
+            <button
+                className='FarmButton'
+                onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
+                disabled={isButtonDisabled && !isClaimButton}
+                style={{
+                    backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
+                    color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}
+            >
+                {isButtonDisabled && isMining && <Timer style={{ marginRight: '8px' }} />}
+                {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
+            </button>
+            <Menu />
         </section>
     );
 }
