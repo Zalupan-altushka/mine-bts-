@@ -64,9 +64,9 @@ function HomePage({ userData }) {
 
     const handleMineFor100 = () => {
         setIsLoading(true); // Показываем индикатор загрузки
-        const oneMinuteInSeconds = 60; // 1 минута для тестирования
-        setTimeRemaining(oneMinuteInSeconds);
-        startTimer(oneMinuteInSeconds);
+        const sixHoursInSeconds = 6 * 60 * 60; // 6 часов в секундах
+        setTimeRemaining(sixHoursInSeconds);
+        startTimer(sixHoursInSeconds);
         setIsMining(true);
         setIsButtonDisabled(true);
         setIsClaimButton(false); // Disable Claim button when mining
@@ -129,9 +129,10 @@ function HomePage({ userData }) {
     };
 
     const formatTime = (seconds) => {
-        const minutes = String(Math.floor(seconds / 60)).padStart(2, '0');
+        const hours = String(Math.floor(seconds / 3600)).padStart(2, '0');
+        const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
         const secs = String(seconds % 60).padStart(2, '0');
-        return `${minutes}:${secs}`;
+        return `${hours}:${minutes}:${secs}`;
     };
 
     useEffect(() => {
