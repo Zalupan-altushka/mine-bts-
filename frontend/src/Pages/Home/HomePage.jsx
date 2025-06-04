@@ -18,6 +18,7 @@ function HomePage({ userData }) {
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [timeRemaining, setTimeRemaining] = useState(0);
     const [isClaimButton, setIsClaimButton] = useState(false);
+    const [isLoading, setIsLoading] = useState(false); // Состояние для индикатора загрузки
     const timerRef = useRef(null);
 
     const fetchUserData = async (userId) => {
@@ -50,6 +51,7 @@ function HomePage({ userData }) {
     };
 
     const handleClaimPoints = async () => {
+        setIsLoading(true); // Показываем индикатор загрузки
         const bonusPoints = 50; // Изменено количество очков
         const newPoints = points + bonusPoints;
         await updatePointsInDatabase(newPoints);
@@ -57,15 +59,18 @@ function HomePage({ userData }) {
         localStorage.setItem('points', Math.floor(newPoints).toString());
         setIsClaimButton(false);
         setIsButtonDisabled(false);
+        setIsLoading(false); // Скрываем индикатор загрузки
     };
 
     const handleMineFor100 = () => {
+        setIsLoading(true); // Показываем индикатор загрузки
         const oneMinuteInSeconds = 60; // 1 минута для тестирования
         setTimeRemaining(oneMinuteInSeconds);
         startTimer(oneMinuteInSeconds);
         setIsMining(true);
         setIsButtonDisabled(true);
         setIsClaimButton(false); // Disable Claim button when mining
+        setIsLoading(false); // Скрываем индикатор загрузки
     };
 
     const startTimer = (duration) => {
@@ -184,7 +189,7 @@ function HomePage({ userData }) {
             <button
                 className='FarmButton'
                 onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
-                disabled={isButtonDisabled}
+                disabled={isButtonDisabled || isLoading}
                 style={{
                     backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
                     color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
@@ -193,8 +198,14 @@ function HomePage({ userData }) {
                     justifyContent: 'center',
                 }}
             >
-                {isButtonDisabled && isMining && <Timer style={{ marginRight: '8px' }} />}
-                {isClaimButton ? 'Claim 50 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 50 BTS')}
+                {isLoading ? (
+                    <span className="loading-indicator">Loading...</span>
+                ) : (
+                    <>
+                        {isButtonDisabled && isMining && <Timer style={{ marginRight: '8px' }} />}
+                        {isClaimButton ? 'Claim 50 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 50 BTS')}
+                    </>
+                )}
             </button>
             <Menu />
         </section>
