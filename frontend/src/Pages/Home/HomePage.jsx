@@ -146,6 +146,11 @@ function HomePage({ userData }) {
             setTimeRemaining(remainingTime);
             if (remainingTime > 0) {
                 startTimer(remainingTime);
+            } else {
+                // Если таймер истек, кнопка должна отображать "Claim 50 BTS"
+                setIsClaimButton(true);
+                setIsButtonDisabled(false);
+                setIsMining(false);
             }
         } else {
             // Если таймер не запущен, кнопка должна отображать "Mine 50 BTS"
