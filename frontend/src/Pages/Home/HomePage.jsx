@@ -12,7 +12,7 @@ const tg = window.Telegram.WebApp;
 function HomePage({ userData }) {
     const [points, setPoints] = useState(() => {
         const storedPoints = localStorage.getItem('points');
-        return storedPoints ? parseInt(storedPoints, 10) : 0;
+        return storedPoints ? parseFloat(storedPoints) : 0;
     });
     const [isMining, setIsMining] = useState(false);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
@@ -39,7 +39,7 @@ function HomePage({ userData }) {
 
             const data = await response.json();
             if (data.isValid && data.userData) {
-                const initialPoints = Math.floor(data.userData.points || 0);
+                const initialPoints = parseFloat(data.userData.points || 0);
                 setPoints(initialPoints);
                 localStorage.setItem('points', initialPoints.toString()); // Сохраняем очки в LocalStorage
             } else {
@@ -52,11 +52,11 @@ function HomePage({ userData }) {
 
     const handleClaimPoints = async () => {
         setIsLoading(true); // Показываем индикатор загрузки
-        const bonusPoints = 50; // Изменено количество очков
+        const bonusPoints = 52.033; // Изменено количество очков
         const newPoints = points + bonusPoints;
         await updatePointsInDatabase(newPoints);
-        setPoints(Math.floor(newPoints));
-        localStorage.setItem('points', Math.floor(newPoints).toString());
+        setPoints(parseFloat(newPoints.toFixed(3))); // Округляем до 3 знаков после запятой
+        localStorage.setItem('points', newPoints.toFixed(3));
         setIsClaimButton(false);
         setIsButtonDisabled(false);
         setIsLoading(false); // Скрываем индикатор загрузки
@@ -109,7 +109,7 @@ function HomePage({ userData }) {
                 },
                 body: JSON.stringify({
                     telegramId: userId,
-                    points: newPoints,
+                    points: newPoints.toFixed(3), // Округляем до 3 знаков после запятой
                 }),
             });
 
@@ -155,13 +155,13 @@ function HomePage({ userData }) {
             if (remainingTime > 0) {
                 startTimer(remainingTime);
             } else {
-                // Если таймер истек, кнопка должна отображать "Claim 50 BTS"
+                // Если таймер истек, кнопка должна отображать "Claim 52.033 BTS"
                 setIsClaimButton(true);
                 setIsButtonDisabled(false);
                 setIsMining(false);
             }
         } else {
-            // Если таймер не запущен, кнопка должна отображать "Mine 50 BTS"
+            // Если таймер не запущен, кнопка должна отображать "Mine 52.033 BTS"
             setIsClaimButton(false);
             setIsButtonDisabled(false);
         }
@@ -169,7 +169,7 @@ function HomePage({ userData }) {
 
     useEffect(() => {
         if (userData) {
-            const initialPoints = userData.points || 0;
+            const initialPoints = parseFloat(userData.points || 0);
             setPoints(initialPoints);
             localStorage.setItem('points', initialPoints.toString());
         }
@@ -184,7 +184,7 @@ function HomePage({ userData }) {
 
     return (
         <section className='bodyhomepage'>
-            <span className='points-count'>{points}</span>
+            <span className='points-count'>{points.toFixed(3)}</span>
             <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
             <Game />
             <BoosterContainer />
@@ -206,7 +206,7 @@ function HomePage({ userData }) {
                 ) : (
                     <>
                         {isButtonDisabled && isMining && <Timer style={{ marginRight: '8px' }} />}
-                        {isClaimButton ? 'Claim 50 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 50 BTS')}
+                        {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
                     </>
                 )}
             </button>

@@ -88,7 +88,7 @@ function DayCheck({ onPointsUpdate, userData }) { // Добавляем userData
   }, []);
 
   const handleGetButtonClick = async () => {
-    const bonusPoints = 30; // Количество очков для добавления
+    const bonusPoints = 30.033; // Количество очков для добавления
     const newPoints = (userData?.points || 0) + bonusPoints;
 
     // Обновляем очки в базе данных
