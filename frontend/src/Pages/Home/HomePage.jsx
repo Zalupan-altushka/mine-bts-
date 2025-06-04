@@ -76,12 +76,14 @@ function HomePage({ userData }) {
     const startTimer = (duration) => {
         clearInterval(timerRef.current);
         const endTime = Date.now() + duration * 1000;
+        localStorage.setItem('endTime', endTime.toString());
 
         timerRef.current = setInterval(() => {
             const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
             setTimeRemaining(remainingTime);
             if (remainingTime <= 0) {
                 clearInterval(timerRef.current);
+                localStorage.removeItem('endTime');
                 setIsButtonDisabled(false);
                 setIsMining(false);
                 setIsClaimButton(true);
