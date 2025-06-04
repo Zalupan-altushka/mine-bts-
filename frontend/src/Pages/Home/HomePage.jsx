@@ -60,7 +60,7 @@ function HomePage({ userData }) {
     };
 
     const handleMineFor100 = () => {
-        const sixHoursInSeconds = 6 * 60 * 60; // 6 hours in seconds
+        const sixHoursInSeconds = 60; // 1 минута для тестирования
         setTimeRemaining(sixHoursInSeconds);
         startTimer(sixHoursInSeconds);
         setIsMining(true);
@@ -133,10 +133,10 @@ function HomePage({ userData }) {
     };
 
     const formatTime = (seconds) => {
-        const hours = String(Math.floor(seconds / 3600)).padStart(2, '0');
-        const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
-        const secs = String(seconds % 60).padStart(2, '0');
-        return `${hours}:${minutes}:${secs}`;
+      const hours = String(Math.floor(seconds / 3600)).padStart(2, '0');
+      const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+      const secs = String(seconds % 60).padStart(2, '0');
+      return `${hours}:${minutes}:${secs}`;
     };
 
     useEffect(() => {
@@ -177,7 +177,7 @@ function HomePage({ userData }) {
 
     return (
         <section className='bodyhomepage'>
-            <span className='points-count'>{points.toFixed(4)}</span>
+            <span className='points-count'>{points}</span>
             <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
             <Game />
             <BoosterContainer />
@@ -195,7 +195,7 @@ function HomePage({ userData }) {
                 }}
             >
                 {isButtonDisabled && isMining && <Timer style={{ marginRight: '8px' }} />}
-                {isClaimButton ? 'Claim 50 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
+                {isClaimButton ? 'Claim 50 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 50 BTS')}
             </button>
             <Menu />
         </section>
