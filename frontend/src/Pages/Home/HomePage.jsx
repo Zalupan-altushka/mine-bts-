@@ -51,7 +51,7 @@ function HomePage({ userData }) {
     };
 
     const handleClaimPoints = async () => {
-        const bonusPoints = 50;
+        const bonusPoints = 50; // Изменено количество очков
         const newPoints = points + bonusPoints;
         await updatePointsInDatabase(newPoints);
         setPoints(Math.floor(newPoints));
@@ -84,6 +84,8 @@ function HomePage({ userData }) {
                 localStorage.setItem('isButtonDisabled', 'false');
                 localStorage.setItem('isMining', 'false');
                 localStorage.setItem('isClaimButton', 'true');
+
+                // Обновляем состояния после завершения таймера
                 setIsButtonDisabled(false);
                 setIsMining(false);
                 setIsClaimButton(true);
@@ -175,7 +177,7 @@ function HomePage({ userData }) {
 
     return (
         <section className='bodyhomepage'>
-            <span className='points-count'>{points}</span>
+            <span className='points-count'>{points.toFixed(4)}</span>
             <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
             <Game />
             <BoosterContainer />
@@ -193,7 +195,7 @@ function HomePage({ userData }) {
                 }}
             >
                 {isButtonDisabled && isMining && <Timer style={{ marginRight: '8px' }} />}
-                {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
+                {isClaimButton ? 'Claim 50 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
             </button>
             <Menu />
         </section>
