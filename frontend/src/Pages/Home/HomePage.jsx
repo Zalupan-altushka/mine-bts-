@@ -18,7 +18,12 @@ function HomePage({ userData }) {
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [timeRemaining, setTimeRemaining] = useState(0);
     const [isClaimButton, setIsClaimButton] = useState(false);
+    const [logs, setLogs] = useState([]);
     const timerRef = useRef(null);
+
+    const addLog = (message) => {
+        setLogs((prevLogs) => [...prevLogs, message]);
+    };
 
     const fetchUserData = async (userId) => {
         const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth';
@@ -32,7 +37,7 @@ function HomePage({ userData }) {
             });
 
             if (!response.ok) {
-                console.error("Ошибка при получении данных пользователя:", response.status);
+                addLog("Ошибка при получении данных пользователя: " + response.status);
                 return;
             }
 
@@ -43,10 +48,10 @@ function HomePage({ userData }) {
                 setPoints(initialPoints);
                 localStorage.setItem('points', initialPoints.toString()); // Сохраняем очки в LocalStorage
             } else {
-                console.warn("Не удалось получить данные пользователя");
+                addLog("Не удалось получить данные пользователя");
             }
         } catch (error) {
-            console.error("Ошибка при запросе данных пользователя:", error);
+            addLog("Ошибка при запросе данных пользователя: " + error.message);
         }
     };
 
@@ -100,7 +105,7 @@ function HomePage({ userData }) {
         const userId = userData?.telegram_user_id;
 
         if (!userId) {
-            console.warn("User ID not found, cannot update points.");
+            addLog("User ID not found, cannot update points.");
             return;
         }
 
@@ -117,19 +122,19 @@ function HomePage({ userData }) {
             });
 
             if (!response.ok) {
-                console.error("HTTP error при обновлении очков:", response.status, response.statusText);
+                addLog("HTTP error при обновлении очков: " + response.status + " " + response.statusText);
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
             if (!data.success) {
-                console.error("Ошибка от Netlify Function:", data.error);
+                addLog("Ошибка от Netlify Function: " + data.error);
                 throw new Error(`Failed to update points in database: ${data.error}`);
             }
 
-            console.log("Очки успешно обновлены в базе данных!");
+            addLog("Очки успешно обновлены в базе данных!");
         } catch (error) {
-            console.error("Ошибка при обновлении очков:", error);
+            addLog("Ошибка при обновлении очков: " + error.message);
         }
     };
 
@@ -178,6 +183,14 @@ function HomePage({ userData }) {
 
     return (
         <section className='bodyhomepage'>
+            <div className='logs'>
+                <h3>Logs:</h3>
+                <ul>
+                    {logs.map((log, index) => (
+                        <li key={index}>{log}</li>
+                    ))}
+                </ul>
+            </div>
             <span className='points-count'>{points}</span>
             <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
             <Game />
@@ -186,7 +199,7 @@ function HomePage({ userData }) {
             <button
                 className='FarmButton'
                 onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
-                disabled={isButtonDisabled && !isClaimButton}
+                disabled={isButtonDisabled}
                 style={{
                     backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
                     color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
