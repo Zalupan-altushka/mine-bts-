@@ -186,7 +186,7 @@ function HomePage({ userData }) {
             <button
                 className='FarmButton'
                 onClick={isClaimButton ? handleClaimPoints : handleMineFor100}
-                disabled={isButtonDisabled}
+                disabled={isButtonDisabled && !isClaimButton}
                 style={{
                     backgroundColor: isClaimButton ? '#c4f85c' : (isButtonDisabled ? '#c4f85c' : ''),
                     color: isClaimButton ? 'black' : (isButtonDisabled ? 'black' : ''),
