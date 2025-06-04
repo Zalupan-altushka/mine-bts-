@@ -43,7 +43,6 @@ function HomePage({ userData }) {
 
             const data = await response.json();
             if (data.isValid && data.userData) {
-                setUserData(data.userData);
                 const initialPoints = Math.floor(data.userData.points || 0);
                 setPoints(initialPoints);
                 localStorage.setItem('points', initialPoints.toString()); // Сохраняем очки в LocalStorage
