@@ -88,7 +88,15 @@ function DayCheck({ onPointsUpdate, userData }) { // Добавляем userData
   }, []);
 
   const handleGetButtonClick = async () => {
-    onPointsUpdate(30); // Обновляем очки
+    const bonusPoints = 30; // Количество очков для добавления
+    const newPoints = (userData?.points || 0) + bonusPoints;
+
+    // Обновляем очки в базе данных
+    await updatePointsInDatabase(newPoints);
+
+    // Обновляем очки в родительском компоненте
+    onPointsUpdate(newPoints);
+
     setIsButtonDisabled(true);
     const nextClaimTime = Date.now() + 12 * 60 * 60 * 1000; // 12 часов
     localStorage.setItem('nextClaimTime', nextClaimTime);
@@ -99,11 +107,6 @@ function DayCheck({ onPointsUpdate, userData }) { // Добавляем userData
     setDayCheckCount(newDayCheckCount);
     localStorage.setItem('dayCheckCount', newDayCheckCount);
     localStorage.setItem('lastClaimTime', Date.now()); // Сохраняем время последнего сбора
-
-    // Обновляем очки в базе данных
-    if (userData) {
-      await updatePointsInDatabase(userData.points + 30);
-    }
   };
 
   const formatTimeLeft = (time) => {
