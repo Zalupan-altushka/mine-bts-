@@ -18,12 +18,7 @@ function HomePage({ userData }) {
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [timeRemaining, setTimeRemaining] = useState(0);
     const [isClaimButton, setIsClaimButton] = useState(false);
-    const [logs, setLogs] = useState([]);
     const timerRef = useRef(null);
-
-    const addLog = (message) => {
-        setLogs((prevLogs) => [...prevLogs, message]);
-    };
 
     const fetchUserData = async (userId) => {
         const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth';
@@ -37,7 +32,7 @@ function HomePage({ userData }) {
             });
 
             if (!response.ok) {
-                addLog("Ошибка при получении данных пользователя: " + response.status);
+                console.error("Ошибка при получении данных пользователя:", response.status);
                 return;
             }
 
@@ -47,10 +42,10 @@ function HomePage({ userData }) {
                 setPoints(initialPoints);
                 localStorage.setItem('points', initialPoints.toString()); // Сохраняем очки в LocalStorage
             } else {
-                addLog("Не удалось получить данные пользователя");
+                console.warn("Не удалось получить данные пользователя");
             }
         } catch (error) {
-            addLog("Ошибка при запросе данных пользователя: " + error.message);
+            console.error("Ошибка при запросе данных пользователя:", error);
         }
     };
 
@@ -69,28 +64,19 @@ function HomePage({ userData }) {
         setTimeRemaining(oneMinuteInSeconds);
         startTimer(oneMinuteInSeconds);
         setIsMining(true);
-        localStorage.setItem('isMining', 'true');
         setIsButtonDisabled(true);
-        localStorage.setItem('isButtonDisabled', 'true');
         setIsClaimButton(false); // Disable Claim button when mining
     };
 
     const startTimer = (duration) => {
         clearInterval(timerRef.current);
         const endTime = Date.now() + duration * 1000;
-        localStorage.setItem('endTime', endTime.toString());
 
         timerRef.current = setInterval(() => {
             const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
             setTimeRemaining(remainingTime);
             if (remainingTime <= 0) {
                 clearInterval(timerRef.current);
-                localStorage.removeItem('endTime');
-                localStorage.setItem('isButtonDisabled', 'false');
-                localStorage.setItem('isMining', 'false');
-                localStorage.setItem('isClaimButton', 'true');
-
-                // Обновляем состояния после завершения таймера
                 setIsButtonDisabled(false);
                 setIsMining(false);
                 setIsClaimButton(true);
@@ -104,7 +90,7 @@ function HomePage({ userData }) {
         const userId = userData?.telegram_user_id;
 
         if (!userId) {
-            addLog("User ID not found, cannot update points.");
+            console.warn("User ID not found, cannot update points.");
             return;
         }
 
@@ -121,27 +107,26 @@ function HomePage({ userData }) {
             });
 
             if (!response.ok) {
-                addLog("HTTP error при обновлении очков: " + response.status + " " + response.statusText);
+                console.error("HTTP error при обновлении очков:", response.status, response.statusText);
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
             if (!data.success) {
-                addLog("Ошибка от Netlify Function: " + data.error);
+                console.error("Ошибка от Netlify Function:", data.error);
                 throw new Error(`Failed to update points in database: ${data.error}`);
             }
 
-            addLog("Очки успешно обновлены в базе данных!");
+            console.log("Очки успешно обновлены в базе данных!");
         } catch (error) {
-            addLog("Ошибка при обновлении очков: " + error.message);
+            console.error("Ошибка при обновлении очков:", error);
         }
     };
 
     const formatTime = (seconds) => {
-      const hours = String(Math.floor(seconds / 3600)).padStart(2, '0');
-      const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
-      const secs = String(seconds % 60).padStart(2, '0');
-      return `${hours}:${minutes}:${secs}`;
+        const minutes = String(Math.floor(seconds / 60)).padStart(2, '0');
+        const secs = String(seconds % 60).padStart(2, '0');
+        return `${minutes}:${secs}`;
     };
 
     useEffect(() => {
@@ -207,14 +192,6 @@ function HomePage({ userData }) {
                 {isClaimButton ? 'Claim 50 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 50 BTS')}
             </button>
             <Menu />
-            <div className='logs'>
-                <h3>Logs:</h3>
-                <ul>
-                    {logs.map((log, index) => (
-                        <li key={index}>{log}</li>
-                    ))}
-                </ul>
-            </div>
         </section>
     );
 }
