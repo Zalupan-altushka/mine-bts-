@@ -162,6 +162,10 @@ function HomePage({ userData }) {
             if (remainingTime > 0) {
                 startTimer(remainingTime);
             }
+        } else {
+            // Если таймер не запущен, кнопка должна отображать "Mine 50 BTS"
+            setIsClaimButton(false);
+            setIsButtonDisabled(false);
         }
     }, []);
 
@@ -182,14 +186,6 @@ function HomePage({ userData }) {
 
     return (
         <section className='bodyhomepage'>
-            <div className='logs'>
-                <h3>Logs:</h3>
-                <ul>
-                    {logs.map((log, index) => (
-                        <li key={index}>{log}</li>
-                    ))}
-                </ul>
-            </div>
             <span className='points-count'>{points}</span>
             <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
             <Game />
@@ -211,6 +207,14 @@ function HomePage({ userData }) {
                 {isClaimButton ? 'Claim 50 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 50 BTS')}
             </button>
             <Menu />
+            <div className='logs'>
+                <h3>Logs:</h3>
+                <ul>
+                    {logs.map((log, index) => (
+                        <li key={index}>{log}</li>
+                    ))}
+                </ul>
+            </div>
         </section>
     );
 }
