@@ -17,7 +17,7 @@ function HomePage({ userData }) {
     const [isMining, setIsMining] = useState(false);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [timeRemaining, setTimeRemaining] = useState(0);
-    const [isClaimButton, setIsClaimButton] = useState(true);
+    const [isClaimButton, setIsClaimButton] = useState(false);
     const timerRef = useRef(null);
 
     const fetchUserData = async (userId) => {
@@ -57,12 +57,13 @@ function HomePage({ userData }) {
         setPoints(Math.floor(newPoints));
         localStorage.setItem('points', Math.floor(newPoints).toString());
         setIsClaimButton(false);
+        setIsButtonDisabled(false);
     };
 
     const handleMineFor100 = () => {
-        const sixHoursInSeconds = 60; // 1 минута для тестирования
-        setTimeRemaining(sixHoursInSeconds);
-        startTimer(sixHoursInSeconds);
+        const oneMinuteInSeconds = 60; // 1 минута для тестирования
+        setTimeRemaining(oneMinuteInSeconds);
+        startTimer(oneMinuteInSeconds);
         setIsMining(true);
         localStorage.setItem('isMining', 'true');
         setIsButtonDisabled(true);
