@@ -25,7 +25,7 @@ function DayCheck({ onPointsUpdate, userData }) { // Добавляем userData
         },
         body: JSON.stringify({
           telegramId: userId,
-          points: newPoints,
+          points: newPoints.toFixed(3), // Округляем до 3 знаков после запятой
         }),
       });
 
