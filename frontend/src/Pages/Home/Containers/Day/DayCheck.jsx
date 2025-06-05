@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './DayCheck.css';
 import Moom from '../../../../Most Used/Image/Moom';
 import CheckIcon from '../../../../Most Used/Image/CheckIcon';
@@ -7,6 +7,7 @@ function DayCheck({ onPointsUpdate, userData }) { // Добавляем userData
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
   const [dayCheckCount, setDayCheckCount] = useState(0); // Состояние для хранения количества day-check
+  const timerRef = useRef(null);
 
   const updatePointsInDatabase = async (newPoints) => {
     const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
@@ -72,17 +73,17 @@ function DayCheck({ onPointsUpdate, userData }) { // Добавляем userData
       if (remainingTime > 0) {
         setTimeLeft(remainingTime);
         setIsButtonDisabled(true);
-        const interval = setInterval(() => {
+        timerRef.current = setInterval(() => {
           setTimeLeft((prev) => {
             if (prev <= 1000) {
-              clearInterval(interval);
+              clearInterval(timerRef.current);
               setIsButtonDisabled(false);
               return 0;
             }
             return prev - 1000;
           });
         }, 1000);
-        return () => clearInterval(interval);
+        return () => clearInterval(timerRef.current);
       }
     }
   }, []);
@@ -98,21 +99,34 @@ function DayCheck({ onPointsUpdate, userData }) { // Добавляем userData
     onPointsUpdate(newPoints);
 
     setIsButtonDisabled(true);
-    const nextClaimTime = Date.now() + 12 * 60 * 60 * 1000; // 12 часов
+    const nextClaimTime = Date.now() + 60 * 1000; // 1 минута
     localStorage.setItem('nextClaimTime', nextClaimTime);
-    setTimeLeft(12 * 60 * 60 * 1000); // Устанавливаем время блокировки
+    setTimeLeft(60 * 1000); // Устанавливаем время блокировки
 
     // Увеличиваем количество day-check и сохраняем в localStorage
     const newDayCheckCount = dayCheckCount + 1;
     setDayCheckCount(newDayCheckCount);
     localStorage.setItem('dayCheckCount', newDayCheckCount);
     localStorage.setItem('lastClaimTime', Date.now()); // Сохраняем время последнего сбора
+
+    // Запускаем таймер
+    clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1000) {
+          clearInterval(timerRef.current);
+          setIsButtonDisabled(false);
+          return 0;
+        }
+        return prev - 1000;
+      });
+    }, 1000);
   };
 
   const formatTimeLeft = (time) => {
-    const hours = Math.floor((time / (1000 * 60 * 60)) % 24);
     const minutes = Math.floor((time / (1000 * 60)) % 60);
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+    const seconds = Math.floor((time / 1000) % 60);
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   };
 
   return (
