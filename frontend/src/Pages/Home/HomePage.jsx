@@ -10,13 +10,87 @@ import Game from './Containers/MiniGame/Game';
 const tg = window.Telegram.WebApp;
 
 function HomePage({ userData }) {
-    const [points, setPoints] = useState(0); // Инициализируем points значением из userData
+    const [points, setPoints] = useState(() => {
+        const storedPoints = localStorage.getItem('points');
+        return storedPoints ? parseFloat(storedPoints) : 0;
+    });
     const [isMining, setIsMining] = useState(false);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [timeRemaining, setTimeRemaining] = useState(0);
     const [isClaimButton, setIsClaimButton] = useState(false);
     const [isLoading, setIsLoading] = useState(false); // Состояние для индикатора загрузки
     const timerRef = useRef(null);
+
+    const fetchUserData = async (userId) => {
+        const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth';
+        try {
+            const response = await fetch(AUTH_FUNCTION_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ initData: window.Telegram?.WebApp?.initData }),
+            });
+
+            if (!response.ok) {
+                console.error("Ошибка при получении данных пользователя:", response.status);
+                return;
+            }
+
+            const data = await response.json();
+            if (data.isValid && data.userData) {
+                const initialPoints = parseFloat(data.userData.points || 0);
+                setPoints(initialPoints);
+                localStorage.setItem('points', initialPoints.toString()); // Сохраняем очки в LocalStorage
+            } else {
+                console.warn("Не удалось получить данные пользователя");
+            }
+        } catch (error) {
+            console.error("Ошибка при запросе данных пользователя:", error);
+        }
+    };
+
+    const handleClaimPoints = async () => {
+        setIsLoading(true); // Показываем индикатор загрузки
+        const bonusPoints = 52.033; // Изменено количество очков
+        const newPoints = points + bonusPoints;
+        await updatePointsInDatabase(newPoints);
+        setPoints(parseFloat(newPoints.toFixed(3))); // Округляем до 3 знаков после запятой
+        localStorage.setItem('points', newPoints.toFixed(3));
+        setIsClaimButton(false);
+        setIsButtonDisabled(false);
+        setIsLoading(false); // Скрываем индикатор загрузки
+    };
+
+    const handleMineFor100 = () => {
+        setIsLoading(true); // Показываем индикатор загрузки
+        const sixHoursInSeconds = 6 * 60 * 60; // 6 часов в секундах
+        setTimeRemaining(sixHoursInSeconds);
+        startTimer(sixHoursInSeconds);
+        setIsMining(true);
+        setIsButtonDisabled(true);
+        setIsClaimButton(false); // Disable Claim button when mining
+        setIsLoading(false); // Скрываем индикатор загрузки
+    };
+
+    const startTimer = (duration) => {
+        clearInterval(timerRef.current);
+        const endTime = Date.now() + duration * 1000;
+        localStorage.setItem('endTime', endTime.toString());
+
+        timerRef.current = setInterval(() => {
+            const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+            setTimeRemaining(remainingTime);
+            if (remainingTime <= 0) {
+                clearInterval(timerRef.current);
+                localStorage.removeItem('endTime');
+                setIsButtonDisabled(false);
+                setIsMining(false);
+                setIsClaimButton(true);
+                setTimeRemaining(0);
+            }
+        }, 1000);
+    };
 
     const updatePointsInDatabase = async (newPoints) => {
         const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
@@ -26,6 +100,7 @@ function HomePage({ userData }) {
             console.warn("User ID not found, cannot update points.");
             return;
         }
+
         try {
             const response = await fetch(UPDATE_POINTS_URL, {
                 method: 'POST',
@@ -93,66 +168,24 @@ function HomePage({ userData }) {
     }, []);
 
     useEffect(() => {
-        // Обновление очков при изменении userData
-        if (userData?.points !== undefined) {
-            setPoints(parseFloat(userData.points)); // Используем значение из userData
+        if (userData) {
+            const initialPoints = parseFloat(userData.points || 0);
+            setPoints(initialPoints);
+            localStorage.setItem('points', initialPoints.toString());
         }
     }, [userData]);
 
-
     useEffect(() => {
-        localStorage.setItem('points', points.toFixed(3));
-        localStorage.setItem('isMining', isMining);
-        localStorage.setItem('isButtonDisabled', isButtonDisabled);
-        localStorage.setItem('isClaimButton', isClaimButton);
-    }, [points, isMining, isButtonDisabled, isClaimButton]);
-
-    const handleClaimPoints = async () => {
-        setIsLoading(true); // Показываем индикатор загрузки
-        const bonusPoints = 52.033; // Изменено количество очков
-        const newPoints = points + bonusPoints;
-        await updatePointsInDatabase(newPoints);
-        setPoints(parseFloat(newPoints.toFixed(3))); // Округляем до 3 знаков после запятой
-        localStorage.setItem('points', newPoints.toFixed(3));
-        setIsClaimButton(false);
-        setIsButtonDisabled(false);
-        setIsLoading(false); // Скрываем индикатор загрузки
-    };
-
-    const handleMineFor100 = () => {
-        setIsLoading(true); // Показываем индикатор загрузки
-        const sixHoursInSeconds = 6 * 60 * 60; // 6 часов в секундах
-        setTimeRemaining(sixHoursInSeconds);
-        startTimer(sixHoursInSeconds);
-        setIsMining(true);
-        setIsButtonDisabled(true);
-        setIsClaimButton(false); // Disable Claim button when mining
-        setIsLoading(false); // Скрываем индикатор загрузки
-    };
-
-    const startTimer = (duration) => {
-        clearInterval(timerRef.current);
-        const endTime = Date.now() + duration * 1000;
-        localStorage.setItem('endTime', endTime.toString());
-
-        timerRef.current = setInterval(() => {
-            const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-            setTimeRemaining(remainingTime);
-            if (remainingTime <= 0) {
-                clearInterval(timerRef.current);
-                localStorage.removeItem('endTime');
-                setIsButtonDisabled(false);
-                setIsMining(false);
-                setIsClaimButton(true);
-                setTimeRemaining(0);
-            }
-        }, 1000);
-    };
+        const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+        if (userId) {
+            fetchUserData(userId);
+        }
+    }, []);
 
     return (
         <section className='bodyhomepage'>
             <span className='points-count'>{points.toFixed(3)}</span>
-            <DayCheck onPointsUpdate={setPoints} userData={userData} />
+            <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
             <Game />
             <BoosterContainer />
             <FriendsConnt />
