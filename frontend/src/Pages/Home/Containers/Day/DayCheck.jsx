@@ -9,8 +9,9 @@ function DayCheck({ updatePointsInDatabase, userData }) {
     const [dayCheckCount, setDayCheckCount] = useState(() => {
         return parseInt(localStorage.getItem('dayCheckCount') || '0', 10);
     });
-      // Функция для отправки логов на сервер
-      const sendLogToServer = async (message) => {
+
+    // Функция для отправки логов на сервер
+    const sendLogToServer = async (message) => {
         const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
         try {
             const response = await fetch(UPDATE_POINTS_URL, {
@@ -28,6 +29,7 @@ function DayCheck({ updatePointsInDatabase, userData }) {
             console.error("Ошибка при отправке лога на сервер:", error);
         }
     };
+
     useEffect(() => {
         if (!userData) {
             setIsButtonDisabled(true);
@@ -71,7 +73,7 @@ function DayCheck({ updatePointsInDatabase, userData }) {
         console.log("handleGetButtonClick: before updatePointsInDatabase, points:", userData.points);
 
         setIsButtonDisabled(true);
-        const oneMinuteInMilliseconds = 60 * 1000;
+        const oneMinuteInMilliseconds = 60 * 1000; // 1 минута
         const nextClaimTime = Date.now() + oneMinuteInMilliseconds;
         localStorage.setItem('nextClaimTime', nextClaimTime.toString());
         setTimeLeft(oneMinuteInMilliseconds);
@@ -92,9 +94,9 @@ function DayCheck({ updatePointsInDatabase, userData }) {
     };
 
     const formatTimeLeft = (time) => {
-        const hours = Math.floor((time / (1000 * 60 * 60)) % 24);
         const minutes = Math.floor((time / (1000 * 60)) % 60);
-        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+        const seconds = Math.floor((time / 1000) % 60);
+        return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     };
 
     return (
