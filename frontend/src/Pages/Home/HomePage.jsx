@@ -18,7 +18,7 @@ function HomePage({ userData }) {
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [timeRemaining, setTimeRemaining] = useState(0);
     const [isClaimButton, setIsClaimButton] = useState(false);
-    const [isLoading, setIsLoading] = useState(false); // Состояние для индикатора загрузки
+    const [isLoading, setIsLoading] = useState(false);
     const timerRef = useRef(null);
 
     const fetchUserData = async (userId) => {
@@ -41,7 +41,7 @@ function HomePage({ userData }) {
             if (data.isValid && data.userData) {
                 const initialPoints = parseFloat(data.userData.points || 0);
                 setPoints(initialPoints);
-                localStorage.setItem('points', initialPoints.toFixed(3).toString()); // Сохраняем очки в LocalStorage
+                localStorage.setItem('points', initialPoints.toFixed(3).toString());
             } else {
                 console.warn("Не удалось получить данные пользователя");
             }
@@ -56,7 +56,7 @@ function HomePage({ userData }) {
         const newPoints = points + bonusPoints;
         await updatePointsInDatabase(newPoints);
         setPoints(parseFloat(newPoints.toFixed(3)));
-        localStorage.setItem('points', newPoints.toFixed(3).toString()); // Сохраняем очки в LocalStorage
+        localStorage.setItem('points', newPoints.toFixed(3).toString());
         setIsClaimButton(false);
         setIsButtonDisabled(false);
         setIsLoading(false);
@@ -138,13 +138,11 @@ function HomePage({ userData }) {
     };
 
     useEffect(() => {
-        // Load points from localStorage on component mount
         const storedPoints = localStorage.getItem('points');
         if (storedPoints) {
             setPoints(parseFloat(storedPoints));
         }
 
-        // Загрузка начального состояния из localStorage
         const storedIsMining = localStorage.getItem('isMining') === 'true';
         const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
         const storedIsClaimButton = localStorage.getItem('isClaimButton') === 'true';
@@ -174,7 +172,7 @@ function HomePage({ userData }) {
     useEffect(() => {
         if (userData) {
             setPoints(parseFloat(userData.points || 0));
-            localStorage.setItem('points', (parseFloat(userData.points || 0)).toFixed(3).toString()); // Update points in localStorage
+            localStorage.setItem('points', (parseFloat(userData.points || 0)).toFixed(3).toString());
         }
     }, [userData]);
 

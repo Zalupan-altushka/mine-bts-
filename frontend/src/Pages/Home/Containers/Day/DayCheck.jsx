@@ -3,7 +3,7 @@ import './DayCheck.css';
 import Moom from '../../../../Most Used/Image/Moom';
 import CheckIcon from '../../../../Most Used/Image/CheckIcon';
 
-function DayCheck({ onPointsUpdate, userData }) { // Получаем функцию onPointsUpdate из пропсов
+function DayCheck({ onPointsUpdate, userData }) {
   const [dayCheckCount, setDayCheckCount] = useState(0);
   const [buttonStatus, setButtonStatus] = useState('Get');
 
@@ -40,30 +40,27 @@ function DayCheck({ onPointsUpdate, userData }) { // Получаем функц
       }
 
       console.log("Очки успешно обновлены в базе данных!");
-      return true; // Возвращаем true при успешном обновлении
+      return true;
     } catch (error) {
       console.error("Ошибка при обновлении очков:", error);
-      return false; // Возвращаем false при ошибке
+      return false;
     }
   };
 
   useEffect(() => {
-    // Загружаем количество day-check из localStorage
     const storedDayCheckCount = localStorage.getItem('dayCheckCount');
     const lastClaimTime = localStorage.getItem('lastClaimTime');
 
-    // Проверяем, прошло ли 24 часа с последнего сбора
     if (lastClaimTime) {
       const timeSinceLastClaim = Date.now() - parseInt(lastClaimTime, 10);
       if (timeSinceLastClaim > 24 * 60 * 60 * 1000) {
-        // Если прошло более 24 часов, обнуляем счетчик
         setDayCheckCount(0);
         localStorage.setItem('dayCheckCount', 0);
       } else if (storedDayCheckCount) {
         setDayCheckCount(parseInt(storedDayCheckCount, 10));
       }
     } else {
-      setDayCheckCount(0); // Если значение не найдено, устанавливаем его в 0
+      setDayCheckCount(0);
     }
   }, []);
 
@@ -79,7 +76,7 @@ function DayCheck({ onPointsUpdate, userData }) { // Получаем функц
     const success = await updatePointsInDatabase(newPoints);
 
     if (success) {
-      onPointsUpdate(newPoints); // Вызываем функцию обновления очков из пропсов
+      onPointsUpdate(newPoints);
 
       const newDayCheckCount = dayCheckCount + 1;
       setDayCheckCount(newDayCheckCount);
