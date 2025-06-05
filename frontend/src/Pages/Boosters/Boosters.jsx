@@ -5,7 +5,6 @@ import ListContainerThree from '../Boosters-list/ListContainetThree';
 import ListsContainerFirst from '../Boosters-list/ListContainerFirst';
 import ListContainerSecond from '../Boosters-list/ListContainerSecond';
 import BoostersBox from './Containers/BoostersBox';
-import { Telegram } from '@telegram-apps/sdk';
 
 const telegram = Telegram.WebApp;
 
