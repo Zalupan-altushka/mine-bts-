@@ -104,7 +104,7 @@ function DayCheck({ onPointsUpdate, userData }) { // Добавляем userData
           onClick={handleGetButtonClick}
           disabled={isWaiting}
         >
-          {isWaiting ? <span style={{ fontSize: '12px' }}>Wait</span> : 'Get'}
+          {isWaiting ? <span style={{ fontSize: '11px' }}>Wait...</span> : 'Get'}
         </button>
       </div>
     </div>
