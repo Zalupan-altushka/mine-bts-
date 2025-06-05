@@ -10,7 +10,7 @@ function Friends({ userData }) {
 
   useEffect(() => {
     if (userData && userData.telegram_user_id) {
-      const uniqueLink = `https://t.me/mine_bts_bot?start=${userData.telegram_user_id}`;
+      const uniqueLink = `tg://resolve?domain=mine_bts_bot&start=${userData.telegram_user_id}`;
       setReferralLink(uniqueLink);
     }
   }, [userData]);
@@ -64,6 +64,7 @@ function Friends({ userData }) {
 
   return (
     <section className='bodyfriendspage'>
+      <div className='margin-div-fr'></div>
       <TotalFR />
       <Bonus />
       <Reward />
