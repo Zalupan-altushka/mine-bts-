@@ -47,9 +47,9 @@ function DayCheck({ userData, onPointsUpdate }) {
     localStorage.setItem('lastClaimTime', Date.now().toString());
 
     setIsButtonDisabled(true);
-    const oneMinuteInSeconds = 60;
-    setTimeRemaining(oneMinuteInSeconds);
-    startTimer(oneMinuteInSeconds);
+    const twelveHoursInSeconds = 12 * 60 * 60;
+    setTimeRemaining(twelveHoursInSeconds);
+    startTimer(twelveHoursInSeconds);
   };
 
   const startTimer = (duration) => {
@@ -109,9 +109,10 @@ function DayCheck({ userData, onPointsUpdate }) {
   };
 
   const formatTime = (seconds) => {
-    const minutes = String(Math.floor(seconds / 60)).padStart(2, '0');
+    const hours = String(Math.floor(seconds / 3600)).padStart(2, '0');
+    const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
     const secs = String(seconds % 60).padStart(2, '0');
-    return `${minutes}:${secs}`;
+    return `${hours}:${minutes}:${secs}`;
   };
 
   return (
@@ -127,7 +128,7 @@ function DayCheck({ userData, onPointsUpdate }) {
       </div>
       <div className='right-section-button'>
         <button
-          className='Get-button'
+          className={`Get-button ${isButtonDisabled ? 'disabled' : ''}`}
           onClick={handleGetPoints}
           disabled={isButtonDisabled}
         >
