@@ -3,13 +3,66 @@ import './DayCheck.css';
 import Moom from '../../../../Most Used/Image/Moom';
 import CheckIcon from '../../../../Most Used/Image/CheckIcon';
 
-function DayCheck({ userData }) {
+function DayCheck({ onPointsUpdate, userData }) {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
+  const [dayCheckCount, setDayCheckCount] = useState(0);
   const timerRef = useRef(null);
 
+  const updatePointsInDatabase = async (newPoints) => {
+    const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
+    const userId = userData?.telegram_user_id;
+
+    if (!userId) {
+      console.warn("User ID not found, cannot update points.");
+      return;
+    }
+
+    try {
+      const response = await fetch(UPDATE_POINTS_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          telegramId: userId,
+          points: newPoints,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error("HTTP error при обновлении очков:", response.status, response.statusText);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (!data.success) {
+        console.error("Ошибка от Netlify Function:", data.error);
+        throw new Error(`Failed to update points in database: ${data.error}`);
+      }
+
+      console.log("Очки успешно обновлены в базе данных!");
+    } catch (error) {
+      console.error("Ошибка при обновлении очков:", error);
+    }
+  };
+
   useEffect(() => {
-    // Загружаем время следующего запроса из localStorage
+    const storedDayCheckCount = localStorage.getItem('dayCheckCount');
+    const lastClaimTime = localStorage.getItem('lastClaimTime');
+
+    if (lastClaimTime) {
+      const timeSinceLastClaim = Date.now() - parseInt(lastClaimTime, 10);
+      if (timeSinceLastClaim > 24 * 60 * 60 * 1000) {
+        setDayCheckCount(0);
+        localStorage.setItem('dayCheckCount', 0);
+      } else if (storedDayCheckCount) {
+        setDayCheckCount(parseInt(storedDayCheckCount, 10));
+      }
+    } else {
+      setDayCheckCount(0);
+    }
+
     const storedTime = localStorage.getItem('nextClaimTime');
     if (storedTime) {
       const remainingTime = parseInt(storedTime, 10) - Date.now();
@@ -31,11 +84,21 @@ function DayCheck({ userData }) {
     }
   }, []);
 
-  const handleGetButtonClick = () => {
+  const handleGetButtonClick = async () => {
+    onPointsUpdate(30.033);
     setIsButtonDisabled(true);
     const nextClaimTime = Date.now() + 60 * 1000; // 1 минута
     localStorage.setItem('nextClaimTime', nextClaimTime);
     setTimeLeft(60 * 1000); // Устанавливаем время блокировки
+
+    const newDayCheckCount = dayCheckCount + 1;
+    setDayCheckCount(newDayCheckCount);
+    localStorage.setItem('dayCheckCount', newDayCheckCount);
+    localStorage.setItem('lastClaimTime', Date.now());
+
+    if (userData) {
+      await updatePointsInDatabase(userData.points + 30.033);
+    }
 
     // Запускаем таймер
     clearInterval(timerRef.current);
@@ -63,7 +126,7 @@ function DayCheck({ userData }) {
         <Moom />
       </div>
       <div className='mid-section-textabout'>
-        <span className='first-span'>Day-check</span>
+        <span className='first-span'>{dayCheckCount} day-check</span>
         <span className='second-span'>
           {isButtonDisabled ? `Next claim in ${formatTimeLeft(timeLeft)}` : 'Claim available!'}
         </span>
