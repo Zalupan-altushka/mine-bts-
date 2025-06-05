@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Boosters.css';
 import Menu from '../../Most Used/Menu/Menu';
-import ListContainerThree from '../Boosters-list/ListContainerThree';
+import ListContainerThree from '../Boosters-list/ListContainetThree';
 import ListsContainerFirst from '../Boosters-list/ListContainerFirst';
 import ListContainerSecond from '../Boosters-list/ListContainerSecond';
 import BoostersBox from './Containers/BoostersBox';
