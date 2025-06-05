@@ -5,6 +5,7 @@ import CheckIcon from '../../../../Most Used/Image/CheckIcon';
 
 function DayCheck({ onPointsUpdate, userData }) { // Добавляем userData в пропсы
   const [dayCheckCount, setDayCheckCount] = useState(0); // Состояние для хранения количества day-check
+  const [isWaiting, setIsWaiting] = useState(false); // Состояние для отображения надписи "Wait"
 
   const updatePointsInDatabase = async (newPoints) => {
     const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
@@ -65,8 +66,13 @@ function DayCheck({ onPointsUpdate, userData }) { // Добавляем userData
   }, []);
 
   const handleGetButtonClick = async () => {
+    setIsWaiting(true); // Устанавливаем состояние "Wait"
+
     const bonusPoints = 30.033; // Количество очков для добавления
     const newPoints = (userData?.points || 0) + bonusPoints;
+
+    console.log("Current points:", userData?.points);
+    console.log("New points:", newPoints);
 
     // Обновляем очки в базе данных
     await updatePointsInDatabase(newPoints);
@@ -79,6 +85,8 @@ function DayCheck({ onPointsUpdate, userData }) { // Добавляем userData
     setDayCheckCount(newDayCheckCount);
     localStorage.setItem('dayCheckCount', newDayCheckCount);
     localStorage.setItem('lastClaimTime', Date.now()); // Сохраняем время последнего сбора
+
+    setIsWaiting(false); // Снимаем состояние "Wait"
   };
 
   return (
@@ -94,8 +102,9 @@ function DayCheck({ onPointsUpdate, userData }) { // Добавляем userData
         <button
           className='Get-button'
           onClick={handleGetButtonClick}
+          disabled={isWaiting}
         >
-          Get
+          {isWaiting ? <span style={{ fontSize: '12px' }}>Wait</span> : 'Get'}
         </button>
       </div>
     </div>
