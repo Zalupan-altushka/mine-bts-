@@ -6,7 +6,7 @@ import ListsContainerFirst from '../Boosters-list/ListContainerFirst';
 import ListContainerSecond from '../Boosters-list/ListContainerSecond';
 import BoostersBox from './Containers/BoostersBox';
 
-const telegram = Telegram.WebApp;
+const telegram = telegram.WebApp;
 
 function Boosters({ userData }) {
   const [boosters, setBoosters] = useState({
