@@ -169,9 +169,8 @@ function HomePage({ userData }) {
 
     useEffect(() => {
         if (userData) {
-            const initialPoints = parseFloat(userData.points || 0);
-            setPoints(initialPoints);
-            localStorage.setItem('points', initialPoints.toString());
+            setPoints(parseFloat(userData.points || 0));
+            localStorage.setItem('points', (parseFloat(userData.points || 0)).toFixed(3).toString()); // Обновление points в localStorage
         }
     }, [userData]);
 
@@ -185,7 +184,7 @@ function HomePage({ userData }) {
     return (
         <section className='bodyhomepage'>
             <span className='points-count'>{points.toFixed(3)}</span>
-            <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
+            <DayCheck onPointsUpdate={setPoints} userData={userData} /> {/* Передаем setPoints в DayCheck */}
             <Game />
             <BoosterContainer />
             <FriendsConnt />

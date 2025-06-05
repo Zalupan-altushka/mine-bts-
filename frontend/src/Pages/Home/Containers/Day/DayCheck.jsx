@@ -3,9 +3,9 @@ import './DayCheck.css';
 import Moom from '../../../../Most Used/Image/Moom';
 import CheckIcon from '../../../../Most Used/Image/CheckIcon';
 
-function DayCheck({ onPointsUpdate, userData }) { // Добавляем userData в пропсы
-  const [dayCheckCount, setDayCheckCount] = useState(0); // Состояние для хранения количества day-check
-  const [isWaiting, setIsWaiting] = useState(false); // Состояние для отображения надписи "Wait"
+function DayCheck({ onPointsUpdate, userData }) { // Получаем функцию onPointsUpdate из пропсов
+  const [dayCheckCount, setDayCheckCount] = useState(0);
+  const [buttonStatus, setButtonStatus] = useState('Get');
 
   const updatePointsInDatabase = async (newPoints) => {
     const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
@@ -24,7 +24,7 @@ function DayCheck({ onPointsUpdate, userData }) { // Добавляем userData
         },
         body: JSON.stringify({
           telegramId: userId,
-          points: newPoints.toFixed(3), // Округляем до 3 знаков после запятой
+          points: newPoints.toFixed(3),
         }),
       });
 
@@ -40,8 +40,10 @@ function DayCheck({ onPointsUpdate, userData }) { // Добавляем userData
       }
 
       console.log("Очки успешно обновлены в базе данных!");
+      return true; // Возвращаем true при успешном обновлении
     } catch (error) {
       console.error("Ошибка при обновлении очков:", error);
+      return false; // Возвращаем false при ошибке
     }
   };
 
@@ -66,27 +68,26 @@ function DayCheck({ onPointsUpdate, userData }) { // Добавляем userData
   }, []);
 
   const handleGetButtonClick = async () => {
-    setIsWaiting(true); // Устанавливаем состояние "Wait"
+    setButtonStatus('Wait');
 
-    const bonusPoints = 30.033; // Количество очков для добавления
+    const bonusPoints = 30.033;
     const newPoints = (userData?.points || 0) + bonusPoints;
 
     console.log("Current points:", userData?.points);
     console.log("New points:", newPoints);
 
-    // Обновляем очки в базе данных
-    await updatePointsInDatabase(newPoints);
+    const success = await updatePointsInDatabase(newPoints);
 
-    // Обновляем очки в родительском компоненте
-    onPointsUpdate(newPoints);
+    if (success) {
+      onPointsUpdate(newPoints); // Вызываем функцию обновления очков из пропсов
 
-    // Увеличиваем количество day-check и сохраняем в localStorage
-    const newDayCheckCount = dayCheckCount + 1;
-    setDayCheckCount(newDayCheckCount);
-    localStorage.setItem('dayCheckCount', newDayCheckCount);
-    localStorage.setItem('lastClaimTime', Date.now()); // Сохраняем время последнего сбора
+      const newDayCheckCount = dayCheckCount + 1;
+      setDayCheckCount(newDayCheckCount);
+      localStorage.setItem('dayCheckCount', newDayCheckCount);
+      localStorage.setItem('lastClaimTime', Date.now());
+    }
 
-    setIsWaiting(false); // Снимаем состояние "Wait"
+    setButtonStatus('Get');
   };
 
   return (
@@ -95,16 +96,19 @@ function DayCheck({ onPointsUpdate, userData }) { // Добавляем userData
         <Moom />
       </div>
       <div className='mid-section-textabout'>
-        <span className='first-span'>{dayCheckCount} day-check</span> {/* Обновляем количество day-check */}
+        <span className='first-span'>{dayCheckCount} day-check</span>
         <span className='second-span'>Claim available!</span>
       </div>
       <div className='right-section-button'>
         <button
           className='Get-button'
           onClick={handleGetButtonClick}
-          disabled={isWaiting}
         >
-          {isWaiting ? <span style={{ fontSize: '11px' }}>Wait...</span> : 'Get'}
+          {buttonStatus === 'Wait' ? (
+            <span style={{ fontSize: '12px' }}>Wait</span>
+          ) : (
+            'Get'
+          )}
         </button>
       </div>
     </div>
