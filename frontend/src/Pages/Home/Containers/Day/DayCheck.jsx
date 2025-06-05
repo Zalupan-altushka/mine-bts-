@@ -3,10 +3,11 @@ import './DayCheck.css';
 import Moom from '../../../../Most Used/Image/Moom';
 import CheckIcon from '../../../../Most Used/Image/CheckIcon';
 
-function DayCheck({ onPointsUpdate, userData }) {
+function DayCheck({ onPointsUpdate, userData }) { // Добавляем userData в пропсы
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
-  const [dayCheckCount, setDayCheckCount] = useState(0);
+  const [dayCheckCount, setDayCheckCount] = useState(0); // Состояние для хранения количества day-check
+  const [timerRunning, setTimerRunning] = useState(false); // Состояние для управления таймером
   const timerRef = useRef(null);
 
   const updatePointsInDatabase = async (newPoints) => {
@@ -26,7 +27,7 @@ function DayCheck({ onPointsUpdate, userData }) {
         },
         body: JSON.stringify({
           telegramId: userId,
-          points: newPoints,
+          points: newPoints.toFixed(3), // Округляем до 3 знаков после запятой
         }),
       });
 
@@ -48,57 +49,69 @@ function DayCheck({ onPointsUpdate, userData }) {
   };
 
   useEffect(() => {
+    // Загружаем количество day-check из localStorage
     const storedDayCheckCount = localStorage.getItem('dayCheckCount');
     const lastClaimTime = localStorage.getItem('lastClaimTime');
 
+    // Проверяем, прошло ли 24 часа с последнего сбора
     if (lastClaimTime) {
       const timeSinceLastClaim = Date.now() - parseInt(lastClaimTime, 10);
       if (timeSinceLastClaim > 24 * 60 * 60 * 1000) {
+        // Если прошло более 24 часов, обнуляем счетчик
         setDayCheckCount(0);
         localStorage.setItem('dayCheckCount', 0);
       } else if (storedDayCheckCount) {
         setDayCheckCount(parseInt(storedDayCheckCount, 10));
       }
     } else {
-      setDayCheckCount(0);
+      setDayCheckCount(0); // Если значение не найдено, устанавливаем его в 0
     }
 
+    // Загружаем время следующего запроса из localStorage
     const storedTime = localStorage.getItem('nextClaimTime');
     if (storedTime) {
       const remainingTime = parseInt(storedTime, 10) - Date.now();
       if (remainingTime > 0) {
         setTimeLeft(remainingTime);
         setIsButtonDisabled(true);
-        timerRef.current = setInterval(() => {
+        setTimerRunning(true);
+        const interval = setInterval(() => {
           setTimeLeft((prev) => {
             if (prev <= 1000) {
-              clearInterval(timerRef.current);
+              clearInterval(interval);
               setIsButtonDisabled(false);
+              setTimerRunning(false);
               return 0;
             }
             return prev - 1000;
           });
         }, 1000);
-        return () => clearInterval(timerRef.current);
+        return () => clearInterval(interval);
       }
     }
   }, []);
 
   const handleGetButtonClick = async () => {
-    onPointsUpdate(30.033);
+    const bonusPoints = 30.033; // Количество очков для добавления
+    const newPoints = (userData?.points || 0) + bonusPoints;
+
+    // Обновляем очки в базе данных
+    await updatePointsInDatabase(newPoints);
+
+    // Обновляем очки в родительском компоненте
+    onPointsUpdate(newPoints);
+
     setIsButtonDisabled(true);
+    setTimerRunning(true);
     const nextClaimTime = Date.now() + 60 * 1000; // 1 минута
     localStorage.setItem('nextClaimTime', nextClaimTime);
     setTimeLeft(60 * 1000); // Устанавливаем время блокировки
 
+    // Увеличиваем количество day-check и сохраняем в localStorage
     const newDayCheckCount = dayCheckCount + 1;
     setDayCheckCount(newDayCheckCount);
     localStorage.setItem('dayCheckCount', newDayCheckCount);
-    localStorage.setItem('lastClaimTime', Date.now());
-
-    if (userData) {
-      await updatePointsInDatabase(userData.points + 30.033);
-    }
+    localStorage.setItem('lastClaimTime', Date.now()); // Сохраняем время последнего сбора
 
     // Запускаем таймер
     clearInterval(timerRef.current);
@@ -107,6 +120,7 @@ function DayCheck({ onPointsUpdate, userData }) {
         if (prev <= 1000) {
           clearInterval(timerRef.current);
           setIsButtonDisabled(false);
+          setTimerRunning(false);
           return 0;
         }
         return prev - 1000;
@@ -115,7 +129,7 @@ function DayCheck({ onPointsUpdate, userData }) {
   };
 
   const formatTimeLeft = (time) => {
-    const minutes = Math.floor((time / 1000) / 60);
+    const minutes = Math.floor((time / (1000 * 60)) % 60);
     const seconds = Math.floor((time / 1000) % 60);
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   };
@@ -126,9 +140,9 @@ function DayCheck({ onPointsUpdate, userData }) {
         <Moom />
       </div>
       <div className='mid-section-textabout'>
-        <span className='first-span'>{dayCheckCount} day-check</span>
+        <span className='first-span'>{dayCheckCount} day-check</span> {/* Обновляем количество day-check */}
         <span className='second-span'>
-          {isButtonDisabled ? `Next claim in ${formatTimeLeft(timeLeft)}` : 'Claim available!'}
+          {timerRunning ? `Next claim in ${formatTimeLeft(timeLeft)}` : 'Сlaim available!'}
         </span>
       </div>
       <div className='right-section-button'>
