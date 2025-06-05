@@ -1,13 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import './DayCheck.css';
 import Moom from '../../../../Most Used/Image/Moom';
 import CheckIcon from '../../../../Most Used/Image/CheckIcon';
 
 function DayCheck({ onPointsUpdate, userData }) { // Добавляем userData в пропсы
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(0);
   const [dayCheckCount, setDayCheckCount] = useState(0); // Состояние для хранения количества day-check
-  const timerRef = useRef(null);
 
   const updatePointsInDatabase = async (newPoints) => {
     const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
@@ -65,27 +62,6 @@ function DayCheck({ onPointsUpdate, userData }) { // Добавляем userData
     } else {
       setDayCheckCount(0); // Если значение не найдено, устанавливаем его в 0
     }
-
-    // Загружаем время следующего запроса из localStorage
-    const storedTime = localStorage.getItem('nextClaimTime');
-    if (storedTime) {
-      const remainingTime = parseInt(storedTime, 10) - Date.now();
-      if (remainingTime > 0) {
-        setTimeLeft(remainingTime);
-        setIsButtonDisabled(true);
-        timerRef.current = setInterval(() => {
-          setTimeLeft((prev) => {
-            if (prev <= 1000) {
-              clearInterval(timerRef.current);
-              setIsButtonDisabled(false);
-              return 0;
-            }
-            return prev - 1000;
-          });
-        }, 1000);
-        return () => clearInterval(timerRef.current);
-      }
-    }
   }, []);
 
   const handleGetButtonClick = async () => {
@@ -98,34 +74,11 @@ function DayCheck({ onPointsUpdate, userData }) { // Добавляем userData
     // Обновляем очки в родительском компоненте
     onPointsUpdate(newPoints);
 
-    setIsButtonDisabled(true);
-    const nextClaimTime = Date.now() + 30 * 1000; // 30 секунд
-    localStorage.setItem('nextClaimTime', nextClaimTime);
-    setTimeLeft(30 * 1000); // Устанавливаем время блокировки
-
     // Увеличиваем количество day-check и сохраняем в localStorage
     const newDayCheckCount = dayCheckCount + 1;
     setDayCheckCount(newDayCheckCount);
     localStorage.setItem('dayCheckCount', newDayCheckCount);
     localStorage.setItem('lastClaimTime', Date.now()); // Сохраняем время последнего сбора
-
-    // Запускаем таймер
-    clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1000) {
-          clearInterval(timerRef.current);
-          setIsButtonDisabled(false);
-          return 0;
-        }
-        return prev - 1000;
-      });
-    }, 1000);
-  };
-
-  const formatTimeLeft = (time) => {
-    const seconds = Math.floor((time / 1000) % 60);
-    return `${String(seconds).padStart(2, '0')}`;
   };
 
   return (
@@ -135,17 +88,14 @@ function DayCheck({ onPointsUpdate, userData }) { // Добавляем userData
       </div>
       <div className='mid-section-textabout'>
         <span className='first-span'>{dayCheckCount} day-check</span> {/* Обновляем количество day-check */}
-        <span className='second-span'>
-          {isButtonDisabled ? `Next claim in ${formatTimeLeft(timeLeft)}` : 'Сlaim available!'}
-        </span>
+        <span className='second-span'>Claim available!</span>
       </div>
       <div className='right-section-button'>
         <button
-          className={`Get-button ${isButtonDisabled ? 'disabled' : ''}`}
+          className='Get-button'
           onClick={handleGetButtonClick}
-          disabled={isButtonDisabled}
         >
-          {isButtonDisabled ? <CheckIcon /> : 'Get'}
+          Get
         </button>
       </div>
     </div>
