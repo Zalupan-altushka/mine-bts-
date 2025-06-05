@@ -125,8 +125,10 @@ function HomePage({ userData }) {
             }
 
             console.log("Очки успешно обновлены в базе данных!");
+            return true;
         } catch (error) {
             console.error("Ошибка при обновлении очков:", error);
+            return false;
         }
     };
 
