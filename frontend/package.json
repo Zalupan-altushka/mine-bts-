@@ -11,7 +11,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.7.2",
     "@supabase/supabase-js": "^2.49.8",
-    "@telegram-apps/sdk": "^3.7.1",
+    "@telegram-apps/sdk": "^3.10.0",
     "@telegram-apps/sdk-react": "^3.2.1",
     "@ton/core": "^0.60.1",
     "@ton/crypto": "^3.3.0",
