@@ -41,7 +41,7 @@ function HomePage({ userData }) {
             if (data.isValid && data.userData) {
                 const initialPoints = parseFloat(data.userData.points || 0);
                 setPoints(initialPoints);
-                localStorage.setItem('points', initialPoints.toString()); // Сохраняем очки в LocalStorage
+                localStorage.setItem('points', initialPoints.toFixed(3).toString()); // Сохраняем очки в LocalStorage
             } else {
                 console.warn("Не удалось получить данные пользователя");
             }
@@ -51,26 +51,26 @@ function HomePage({ userData }) {
     };
 
     const handleClaimPoints = async () => {
-        setIsLoading(true); // Показываем индикатор загрузки
-        const bonusPoints = 52.033; // Изменено количество очков
+        setIsLoading(true);
+        const bonusPoints = 52.033;
         const newPoints = points + bonusPoints;
         await updatePointsInDatabase(newPoints);
-        setPoints(parseFloat(newPoints.toFixed(3))); // Округляем до 3 знаков после запятой
-        localStorage.setItem('points', newPoints.toFixed(3));
+        setPoints(parseFloat(newPoints.toFixed(3)));
+        localStorage.setItem('points', newPoints.toFixed(3).toString()); // Сохраняем очки в LocalStorage
         setIsClaimButton(false);
         setIsButtonDisabled(false);
-        setIsLoading(false); // Скрываем индикатор загрузки
+        setIsLoading(false);
     };
 
     const handleMineFor100 = () => {
-        setIsLoading(true); // Показываем индикатор загрузки
-        const sixHoursInSeconds = 6 * 60 * 60; // 6 часов в секундах
+        setIsLoading(true);
+        const sixHoursInSeconds = 6 * 60 * 60;
         setTimeRemaining(sixHoursInSeconds);
         startTimer(sixHoursInSeconds);
         setIsMining(true);
         setIsButtonDisabled(true);
-        setIsClaimButton(false); // Disable Claim button when mining
-        setIsLoading(false); // Скрываем индикатор загрузки
+        setIsClaimButton(false);
+        setIsLoading(false);
     };
 
     const startTimer = (duration) => {
@@ -109,7 +109,7 @@ function HomePage({ userData }) {
                 },
                 body: JSON.stringify({
                     telegramId: userId,
-                    points: newPoints.toFixed(3), // Округляем до 3 знаков после запятой
+                    points: newPoints.toFixed(3),
                 }),
             });
 
@@ -138,6 +138,12 @@ function HomePage({ userData }) {
     };
 
     useEffect(() => {
+        // Load points from localStorage on component mount
+        const storedPoints = localStorage.getItem('points');
+        if (storedPoints) {
+            setPoints(parseFloat(storedPoints));
+        }
+
         // Загрузка начального состояния из localStorage
         const storedIsMining = localStorage.getItem('isMining') === 'true';
         const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
@@ -155,13 +161,11 @@ function HomePage({ userData }) {
             if (remainingTime > 0) {
                 startTimer(remainingTime);
             } else {
-                // Если таймер истек, кнопка должна отображать "Claim 52.033 BTS"
                 setIsClaimButton(true);
                 setIsButtonDisabled(false);
                 setIsMining(false);
             }
         } else {
-            // Если таймер не запущен, кнопка должна отображать "Mine 52.033 BTS"
             setIsClaimButton(false);
             setIsButtonDisabled(false);
         }
@@ -170,7 +174,7 @@ function HomePage({ userData }) {
     useEffect(() => {
         if (userData) {
             setPoints(parseFloat(userData.points || 0));
-            localStorage.setItem('points', (parseFloat(userData.points || 0)).toFixed(3).toString()); // Обновление points в localStorage
+            localStorage.setItem('points', (parseFloat(userData.points || 0)).toFixed(3).toString()); // Update points in localStorage
         }
     }, [userData]);
 
@@ -184,7 +188,7 @@ function HomePage({ userData }) {
     return (
         <section className='bodyhomepage'>
             <span className='points-count'>{points.toFixed(3)}</span>
-            <DayCheck onPointsUpdate={setPoints} userData={userData} /> {/* Передаем setPoints в DayCheck */}
+            <DayCheck onPointsUpdate={setPoints} userData={userData} />
             <Game />
             <BoosterContainer />
             <FriendsConnt />
