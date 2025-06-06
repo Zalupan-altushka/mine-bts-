@@ -17,7 +17,10 @@ function HomePage({ userData }) {
     const [isMining, setIsMining] = useState(false);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [timeRemaining, setTimeRemaining] = useState(0);
-    const [isClaimButton, setIsClaimButton] = useState(false);
+    const [isClaimButton, setIsClaimButton] = useState(() => {
+        const storedIsClaimButton = localStorage.getItem('isClaimButton');
+        return storedIsClaimButton === 'true';
+    });
     const [isLoading, setIsLoading] = useState(false);
     const timerRef = useRef(null);
 
@@ -58,6 +61,7 @@ function HomePage({ userData }) {
         setPoints(parseFloat(newPoints.toFixed(3)));
         localStorage.setItem('points', newPoints.toFixed(3).toString());
         setIsClaimButton(false);
+        localStorage.setItem('isClaimButton', 'false');
         setIsButtonDisabled(false);
         setIsLoading(false);
     };
@@ -70,6 +74,7 @@ function HomePage({ userData }) {
         setIsMining(true);
         setIsButtonDisabled(true);
         setIsClaimButton(false);
+        localStorage.setItem('isClaimButton', 'false');
         setIsLoading(false);
     };
 
@@ -87,6 +92,7 @@ function HomePage({ userData }) {
                 setIsButtonDisabled(false);
                 setIsMining(false);
                 setIsClaimButton(true);
+                localStorage.setItem('isClaimButton', 'true');
                 setTimeRemaining(0);
             }
         }, 1000);
@@ -161,11 +167,13 @@ function HomePage({ userData }) {
                 startTimer(remainingTime);
             } else {
                 setIsClaimButton(true);
+                localStorage.setItem('isClaimButton', 'true');
                 setIsButtonDisabled(false);
                 setIsMining(false);
             }
         } else {
             setIsClaimButton(false);
+            localStorage.setItem('isClaimButton', 'false');
             setIsButtonDisabled(false);
         }
     }, []);
