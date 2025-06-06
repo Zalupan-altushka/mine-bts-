@@ -15,8 +15,8 @@ function HomePage({ userData }) {
         return storedPoints ? parseFloat(storedPoints) : 0;
     });
     const [isMining, setIsMining] = useState(false);
-    const [isButtonDisabled] = useState(false);
-    const [timeRemaining] = useState(0);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [timeRemaining, setTimeRemaining] = useState(0);
     const [isClaimButton, setIsClaimButton] = useState(() => {
         const storedIsClaimButton = localStorage.getItem('isClaimButton');
         return storedIsClaimButton === 'true';
@@ -120,7 +120,7 @@ function HomePage({ userData }) {
             });
 
             if (!response.ok) {
-                console.error("HTTP error при обновлении очков:", response.status, response.statusText);
+                console.error("Ошибка при обновлении очков:", response.status);
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
@@ -157,7 +157,7 @@ function HomePage({ userData }) {
         setIsMining(storedIsMining);
         setIsButtonDisabled(storedIsButtonDisabled === 'true'); // Convert to boolean
         setIsClaimButton(storedIsClaimButton === 'true'); // Convert to boolean
-        
+
         const storedEndTime = localStorage.getItem('farmButtonEndTime');
 
         if (storedEndTime && storedIsButtonDisabled === 'true') {
@@ -216,7 +216,7 @@ function HomePage({ userData }) {
                     <span className="loading-indicator">Loading...</span>
                 ) : (
                     <>
-                        {isButtonDisabled && isMining && <Timer style={{ marginRight: '8px' }} />}
+                        {isButtonDisabled && isMining && <Timer style={{ marginRight: '7px' }} />}
                         {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
                     </>
                 )}
