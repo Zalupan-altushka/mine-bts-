@@ -1,18 +1,18 @@
+import React from 'react';
 import Fly from '../../../../Most Used/Image/Fly';
-import './Reward.css'
+import './Reward.css';
 
-function Reward() {
-
-  return(
+function Reward({ invitedFriends }) {
+  return (
     <section className='reward-section-fr'>
-        <article className='left-section-reward-fr'>
-          <span className='title-total-frends'>Your total reward!</span>
-          <span className='span-reward-fr'>54.033 $BTS</span>
-          <span className='span-about-fr'>+50.033 BTS for friend</span>
-        </article>
-        <article className='right-section-reward-fr'>
-          <Fly />
-        </article>
+      <article className='left-section-reward-fr'>
+        <span className='title-total-frends'>Your total reward!</span>
+        <span className='span-reward-fr'>{invitedFriends > 0 ? '205.033' : ''}</span>
+        <span className='span-about-fr'>+205.033 BTS for friend</span>
+      </article>
+      <article className='right-section-reward-fr'>
+        <Fly />
+      </article>
     </section>
   );
 }
