@@ -12,16 +12,13 @@ const tg = window.Telegram.WebApp;
 function HomePage({ userData }) {
     const [points, setPoints] = useState(() => {
         const storedPoints = localStorage.getItem('points');
-        return storedPoints ? parseFloat(storedPoints) : 0;
+        return storedPoints ? parseInt(storedPoints, 10) : 0;
     });
     const [isMining, setIsMining] = useState(false);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [timeRemaining, setTimeRemaining] = useState(0);
-    const [isClaimButton, setIsClaimButton] = useState(() => {
-        const storedIsClaimButton = localStorage.getItem('isClaimButton');
-        return storedIsClaimButton === 'true';
-    });
-    const [isLoading, setIsLoading] = useState(false);
+    const [isClaimButton, setIsClaimButton] = useState(false);
+    const [isLoading, setIsLoading] = useState(false); // Состояние для индикатора загрузки
     const timerRef = useRef(null);
 
     const fetchUserData = async (userId) => {
@@ -42,9 +39,9 @@ function HomePage({ userData }) {
 
             const data = await response.json();
             if (data.isValid && data.userData) {
-                const initialPoints = parseFloat(data.userData.points || 0);
+                const initialPoints = Math.floor(data.userData.points || 0);
                 setPoints(initialPoints);
-                localStorage.setItem('points', initialPoints.toFixed(3).toString());
+                localStorage.setItem('points', initialPoints.toString()); // Сохраняем очки в LocalStorage
             } else {
                 console.warn("Не удалось получить данные пользователя");
             }
@@ -54,45 +51,42 @@ function HomePage({ userData }) {
     };
 
     const handleClaimPoints = async () => {
-        setIsLoading(true);
-        const bonusPoints = 52.033;
+        setIsLoading(true); // Показываем индикатор загрузки
+        const bonusPoints = 52.033; // Изменено количество очков
         const newPoints = points + bonusPoints;
         await updatePointsInDatabase(newPoints);
-        setPoints(parseFloat(newPoints.toFixed(3)));
-        localStorage.setItem('points', newPoints.toFixed(3).toString());
+        setPoints(Math.floor(newPoints.toFixed(3)));
+        localStorage.setItem('points', Math.floor(newPoints.toFixed(3)).toString());
         setIsClaimButton(false);
-        localStorage.setItem('isClaimButton', 'false');
         setIsButtonDisabled(false);
-        setIsLoading(false);
+        setIsLoading(false); // Скрываем индикатор загрузки
     };
 
     const handleMineFor100 = () => {
-        setIsLoading(true);
-        const oneMinuteInSeconds = 60;
-        setTimeRemaining(oneMinuteInSeconds);
-        startTimer(oneMinuteInSeconds);
+        setIsLoading(true); // Показываем индикатор загрузки
+        const sixHoursInSeconds = 6 * 60 * 60; // 6 часов в секундах
+        setTimeRemaining(sixHoursInSeconds);
+        startTimer(sixHoursInSeconds);
         setIsMining(true);
         setIsButtonDisabled(true);
-        setIsClaimButton(false);
-        localStorage.setItem('isClaimButton', 'false');
-        setIsLoading(false);
+        setIsClaimButton(false); // Disable Claim button when mining
+        setIsLoading(false); // Скрываем индикатор загрузки
     };
 
     const startTimer = (duration) => {
         clearInterval(timerRef.current);
         const endTime = Date.now() + duration * 1000;
-        localStorage.setItem('farmButtonEndTime', endTime.toString());
+        localStorage.setItem('endTime', endTime.toString());
 
         timerRef.current = setInterval(() => {
             const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
             setTimeRemaining(remainingTime);
             if (remainingTime <= 0) {
                 clearInterval(timerRef.current);
-                localStorage.removeItem('farmButtonEndTime');
+                localStorage.removeItem('endTime');
                 setIsButtonDisabled(false);
                 setIsMining(false);
                 setIsClaimButton(true);
-                localStorage.setItem('isClaimButton', 'true');
                 setTimeRemaining(0);
             }
         }, 1000);
@@ -115,12 +109,12 @@ function HomePage({ userData }) {
                 },
                 body: JSON.stringify({
                     telegramId: userId,
-                    points: newPoints.toFixed(3),
+                    points: newPoints,
                 }),
             });
 
             if (!response.ok) {
-                console.error("Ошибка при обновлении очков:", response.status);
+                console.error("HTTP error при обновлении очков:", response.status, response.statusText);
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
@@ -131,58 +125,53 @@ function HomePage({ userData }) {
             }
 
             console.log("Очки успешно обновлены в базе данных!");
-            return true;
         } catch (error) {
             console.error("Ошибка при обновлении очков:", error);
-            return false;
         }
     };
 
     const formatTime = (seconds) => {
         const hours = String(Math.floor(seconds / 3600)).padStart(2, '0');
         const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
-        return `${hours}:${minutes}`;
+        const secs = String(seconds % 60).padStart(2, '0');
+        return `${hours}:${minutes}:${secs}`;
     };
 
     useEffect(() => {
-        const storedPoints = localStorage.getItem('points');
-        if (storedPoints) {
-            setPoints(parseFloat(storedPoints));
-        }
-
+        // Загрузка начального состояния из localStorage
         const storedIsMining = localStorage.getItem('isMining') === 'true';
         const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
-        const storedIsClaimButton = localStorage.getItem('isClaimButton');
+        const storedIsClaimButton = localStorage.getItem('isClaimButton') === 'true';
+        const storedEndTime = localStorage.getItem('endTime');
 
         setIsMining(storedIsMining);
-        setIsButtonDisabled(storedIsButtonDisabled === 'true');
-        setIsClaimButton(storedIsClaimButton === 'true');
+        setIsButtonDisabled(storedIsButtonDisabled);
+        setIsClaimButton(storedIsClaimButton);
 
-        const storedEndTime = localStorage.getItem('farmButtonEndTime');
-
-        if (storedEndTime && storedIsButtonDisabled === 'true') {
+        if (storedEndTime && storedIsButtonDisabled) {
             const endTime = parseInt(storedEndTime, 10);
             const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
             setTimeRemaining(remainingTime);
             if (remainingTime > 0) {
                 startTimer(remainingTime);
             } else {
+                // Если таймер истек, кнопка должна отображать "Claim 50 BTS"
                 setIsClaimButton(true);
-                localStorage.setItem('isClaimButton', 'true');
                 setIsButtonDisabled(false);
                 setIsMining(false);
             }
         } else {
+            // Если таймер не запущен, кнопка должна отображать "Mine 50 BTS"
             setIsClaimButton(false);
-            localStorage.setItem('isClaimButton', 'false');
             setIsButtonDisabled(false);
         }
     }, []);
 
     useEffect(() => {
         if (userData) {
-            setPoints(parseFloat(userData.points || 0));
-            localStorage.setItem('points', (parseFloat(userData.points || 0)).toFixed(3).toString());
+            const initialPoints = userData.points || 0;
+            setPoints(initialPoints);
+            localStorage.setItem('points', initialPoints.toString());
         }
     }, [userData]);
 
@@ -193,16 +182,10 @@ function HomePage({ userData }) {
         }
     }, []);
 
-    // Log to check if isClaimButton is updating correctly
-    useEffect(() => {
-        console.log('isClaimButton updated:', isClaimButton);
-        console.log('localStorage isClaimButton:', localStorage.getItem('isClaimButton'));
-    }, [isClaimButton]);
-
     return (
         <section className='bodyhomepage'>
             <span className='points-count'>{points.toFixed(3)}</span>
-            <DayCheck onPointsUpdate={setPoints} userData={userData} />
+            <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
             <Game />
             <BoosterContainer />
             <FriendsConnt />
@@ -223,7 +206,7 @@ function HomePage({ userData }) {
                 ) : (
                     <>
                         {isButtonDisabled && isMining && <Timer style={{ marginRight: '8px' }} />}
-                        {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
+                        {isClaimButton ? 'Claim 50 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 50 BTS')}
                     </>
                 )}
             </button>
