@@ -19,10 +19,16 @@ function HomePage({ userData }) {
     const [timeRemaining, setTimeRemaining] = useState(0);
     const [isClaimButton, setIsClaimButton] = useState(() => {
         const storedIsClaimButton = localStorage.getItem('isClaimButton');
-        return storedIsClaimButton === 'true';
+        return storedIsClaimButton === 'true' || false; // Ensure boolean value
     });
     const [isLoading, setIsLoading] = useState(false);
     const timerRef = useRef(null);
+
+    // --- Функция для обновления состояния isClaimButton и сохранения в localStorage ---
+    const updateClaimButtonState = (newValue) => {
+        setIsClaimButton(newValue);
+        localStorage.setItem('isClaimButton', newValue ? 'true' : 'false');
+    };
 
     const fetchUserData = async (userId) => {
         const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth';
@@ -60,8 +66,7 @@ function HomePage({ userData }) {
         await updatePointsInDatabase(newPoints);
         setPoints(parseFloat(newPoints.toFixed(3)));
         localStorage.setItem('points', newPoints.toFixed(3).toString());
-        setIsClaimButton(false);
-        localStorage.setItem('isClaimButton', 'false');
+        updateClaimButtonState(false);
         setIsButtonDisabled(false);
         setIsLoading(false);
     };
@@ -73,8 +78,7 @@ function HomePage({ userData }) {
         startTimer(oneMinuteInSeconds);
         setIsMining(true);
         setIsButtonDisabled(true);
-        setIsClaimButton(false);
-        localStorage.setItem('isClaimButton', 'false');
+        updateClaimButtonState(false);
         setIsLoading(false);
     };
 
@@ -91,8 +95,7 @@ function HomePage({ userData }) {
                 localStorage.removeItem('farmButtonEndTime');
                 setIsButtonDisabled(false);
                 setIsMining(false);
-                setIsClaimButton(true);
-                localStorage.setItem('isClaimButton', 'true');
+                updateClaimButtonState(true); // Set isClaimButton to true
                 setTimeRemaining(0);
             }
         }, 1000);
@@ -152,29 +155,24 @@ function HomePage({ userData }) {
 
         const storedIsMining = localStorage.getItem('isMining') === 'true';
         const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
-        const storedIsClaimButton = localStorage.getItem('isClaimButton');
-
-        setIsMining(storedIsMining);
-        setIsButtonDisabled(storedIsButtonDisabled === 'true'); // Convert to boolean
-        setIsClaimButton(storedIsClaimButton === 'true'); // Convert to boolean
-
         const storedEndTime = localStorage.getItem('farmButtonEndTime');
 
-        if (storedEndTime && storedIsButtonDisabled === 'true') {
+        setIsMining(storedIsMining);
+        setIsButtonDisabled(storedIsButtonDisabled);
+
+        if (storedEndTime && storedIsButtonDisabled) {
             const endTime = parseInt(storedEndTime, 10);
             const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
             setTimeRemaining(remainingTime);
             if (remainingTime > 0) {
                 startTimer(remainingTime);
             } else {
-                setIsClaimButton(true);
-                localStorage.setItem('isClaimButton', 'true');
+                updateClaimButtonState(true); // Set isClaimButton to true
                 setIsButtonDisabled(false);
                 setIsMining(false);
             }
         } else {
-            setIsClaimButton(false);
-            localStorage.setItem('isClaimButton', 'false');
+            updateClaimButtonState(false); // Ensure isClaimButton is false if no timer
             setIsButtonDisabled(false);
         }
     }, []);
@@ -192,12 +190,6 @@ function HomePage({ userData }) {
             fetchUserData(userId);
         }
     }, []);
-
-    // Log to check if isClaimButton is updating correctly
-    useEffect(() => {
-        console.log('isClaimButton updated:', isClaimButton);
-        console.log('localStorage isClaimButton:', localStorage.getItem('isClaimButton'));
-    }, [isClaimButton]);
 
     return (
         <section className='bodyhomepage'>
