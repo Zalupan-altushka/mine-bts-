@@ -15,8 +15,8 @@ function HomePage({ userData }) {
         return storedPoints ? parseFloat(storedPoints) : 0;
     });
     const [isMining, setIsMining] = useState(false);
-    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-    const [timeRemaining, setTimeRemaining] = useState(0);
+    const [isButtonDisabled] = useState(false);
+    const [timeRemaining] = useState(0);
     const [isClaimButton, setIsClaimButton] = useState(() => {
         const storedIsClaimButton = localStorage.getItem('isClaimButton');
         return storedIsClaimButton === 'true';
@@ -152,14 +152,15 @@ function HomePage({ userData }) {
 
         const storedIsMining = localStorage.getItem('isMining') === 'true';
         const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
-        const storedIsClaimButton = localStorage.getItem('isClaimButton') === 'true';
-        const storedEndTime = localStorage.getItem('farmButtonEndTime');
+        const storedIsClaimButton = localStorage.getItem('isClaimButton');
 
         setIsMining(storedIsMining);
-        setIsButtonDisabled(storedIsButtonDisabled);
-        setIsClaimButton(storedIsClaimButton);
+        setIsButtonDisabled(storedIsButtonDisabled === 'true'); // Convert to boolean
+        setIsClaimButton(storedIsClaimButton === 'true'); // Convert to boolean
+        
+        const storedEndTime = localStorage.getItem('farmButtonEndTime');
 
-        if (storedEndTime && storedIsButtonDisabled) {
+        if (storedEndTime && storedIsButtonDisabled === 'true') {
             const endTime = parseInt(storedEndTime, 10);
             const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
             setTimeRemaining(remainingTime);
