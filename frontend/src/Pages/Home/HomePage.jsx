@@ -64,9 +64,9 @@ function HomePage({ userData }) {
 
     const handleMineFor100 = () => {
         setIsLoading(true);
-        const sixHoursInSeconds = 6 * 60 * 60;
-        setTimeRemaining(sixHoursInSeconds);
-        startTimer(sixHoursInSeconds);
+        const oneMinuteInSeconds = 60;
+        setTimeRemaining(oneMinuteInSeconds);
+        startTimer(oneMinuteInSeconds);
         setIsMining(true);
         setIsButtonDisabled(true);
         setIsClaimButton(false);

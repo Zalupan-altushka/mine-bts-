@@ -7,6 +7,7 @@ function DayCheck({ userData, onPointsUpdate }) {
   const [dayCheckCount, setDayCheckCount] = useState(0);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const storedDayCheckCount = localStorage.getItem('dayCheckCount');
@@ -37,6 +38,7 @@ function DayCheck({ userData, onPointsUpdate }) {
   }, []);
 
   const handleGetPoints = async () => {
+    setIsLoading(true);
     const bonusPoints = 30.033;
     const newPoints = parseFloat(localStorage.getItem('points')) + bonusPoints;
     await updatePointsInDatabase(newPoints);
@@ -50,6 +52,7 @@ function DayCheck({ userData, onPointsUpdate }) {
     const twelveHoursInSeconds = 12 * 60 * 60;
     setTimeRemaining(twelveHoursInSeconds);
     startTimer(twelveHoursInSeconds);
+    setIsLoading(false);
   };
 
   const startTimer = (duration) => {
@@ -129,9 +132,9 @@ function DayCheck({ userData, onPointsUpdate }) {
         <button
           className={`Get-button ${isButtonDisabled ? 'disabled' : ''}`}
           onClick={handleGetPoints}
-          disabled={isButtonDisabled}
+          disabled={isButtonDisabled || isLoading}
         >
-          {isButtonDisabled ? <CheckIcon /> : 'GeT'}
+          {isLoading ? <span style={{ fontSize: '11px' }}>Wait...</span> : (isButtonDisabled ? <CheckIcon /> : 'GeT')}
         </button>
       </div>
     </div>
