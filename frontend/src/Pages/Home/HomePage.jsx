@@ -55,8 +55,8 @@ function HomePage({ userData }) {
         const bonusPoints = 52.033; // Изменено количество очков
         const newPoints = points + bonusPoints;
         await updatePointsInDatabase(newPoints);
-        setPoints(Math.floor(newPoints.toFixed(3)));
-        localStorage.setItem('points', Math.floor(newPoints.toFixed(3)).toString());
+        setPoints(parseFloat(newPoints.toFixed(3))); // Округляем до 3 знаков после запятой
+        localStorage.setItem('points', newPoints.toFixed(3));
         setIsClaimButton(false);
         setIsButtonDisabled(false);
         setIsLoading(false); // Скрываем индикатор загрузки
@@ -184,7 +184,7 @@ function HomePage({ userData }) {
 
     return (
         <section className='bodyhomepage'>
-            <span className='points-count'>{points.toFixed(3)}</span>
+            <span className='points-count'>{points}</span>
             <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
             <Game />
             <BoosterContainer />
