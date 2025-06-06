@@ -76,14 +76,14 @@ function HomePage({ userData }) {
     const startTimer = (duration) => {
         clearInterval(timerRef.current);
         const endTime = Date.now() + duration * 1000;
-        localStorage.setItem('endTime', endTime.toString());
+        localStorage.setItem('farmButtonEndTime', endTime.toString());
 
         timerRef.current = setInterval(() => {
             const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
             setTimeRemaining(remainingTime);
             if (remainingTime <= 0) {
                 clearInterval(timerRef.current);
-                localStorage.removeItem('endTime');
+                localStorage.removeItem('farmButtonEndTime');
                 setIsButtonDisabled(false);
                 setIsMining(false);
                 setIsClaimButton(true);
@@ -135,8 +135,7 @@ function HomePage({ userData }) {
     const formatTime = (seconds) => {
         const hours = String(Math.floor(seconds / 3600)).padStart(2, '0');
         const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
-        const secs = String(seconds % 60).padStart(2, '0');
-        return `${hours}:${minutes}:${secs}`;
+        return `${hours}:${minutes}`;
     };
 
     useEffect(() => {
@@ -148,7 +147,7 @@ function HomePage({ userData }) {
         const storedIsMining = localStorage.getItem('isMining') === 'true';
         const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
         const storedIsClaimButton = localStorage.getItem('isClaimButton') === 'true';
-        const storedEndTime = localStorage.getItem('endTime');
+        const storedEndTime = localStorage.getItem('farmButtonEndTime');
 
         setIsMining(storedIsMining);
         setIsButtonDisabled(storedIsButtonDisabled);

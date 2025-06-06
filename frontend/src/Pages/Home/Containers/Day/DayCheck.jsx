@@ -24,7 +24,7 @@ function DayCheck({ userData, onPointsUpdate }) {
       setDayCheckCount(0);
     }
 
-    const storedEndTime = localStorage.getItem('endTime');
+    const storedEndTime = localStorage.getItem('dayCheckEndTime');
     if (storedEndTime) {
       const endTime = parseInt(storedEndTime, 10);
       const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
@@ -54,14 +54,14 @@ function DayCheck({ userData, onPointsUpdate }) {
 
   const startTimer = (duration) => {
     const endTime = Date.now() + duration * 1000;
-    localStorage.setItem('endTime', endTime.toString());
+    localStorage.setItem('dayCheckEndTime', endTime.toString());
 
     const timer = setInterval(() => {
       const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
       setTimeRemaining(remainingTime);
       if (remainingTime <= 0) {
         clearInterval(timer);
-        localStorage.removeItem('endTime');
+        localStorage.removeItem('dayCheckEndTime');
         setIsButtonDisabled(false);
         setTimeRemaining(0);
       }
