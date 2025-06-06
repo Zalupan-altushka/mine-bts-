@@ -193,6 +193,12 @@ function HomePage({ userData }) {
         }
     }, []);
 
+    // Log to check if isClaimButton is updating correctly
+    useEffect(() => {
+        console.log('isClaimButton updated:', isClaimButton);
+        console.log('localStorage isClaimButton:', localStorage.getItem('isClaimButton'));
+    }, [isClaimButton]);
+
     return (
         <section className='bodyhomepage'>
             <span className='points-count'>{points.toFixed(3)}</span>
@@ -216,7 +222,7 @@ function HomePage({ userData }) {
                     <span className="loading-indicator">Loading...</span>
                 ) : (
                     <>
-                        {isButtonDisabled && isMining && <Timer style={{ marginRight: '7px' }} />}
+                        {isButtonDisabled && isMining && <Timer style={{ marginRight: '8px' }} />}
                         {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
                     </>
                 )}
