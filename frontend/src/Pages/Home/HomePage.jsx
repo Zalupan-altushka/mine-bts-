@@ -184,7 +184,7 @@ function HomePage({ userData }) {
 
     return (
         <section className='bodyhomepage'>
-            <span className='points-count'>{points}</span>
+            <span className='points-count'>{pointstoFixed(3)}</span>
             <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
             <Game />
             <BoosterContainer />
