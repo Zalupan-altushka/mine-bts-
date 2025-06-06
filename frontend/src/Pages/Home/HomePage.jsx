@@ -76,14 +76,14 @@ function HomePage({ userData }) {
     const startTimer = (duration) => {
         clearInterval(timerRef.current);
         const endTime = Date.now() + duration * 1000;
-        localStorage.setItem('endTime', endTime.toString());
+        localStorage.setItem('homePageEndTime', endTime.toString());
 
         timerRef.current = setInterval(() => {
             const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
             setTimeRemaining(remainingTime);
             if (remainingTime <= 0) {
                 clearInterval(timerRef.current);
-                localStorage.removeItem('endTime');
+                localStorage.removeItem('homePageEndTime');
                 setIsButtonDisabled(false);
                 setIsMining(false);
                 setIsClaimButton(true);
@@ -142,7 +142,7 @@ function HomePage({ userData }) {
         const storedIsMining = localStorage.getItem('isMining') === 'true';
         const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
         const storedIsClaimButton = localStorage.getItem('isClaimButton') === 'true';
-        const storedEndTime = localStorage.getItem('endTime');
+        const storedEndTime = localStorage.getItem('homePageEndTime');
 
         setIsMining(storedIsMining);
         setIsButtonDisabled(storedIsButtonDisabled);
@@ -205,7 +205,7 @@ function HomePage({ userData }) {
                     <span className="loading-indicator">Loading...</span>
                 ) : (
                     <>
-                        {isButtonDisabled && isMining && <Timer style={{ marginRight: '8px' }} />}
+                        {isButtonDisabled && isMining && <Timer style={{ marginRight: '9px' }} />}
                         {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
                     </>
                 )}
