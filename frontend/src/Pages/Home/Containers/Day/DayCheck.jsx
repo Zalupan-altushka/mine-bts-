@@ -111,7 +111,7 @@ function DayCheck({ userData, onPointsUpdate }) {
     }
   };
 
-  const formatTime = (seconds) => {
+  const formatTimeDay = (seconds) => {
     const hours = String(Math.floor(seconds / 3600)).padStart(2, '0');
     const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
     return `${hours}:${minutes}`;
@@ -125,7 +125,7 @@ function DayCheck({ userData, onPointsUpdate }) {
       <div className='mid-section-textabout'>
         <span className='first-span'>{dayCheckCount} day-check</span>
         <span className='second-span'>
-          {isButtonDisabled ? `Next claim in ${formatTime(timeRemaining)}` : 'Claim available!'}
+          {isButtonDisabled ? `Next claim in ${formatTimeDay(timeRemaining)}` : 'Claim available!'}
         </span>
       </div>
       <div className='right-section-button'>
