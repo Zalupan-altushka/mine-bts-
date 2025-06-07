@@ -6,19 +6,11 @@ import Bonus from './Containers-fr/Bonuses/Bonus';
 import Reward from './Containers-fr/Reward/Reward';
 
 function Friends({ userData }) {
-  const [invitedFriends, setInvitedFriends] = useState(0);
-
-  useEffect(() => {
-    const storedInvitedFriends = localStorage.getItem('invitedFriends');
-    if (storedInvitedFriends) {
-      setInvitedFriends(parseInt(storedInvitedFriends, 10));
-    }
-  }, []);
 
   const handleInviteClick = () => {
     const userId = userData?.telegram_user_id;
     if (!userId) {
-      console.warn("User ID not found, cannot generate invite link.");
+      console.warn("User ID not found, cannot generate invite linkk.");
       return;
     }
 
@@ -28,24 +20,14 @@ function Friends({ userData }) {
     window.open(telegramUrl, '_blank');
   };
 
-  const handleClaimReward = () => {
-    const newPoints = userData.points + 205.033;
-    // Update points in database
-    // Update points in local state
-    // Update invitedFriends count
-    const newInvitedFriends = invitedFriends + 1;
-    setInvitedFriends(newInvitedFriends);
-    localStorage.setItem('invitedFriends', newInvitedFriends);
-  };
-
   return (
     <section className='bodyfriendspage'>
       <div className='margin-div-fr'></div>
-      <TotalFR invitedFriends={invitedFriends} />
+      <TotalFR />
       <Bonus />
-      <Reward invitedFriends={invitedFriends} />
+      <Reward />
       <section className='Container-button'>
-        <button className='get-reward-button' onClick={handleClaimReward}>Claim Reward</button>
+        <button className='get-reward-button'>Claim Reward</button>
         <button className='Invite-button' onClick={handleInviteClick}>Invite Friends</button>
       </section>
       <Menu />
