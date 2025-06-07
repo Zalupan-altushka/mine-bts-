@@ -30,7 +30,7 @@ function Friends({ userData, isNewUser, invitedBy }) {
         const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent(message)}`;
 
           // Use Telegram.WebApp.openLink with the correct URL structure
-        tg.openLink(telegramUrl);
+        window.open(telegramUrl, '_blank');
     };
 
     const handleClaimReward = async () => {
