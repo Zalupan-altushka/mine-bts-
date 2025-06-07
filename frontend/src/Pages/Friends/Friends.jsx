@@ -18,7 +18,8 @@ function Friends({ userData, isNewUser, invitedBy }) {
     }
   }, [isNewUser, invitedBy]);
 
-  const handleInviteClick = () => {
+   const handleInviteClick = () => {
+    console.log("userData in handleInviteClick:", userData); // Add this line
     const userId = userData?.telegram_user_id;
     if (!userId) {
       console.warn("User ID not found, cannot generate invite link.");
@@ -26,13 +27,13 @@ function Friends({ userData, isNewUser, invitedBy }) {
     }
 
     const message = "Join me in 'Mine BTS!' and let's mine new gold! Use my invite link to join🎉";
-    const inviteLink = `https://t.me/mine_bts_bot/zZ22?start=${userId}`; // Correct format for Telegram link
+    const inviteLink = `https://t.me/mine_bts_bot/zZ22?start=${userId}`;
     const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent(message)}`;
 
     // Use Telegram.WebApp.openTelegramLink
     tg.openTelegramLink(telegramUrl);
   };
-
+  
   const handleClaimReward = async () => {
     const newPoints = userData.points + rewardPoints;
 
@@ -83,7 +84,9 @@ function Friends({ userData, isNewUser, invitedBy }) {
       <Reward rewardPoints={rewardPoints} />
       <section className='Container-button'>
         <button className='get-reward-button' onClick={handleClaimReward}>Claim Reward</button>
-        <button className='Invite-button' onClick={handleInviteClick}>Invite Friends</button>
+        {userData && (
+          <button className='Invite-button' onClick={handleInviteClick}>Invite Friends</button>
+        )}
       </section>
       <Menu />
     </section>
