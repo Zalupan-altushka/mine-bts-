@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import './Friends.css';
 import Menu from '../../Most Used/Menu/Menu';
-import TotalFR from '../../Most Used/Friends/Containers-fr/Total/TotalFR';
-import Bonus from '../../Most Used/Friends/Containers-fr/Bonuses/Bonus';
-import Reward from '../../Most Used/Friends/Containers-fr/Reward/Reward';
+import TotalFR from './Containers-fr/Total/TotalFR';
+import Bonus from './Containers-fr/Bonuses/Bonus';
+import Reward from './Containers-fr/Reward/Reward';
 
 const tg = window.Telegram.WebApp;
 
