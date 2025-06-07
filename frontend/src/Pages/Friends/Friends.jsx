@@ -8,10 +8,9 @@ import Reward from '../../Most Used/Friends/Containers-fr/Reward/Reward';
 function Friends({ userData, isNewUser, invitedBy }) {
     const [rewardPoints, setRewardPoints] = useState(0);
     const [invitedFriendsCount, setInvitedFriendsCount] = useState(0);
-
-    useEffect(() => {
+     useEffect(() => {
         if (isNewUser && invitedBy) {
-            setInvitedFriendsCount(1);
+            setInvitedFriendsCount(prevCount => prevCount + 1);
             setRewardPoints(205.033);
         }
     }, [isNewUser, invitedBy]);
@@ -31,13 +30,8 @@ function Friends({ userData, isNewUser, invitedBy }) {
 
     const handleClaimReward = async () => {
         const newPoints = userData.points + rewardPoints;
-        // Update points in database
-        await updatePointsInDatabase(newPoints);
-        // Update points in local state
-        setRewardPoints(0);
-    };
 
-    const updatePointsInDatabase = async (newPoints) => {
+        // Update points in database
         const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
         const userId = userData?.telegram_user_id;
 
@@ -73,8 +67,8 @@ function Friends({ userData, isNewUser, invitedBy }) {
         } catch (error) {
             console.error("Ошибка при обновлении очков:", error);
         }
+        setRewardPoints(0);
     };
-
     return (
         <section className='bodyfriendspage'>
             <div className='margin-div-fr'></div>
