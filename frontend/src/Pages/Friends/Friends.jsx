@@ -28,6 +28,8 @@ function Friends({ userData, isNewUser, invitedBy }) {
         const message = "Join me in 'Mine BTS!' and let's mine new gold! Use my invite link to join🎉";
         const inviteLink = `https://t.me/mine_bts_bot/zZ22?ref=${userId}`;
         const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent(message)}`;
+
+          // Use Telegram.WebApp.openLink with the correct URL structure
         tg.openLink(telegramUrl);
     };
 
