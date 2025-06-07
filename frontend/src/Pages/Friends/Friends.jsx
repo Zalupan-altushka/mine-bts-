@@ -7,6 +7,7 @@ import Reward from './Containers-fr/Reward/Reward';
 
 function Friends({ userData }) {
   const [invitedFriends, setInvitedFriends] = useState(0);
+  const [rewardPoints, setRewardPoints] = useState(0);
 
   useEffect(() => {
     const storedInvitedFriends = localStorage.getItem('invitedFriends');
@@ -28,14 +29,50 @@ function Friends({ userData }) {
     window.open(telegramUrl, '_blank');
   };
 
-  const handleClaimReward = () => {
-    const newPoints = userData.points + 205.033;
+  const handleClaimReward = async () => {
+    const newPoints = userData.points + rewardPoints;
     // Update points in database
+    await updatePointsInDatabase(newPoints);
     // Update points in local state
-    // Update invitedFriends count
-    const newInvitedFriends = invitedFriends + 1;
-    setInvitedFriends(newInvitedFriends);
-    localStorage.setItem('invitedFriends', newInvitedFriends);
+    setRewardPoints(0);
+  };
+
+  const updatePointsInDatabase = async (newPoints) => {
+    const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
+    const userId = userData?.telegram_user_id;
+
+    if (!userId) {
+      console.warn("User ID not found, cannot update points.");
+      return;
+    }
+
+    try {
+      const response = await fetch(UPDATE_POINTS_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          telegramId: userId,
+          points: newPoints.toFixed(3),
+        }),
+      });
+
+      if (!response.ok) {
+        console.error("HTTP error при обновлении очков:", response.status, response.statusText);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (!data.success) {
+        console.error("Ошибка от Netlify Function:", data.error);
+        throw new Error(`Failed to update points in database: ${data.error}`);
+      }
+
+      console.log("Очки успешно обновлены в базе данных!");
+    } catch (error) {
+      console.error("Ошибка при обновлении очков:", error);
+    }
   };
 
   return (
@@ -43,7 +80,7 @@ function Friends({ userData }) {
       <div className='margin-div-fr'></div>
       <TotalFR invitedFriends={invitedFriends} />
       <Bonus />
-      <Reward invitedFriends={invitedFriends} />
+      <Reward rewardPoints={rewardPoints} />
       <section className='Container-button'>
         <button className='get-reward-button' onClick={handleClaimReward}>Claim Reward</button>
         <button className='Invite-button' onClick={handleInviteClick}>Invite Friends</button>
