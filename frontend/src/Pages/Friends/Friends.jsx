@@ -5,10 +5,13 @@ import TotalFR from '../../Most Used/Friends/Containers-fr/Total/TotalFR';
 import Bonus from '../../Most Used/Friends/Containers-fr/Bonuses/Bonus';
 import Reward from '../../Most Used/Friends/Containers-fr/Reward/Reward';
 
+const tg = window.Telegram.WebApp;
+
 function Friends({ userData, isNewUser, invitedBy }) {
     const [rewardPoints, setRewardPoints] = useState(0);
     const [invitedFriendsCount, setInvitedFriendsCount] = useState(0);
-     useEffect(() => {
+
+    useEffect(() => {
         if (isNewUser && invitedBy) {
             setInvitedFriendsCount(prevCount => prevCount + 1);
             setRewardPoints(205.033);
@@ -25,7 +28,7 @@ function Friends({ userData, isNewUser, invitedBy }) {
         const message = "Join me in 'Mine BTS!' and let's mine new gold! Use my invite link to join🎉";
         const inviteLink = `https://t.me/mine_bts_bot/zZ22?ref=${userId}`;
         const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent(message)}`;
-        window.open(telegramUrl, '_blank');
+        tg.openLink(telegramUrl);
     };
 
     const handleClaimReward = async () => {
