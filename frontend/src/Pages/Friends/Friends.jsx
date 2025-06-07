@@ -5,21 +5,18 @@ import TotalFR from './Containers-fr/Total/TotalFR';
 import Bonus from './Containers-fr/Bonuses/Bonus';
 import Reward from './Containers-fr/Reward/Reward';
 
-const tg = window.Telegram.WebApp;
-
-function Friends({ userData, isNewUser, invitedBy }) {
+function Friends({ userData }) {
+  const [invitedFriends, setInvitedFriends] = useState(0);
   const [rewardPoints, setRewardPoints] = useState(0);
-  const [invitedFriendsCount, setInvitedFriendsCount] = useState(0);
 
   useEffect(() => {
-    if (isNewUser && invitedBy) {
-      setInvitedFriendsCount(prevCount => prevCount + 1);
-      setRewardPoints(205.033);
+    const storedInvitedFriends = localStorage.getItem('invitedFriends');
+    if (storedInvitedFriends) {
+      setInvitedFriends(parseInt(storedInvitedFriends, 10));
     }
-  }, [isNewUser, invitedBy]);
+  }, []);
 
-   const handleInviteClick = () => {
-    console.log("userData in handleInviteClick:", userData); // Add this line
+  const handleInviteClick = () => {
     const userId = userData?.telegram_user_id;
     if (!userId) {
       console.warn("User ID not found, cannot generate invite link.");
@@ -27,24 +24,27 @@ function Friends({ userData, isNewUser, invitedBy }) {
     }
 
     const message = "Join me in 'Mine BTS!' and let's mine new gold! Use my invite link to join🎉";
-    const inviteLink = `https://t.me/mine_bts_bot/zZ22?start=${userId}`;
+    const inviteLink = `https://t.me/mine_bts_bot/zZ22?ref=${userId}`;
     const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent(message)}`;
-
-    // Use Telegram.WebApp.openTelegramLink
-    tg.openTelegramLink(telegramUrl);
+    window.open(telegramUrl, '_blank');
   };
-  
+
   const handleClaimReward = async () => {
     const newPoints = userData.points + rewardPoints;
-
     // Update points in database
+    await updatePointsInDatabase(newPoints);
+    // Update points in local state
+    setRewardPoints(0);
+  };
+
+  const updatePointsInDatabase = async (newPoints) => {
     const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points';
     const userId = userData?.telegram_user_id;
 
     if (!userId) {
       console.warn("User ID not found, cannot update points.");
       return;
-      }
+    }
 
     try {
       const response = await fetch(UPDATE_POINTS_URL, {
@@ -73,20 +73,17 @@ function Friends({ userData, isNewUser, invitedBy }) {
     } catch (error) {
       console.error("Ошибка при обновлении очков:", error);
     }
-    setRewardPoints(0);
   };
 
   return (
     <section className='bodyfriendspage'>
       <div className='margin-div-fr'></div>
-      <TotalFR invitedFriends={invitedFriendsCount} />
+      <TotalFR invitedFriends={invitedFriends} />
       <Bonus />
       <Reward rewardPoints={rewardPoints} />
       <section className='Container-button'>
         <button className='get-reward-button' onClick={handleClaimReward}>Claim Reward</button>
-        {userData && (
-          <button className='Invite-button' onClick={handleInviteClick}>Invite Friends</button>
-        )}
+        <button className='Invite-button' onClick={handleInviteClick}>Invite Friends</button>
       </section>
       <Menu />
     </section>
