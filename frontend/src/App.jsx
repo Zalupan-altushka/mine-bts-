@@ -6,7 +6,6 @@ import Tasks from './Pages/Tasks/Tasks.jsx';
 import Boosters from './Pages/Boosters/Boosters.jsx';
 import PageTransition from './Pages/Transition/PageTransition.jsx';
 import Loader from './Pages/Loader/Loader.jsx';
-import InviteHandler from './Pages/InviteHandler/InviteHandler.jsx';
 
 const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth'; // Убедитесь, что URL правильный
 
@@ -83,6 +82,15 @@ const App = () => {
 
             console.log("App.jsx: AUTH_FUNCTION_URL:", AUTH_FUNCTION_URL);
 
+            // *** START OF REFFERAL CODE ***
+            const urlParams = new URLSearchParams(window.location.search);
+            const refCode = urlParams.get('ref');
+            if (refCode) {
+                console.log("App.jsx: Referral code from URL:", refCode);
+                initData += `&ref=${refCode}`; // Append ref code to initData
+            }
+            // *** END OF REFFERAL CODE ***
+
             if (initData) {
                 console.log("App.jsx: initData exists, sending request");
 
@@ -95,8 +103,7 @@ const App = () => {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ initData }),
-                })
-                    .then(response => {
+                })  .then(response => {
                         console.log("App.jsx: Response status:", response.status);
                         if (!response.ok) {
                             throw new Error(`HTTP error! status: ${response.status}`);
@@ -105,7 +112,6 @@ const App = () => {
                     })
                     .then(data => {
                         console.log("App.jsx: Auth data:", data);
-
                         if (data.isValid) {
                             console.log("App.jsx: Авторизация прошла успешно!");
                             setUserData(data.userData);
@@ -167,15 +173,9 @@ const App = () => {
                                   <Boosters isActive={isActive} userData={userData} />
                           }
                       />
-                      <Route
-                          path="/invite"
-                          element={
-                                  <InviteHandler />
-                          } 
-                      />
                   </Routes>
               </PageTransition>
-                
+
             )}
         </>
     );
