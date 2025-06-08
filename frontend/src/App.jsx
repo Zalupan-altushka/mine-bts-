@@ -6,6 +6,7 @@ import Tasks from './Pages/Tasks/Tasks.jsx';
 import Boosters from './Pages/Boosters/Boosters.jsx';
 import PageTransition from './Pages/Transition/PageTransition.jsx';
 import Loader from './Pages/Loader/Loader.jsx';
+import InviteHandler from './Pages/InviteHandler/InviteHandler.jsx';
 
 const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth'; // Убедитесь, что URL правильный
 
@@ -165,6 +166,12 @@ const App = () => {
                           element={
                                   <Boosters isActive={isActive} userData={userData} />
                           }
+                      />
+                      <Route
+                          path="/invite"
+                          element={
+                                  <InviteHandler />
+                          } 
                       />
                   </Routes>
               </PageTransition>

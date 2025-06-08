@@ -1,17 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Fly from '../../../../Most Used/Image/Fly';
 import './Reward.css';
 
-function Reward() {
-  const [totalReward, setTotalReward] = useState(0);
-
-  useEffect(() => {
-    const reward = localStorage.getItem('total_reward');
-    if (reward) {
-      setTotalReward(parseFloat(reward));
-    }
-  }, []);
-
+function Reward({ totalReward }) {
   return (
     <section className='reward-section-fr'>
       <article className='left-section-reward-fr'>
