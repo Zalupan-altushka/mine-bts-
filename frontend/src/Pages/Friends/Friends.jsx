@@ -10,37 +10,47 @@ function Friends({ userData }) {
   const [totalReward, setTotalReward] = useState(0);
 
   useEffect(() => {
-    // Отправка запроса к Netlify Function для обработки пользователя
-    fetch('https://ah-user.netlify.app/.netlify/functions/userHandler', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data.total_friends !== undefined) {
-          setTotalFriends(data.total_friends);
-          localStorage.setItem('total_friends', data.total_friends);
-        }
-        if (data.total_reward !== undefined) {
-          setTotalReward(data.total_reward);
-          localStorage.setItem('total_reward', data.total_reward);
-        }
-      })
-      .catch(error => console.error('Error handling user:', error));
+    // Функция для обработки пользователя через Netlify Function
+    const handleUser = async () => {
+      const response = await fetch('https://ah-user.netlify.app/.netlify/functions/userHandler', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
 
-    // Обновление состояния из локального хранилища
-    const friends = localStorage.getItem('total_friends');
-    const reward = localStorage.getItem('total_reward');
+      const data = await response.json();
 
-    if (friends) {
-      setTotalFriends(parseInt(friends, 10));
-    }
+      if (data.total_friends !== undefined) {
+        setTotalFriends(data.total_friends);
+        localStorage.setItem('total_friends', data.total_friends);
+      }
+      if (data.total_reward !== undefined) {
+        setTotalReward(data.total_reward);
+        localStorage.setItem('total_reward', data.total_reward);
+      }
+    };
 
-    if (reward) {
-      setTotalReward(parseFloat(reward));
+    // Проверка, пришел ли пользователь по реферальной ссылке
+    const urlParams = new URLSearchParams(window.location.search);
+    const referrerId = urlParams.get('ref');
+
+    if (referrerId) {
+      // Если пользователь пришел по реферальной ссылке, обновляем данные
+      handleUser();
+    } else {
+      // Если пользователь не пришел по реферальной ссылке, загружаем данные из локального хранилища
+      const friends = localStorage.getItem('total_friends');
+      const reward = localStorage.getItem('total_reward');
+
+      if (friends) {
+        setTotalFriends(parseInt(friends, 10));
+      }
+
+      if (reward) {
+        setTotalReward(parseFloat(reward));
+      }
     }
   }, [userData]);
 
