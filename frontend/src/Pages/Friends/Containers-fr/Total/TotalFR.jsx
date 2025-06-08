@@ -1,8 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import BeachGIF from '../../../../Most Used/Image/BeachGIF';
 import './TotalFR.css';
 
 function TotalFR() {
+  const [totalFriends, setTotalFriends] = useState(0);
+
+  useEffect(() => {
+    const friends = localStorage.getItem('total_friends');
+    if (friends) {
+      setTotalFriends(parseInt(friends, 10));
+    }
+  }, []);
+
   return (
     <section className='section-total'>
       <div className='left-section-gif-fr'>
@@ -13,7 +22,7 @@ function TotalFR() {
         <span className='second-span'>Total friends:</span>
       </div>
       <div className='right-section-total-fr'>
-        <span className='span-count'><span className='spusk'>0</span></span>
+        <span className='span-count'><span className='spusk'>{totalFriends}</span></span>
       </div>
     </section>
   );
