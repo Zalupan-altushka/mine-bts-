@@ -25,7 +25,7 @@ function Friends({ userData }) {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(userData),
+          body: JSON.stringify({ initData: userData.initData }), // Убедитесь, что передаете initData
         });
 
         if (!response.ok) {
@@ -35,13 +35,11 @@ function Friends({ userData }) {
         const data = await response.json();
         console.log('Received response from userHandler:', data);
 
-        if (data.total_friends !== undefined) {
-          setTotalFriends(data.total_friends);
-          localStorage.setItem('total_friends', data.total_friends);
-        }
-        if (data.total_reward !== undefined) {
-          setTotalReward(data.total_reward);
-          localStorage.setItem('total_reward', data.total_reward);
+        if (data.userData) {
+          setTotalFriends(data.userData.total_friends || 0);
+          setTotalReward(data.userData.total_reward || 0);
+          localStorage.setItem('total_friends', data.userData.total_friends || 0);
+          localStorage.setItem('total_reward', data.userData.total_reward || 0);
         }
       } catch (error) {
         console.error('Error handling user:', error);
