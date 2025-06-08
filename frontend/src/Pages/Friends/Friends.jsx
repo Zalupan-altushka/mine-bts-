@@ -12,23 +12,39 @@ function Friends({ userData }) {
   useEffect(() => {
     // Функция для обработки пользователя через Netlify Function
     const handleUser = async () => {
-      const response = await fetch('https://ah-user.netlify.app/.netlify/functions/userHandler', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-      });
-
-      const data = await response.json();
-
-      if (data.total_friends !== undefined) {
-        setTotalFriends(data.total_friends);
-        localStorage.setItem('total_friends', data.total_friends);
+      if (!userData || !userData.telegram_user_id) {
+        console.warn('User data is missing or invalid');
+        return;
       }
-      if (data.total_reward !== undefined) {
-        setTotalReward(data.total_reward);
-        localStorage.setItem('total_reward', data.total_reward);
+
+      console.log('Sending request to userHandler with data:', userData);
+
+      try {
+        const response = await fetch('https://ah-user.netlify.app/.netlify/functions/userHandler', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(userData),
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        console.log('Received response from userHandler:', data);
+
+        if (data.total_friends !== undefined) {
+          setTotalFriends(data.total_friends);
+          localStorage.setItem('total_friends', data.total_friends);
+        }
+        if (data.total_reward !== undefined) {
+          setTotalReward(data.total_reward);
+          localStorage.setItem('total_reward', data.total_reward);
+        }
+      } catch (error) {
+        console.error('Error handling user:', error);
       }
     };
 
