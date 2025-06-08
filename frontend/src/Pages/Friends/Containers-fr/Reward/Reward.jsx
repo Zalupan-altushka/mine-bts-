@@ -2,12 +2,14 @@ import React from 'react';
 import Fly from '../../../../Most Used/Image/Fly';
 import './Reward.css';
 
-function Reward({ totalReward }) {
+function Reward() {
+    const fixedReward = 205.033;
+
     return (
         <section className='reward-section-fr'>
             <article className='left-section-reward-fr'>
                 <span className='title-total-frends'>Your total reward!</span>
-                <span className='span-reward-fr'>{totalReward.toFixed(3)}</span>
+                <span className='span-reward-fr'>{fixedReward.toFixed(3)}</span>
                 <span className='span-about-fr'>+205.033 BTS for friend</span>
             </article>
             <article className='right-section-reward-fr'>
