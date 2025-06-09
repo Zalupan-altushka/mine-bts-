@@ -9,7 +9,7 @@ function Friends({ userData }) {
     const handleInviteClick = () => {
         const userId = userData?.telegram_user_id;
         if (!userId) {
-            console.warn("User ID not found, cannot generate invite link.");
+            console.warn("User ID not found, cannot generate invite linkk.");
             return;
         }
 
