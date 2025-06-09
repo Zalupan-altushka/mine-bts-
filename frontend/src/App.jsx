@@ -7,7 +7,7 @@ import Boosters from './Pages/Boosters/Boosters.jsx';
 import PageTransition from './Pages/Transition/PageTransition.jsx';
 import Loader from './Pages/Loader/Loader.jsx';
 
-const AUTH_FUNCTION_URL = 'https://authorezation.netlify.app/.netlify/functions/auth'; // Убедитесь, что URL правильный
+const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth'; // Убедитесь, что URL правильный
 
 const App = () => {
     const location = useLocation();
