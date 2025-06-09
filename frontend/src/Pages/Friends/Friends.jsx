@@ -1,3 +1,4 @@
+// Friends.jsx
 import React from 'react';
 import './Friends.css';
 import Menu from '../../Most Used/Menu/Menu';
@@ -22,9 +23,9 @@ function Friends({ userData }) {
     return (
         <section className='bodyfriendspage'>
             <div className='margin-div-fr'></div>
-            <TotalFR totalFriends={userData?.total_fr || 0} /> {/* Передаем total_fr */}
+            <TotalFR totalFriends={userData?.total_fr || 0} />
             <Bonus />
-            <Reward rewardPoints={userData?.points || 0} /> {/* Передаем points */}
+            <Reward totalReward={userData?.points || 0} />
             <section className='Container-button'>
                 <button className='get-reward-button'>Claim Reward</button>
                 <button className='Invite-button' onClick={handleInviteClick}>Invite Friends</button>
