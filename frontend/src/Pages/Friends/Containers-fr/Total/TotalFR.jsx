@@ -13,7 +13,7 @@ function TotalFR({ totalFriends }) {
                 <span className='second-span'>Total friends:</span>
             </div>
             <div className='right-section-total-fr'>
-                <span className='span-count'><span className='spusk'>{totalFriends}</span></span> {/* Используем пропс totalFriends */}
+                <span className='span-count'><span className='spusk'>{totalFriends}</span></span>
             </div>
         </section>
     );
