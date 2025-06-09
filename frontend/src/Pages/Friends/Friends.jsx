@@ -22,9 +22,9 @@ function Friends({ userData }) {
     return (
         <section className='bodyfriendspage'>
             <div className='margin-div-fr'></div>
-            <TotalFR totalFriends={userData?.total_fr || 0} />
+            <TotalFR totalFriends={userData?.total_fr || 0} /> {/* Передаем total_fr */}
             <Bonus />
-            <Reward />
+            <Reward rewardPoints={userData?.points || 0} /> {/* Передаем points */}
             <section className='Container-button'>
                 <button className='get-reward-button'>Claim Reward</button>
                 <button className='Invite-button' onClick={handleInviteClick}>Invite Friends</button>
