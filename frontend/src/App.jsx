@@ -7,7 +7,7 @@ import Boosters from './Pages/Boosters/Boosters.jsx';
 import PageTransition from './Pages/Transition/PageTransition.jsx';
 import Loader from './Pages/Loader/Loader.jsx';
 
-const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth'; // Убедитесь, что URL правильный
+const AUTH_FUNCTION_URL = 'https://authorezation.netlify.app/.netlify/functions/auth'; // Убедитесь, что URL правильный
 
 const App = () => {
     const location = useLocation();
@@ -57,16 +57,16 @@ const App = () => {
         };
     }, [location.pathname]);
 
-   // useEffect(() => {
+    useEffect(() => {
         // Check Telegram WebApp activity and request fullscreen
-   ///     if (window.Telegram && window.Telegram.WebApp) {
-   //         setIsActive(window.Telegram.WebApp.isActive);
-   //         if (window.Telegram.WebApp.isActive) {
-   //             window.Telegram.WebApp.requestFullscreen();
-   //            window.Telegram.WebApp.isVerticalSwipesEnabled = false; // Disable vertical swipes
-   //         }
-    //    }
-   // }, []);
+        if (window.Telegram && window.Telegram.WebApp) {
+            setIsActive(window.Telegram.WebApp.isActive);
+            if (window.Telegram.WebApp.isActive) {
+                window.Telegram.WebApp.requestFullscreen();
+               window.Telegram.WebApp.isVerticalSwipesEnabled = false; // Disable vertical swipes
+            }
+        }
+    }, []);
 
     useEffect(() => {
         // Authenticate user with Telegram initData

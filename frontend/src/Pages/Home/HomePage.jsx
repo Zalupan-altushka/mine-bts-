@@ -33,7 +33,7 @@ function HomePage({ userData }) {
             });
 
             if (!response.ok) {
-                console.error("Ошибка при получении данных пользователя:", response.status);
+                console.error("Ошибка при получении данных пользователяя:", response.status);
                 return;
             }
 
