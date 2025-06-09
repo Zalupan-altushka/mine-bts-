@@ -57,16 +57,16 @@ const App = () => {
         };
     }, [location.pathname]);
 
-    useEffect(() => {
+   // useEffect(() => {
         // Check Telegram WebApp activity and request fullscreen
-        if (window.Telegram && window.Telegram.WebApp) {
-            setIsActive(window.Telegram.WebApp.isActive);
-            if (window.Telegram.WebApp.isActive) {
-                window.Telegram.WebApp.requestFullscreen();
-               window.Telegram.WebApp.isVerticalSwipesEnabled = false; // Disable vertical swipes
-            }
-        }
-    }, []);
+   ///     if (window.Telegram && window.Telegram.WebApp) {
+   //         setIsActive(window.Telegram.WebApp.isActive);
+   //         if (window.Telegram.WebApp.isActive) {
+   //             window.Telegram.WebApp.requestFullscreen();
+   //            window.Telegram.WebApp.isVerticalSwipesEnabled = false; // Disable vertical swipes
+   //         }
+    //    }
+   // }, []);
 
     useEffect(() => {
         // Authenticate user with Telegram initData
