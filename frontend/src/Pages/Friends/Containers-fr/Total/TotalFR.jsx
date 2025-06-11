@@ -3,7 +3,7 @@ import React from 'react';
 import BeachGIF from '../../../../Most Used/Image/BeachGIF';
 import './TotalFR.css';
 
-function TotalFR({ totalFriends }) {
+function TotalFR() {
     return (
         <section className='section-total'>
             <div className='left-section-gif-fr'>
@@ -14,7 +14,7 @@ function TotalFR({ totalFriends }) {
                 <span className='second-span'>Total friends:</span>
             </div>
             <div className='right-section-total-fr'>
-                <span className='span-count'><span className='spusk'>{totalFriends}</span></span>
+                <span className='span-count'><span className='spusk'></span></span>
             </div>
         </section>
     );
