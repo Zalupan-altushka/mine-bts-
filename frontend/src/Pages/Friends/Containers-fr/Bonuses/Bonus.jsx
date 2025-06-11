@@ -2,12 +2,12 @@ import './Bonus.css'
 import DiamondFR from "../../../../Most Used/Image/DiamondFR";
 
 function Bonus() {
-
+  
   return(
     <section>
         <article className='right-section-bonus-fr'>
           <section className='text-section-bonus-fr'>
-            <span class="title-how-it-works">How it's work?</span>
+            <span class="title-how-it-works">Your invite link</span>
             <div className='block-text'>
               <span>Share your refferal link!</span>
               <span className='second-span-bonus'>Tap the button bellow</span>

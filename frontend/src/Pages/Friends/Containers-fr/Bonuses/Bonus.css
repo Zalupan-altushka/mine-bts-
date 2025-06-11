@@ -7,6 +7,7 @@
   display: flex;
   justify-content: space-between; /* Размещает элементы по краям */
   padding: 20px; /* Добавьте отступы по вашему усмотрению */
+  height: 250px;
 }
 
 .text-section-bonus-fr {
@@ -54,6 +55,40 @@
 .second-span-bonus {
   color: var(--container-color-two);
 }
+
+.section-invite-link {
+  background-color: var(--container-color); /* Цвет фона для ссылки */
+  border-radius: 15px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 100%; /* Ensure it takes the full width of the parent */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+.invite-link-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+.copy-button {
+  background-color: #c4f85c; /* Цвет кнопки */
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.copy-button:hover {
+  background-color: #b0e04a; /* Цвет кнопки при наведении */
+}
+
 
 @media (max-height: 800px) {
   .right-section-bonus-fr  {

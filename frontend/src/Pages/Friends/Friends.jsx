@@ -6,18 +6,15 @@ import Bonus from './Containers-fr/Bonuses/Bonus';
 import Reward from './Containers-fr/Reward/Reward';
 
 function Friends({ userData }) {
-    const [totalFriends, setTotalFriends] = useState(userData?.total_fr || 0);
-    const [isNewReferral, setIsNewReferral] = useState(false);
+    const [inviteLink, setInviteLink] = useState('');
 
     const handleInviteClick = () => {
-        const userId = userData?.telegram_user_id;
-        if (!userId) {
-            console.warn("User ID not found, cannot generate invite link.");
+        if (!inviteLink) {
+            console.warn("Invite link not found, cannot generate invite link.");
             return;
         }
 
         const message = "Join me in 'Mine BTS!' and let's mine new gold! Use my invite link to join🎉";
-        const inviteLink = `https://t.me/mine_bts_bot/zZ22?ref=${userId}`;
         const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent(message)}`;
         window.open(telegramUrl, '_blank');
     };
@@ -28,8 +25,7 @@ function Friends({ userData }) {
             try {
                 const response = await fetch(`https://ah-user.netlify.app/.netlify/functions/auth?userId=${userData.telegram_user_id}`);
                 const data = await response.json();
-                setTotalFriends(data.userData.total_fr);
-                setIsNewReferral(data.isNewReferral);
+                setInviteLink(data.userData.invite_link);
             } catch (error) {
                 console.error("Error fetching user data:", error);
             }
@@ -41,9 +37,9 @@ function Friends({ userData }) {
     return (
         <section className='bodyfriendspage'>
             <div className='margin-div-fr'></div>
-            <TotalFR totalFriends={totalFriends} />
+            <TotalFR />
             <Bonus />
-            <Reward isNewReferral={isNewReferral} />
+            <Reward />
             <section className='Container-button'>
                 <button className='get-reward-button'>Claim Reward</button>
                 <button className='Invite-button' onClick={handleInviteClick}>Invite Friends</button>
