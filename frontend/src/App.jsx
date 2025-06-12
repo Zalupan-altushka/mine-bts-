@@ -57,16 +57,16 @@ const App = () => {
         };
     }, [location.pathname]);
 
-  //  useEffect(() => {
+    useEffect(() => {
         // Check Telegram WebApp activity and request fullscreen
-  //      if (window.Telegram && window.Telegram.WebApp) {
-  //          setIsActive(window.Telegram.WebApp.isActive);
-  //          if (window.Telegram.WebApp.isActive) {
-  //              window.Telegram.WebApp.requestFullscreen();
-  //             window.Telegram.WebApp.isVerticalSwipesEnabled = false; // Disable vertical swipes
-  //          }
-  //      }
- //   }, []);
+        if (window.Telegram && window.Telegram.WebApp) {
+            setIsActive(window.Telegram.WebApp.isActive);
+            if (window.Telegram.WebApp.isActive) {
+                window.Telegram.WebApp.requestFullscreen();
+               window.Telegram.WebApp.isVerticalSwipesEnabled = false; // Disable vertical swipes
+            }
+        }
+    }, []);
 
     useEffect(() => {
         // Authenticate user with Telegram initData
@@ -94,36 +94,37 @@ const App = () => {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ initData }),
-                })  .then(response => {
-                        console.log("App.jsx: Response status:", response.status);
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log("App.jsx: Auth data:", data);
-                        if (data.isValid) {
-                            console.log("App.jsx: Авторизация прошла успешно!");
-                            setUserData(data.userData);
-                            // Задержка перед скрытием Loader
-                            setTimeout(() => {
-                                setAuthCheckLoading(false);
-                            }, 2000);
-                        } else {
-                            console.error("App.jsx: Ошибка авторизации: Недействительные данные Telegram.");
-                            setUserData(null);
-                            setAuthCheckLoading(false); // Скрываем Loader сразу
-                        }
-                    })
-                    .catch(error => {
-                        console.error("App.jsx: Ошибка при запросе к Netlify Function:", error);
+                })
+                .then(response => {
+                    console.log("App.jsx: Response status:", response.status);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("App.jsx: Auth data:", data);
+                    if (data.isValid) {
+                        console.log("App.jsx: Авторизация прошла успешно!");
+                        setUserData(data.userData);
+                        // Задержка перед скрытием Loader
+                        setTimeout(() => {
+                            setAuthCheckLoading(false);
+                        }, 2000);
+                    } else {
+                        console.error("App.jsx: Ошибка авторизации: Недействительные данные Telegram.");
                         setUserData(null);
                         setAuthCheckLoading(false); // Скрываем Loader сразу
-                    })
-                    .finally(() => {
-                        console.log("App.jsx: Auth check complete");
-                    });
+                    }
+                })
+                .catch(error => {
+                    console.error("App.jsx: Ошибка при запросе к Netlify Function:", error);
+                    setUserData(null);
+                    setAuthCheckLoading(false); // Скрываем Loader сразу
+                })
+                .finally(() => {
+                    console.log("App.jsx: Auth check complete");
+                });
             } else {
                 console.warn("App.jsx: Нет данных инициализации Telegram.");
                 setAuthCheckLoading(false);
