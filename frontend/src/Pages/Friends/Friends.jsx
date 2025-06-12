@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import './Friends.css';
 import Menu from '../../Most Used/Menu/Menu';
 import TotalFR from './Containers-fr/Total/TotalFR';
@@ -21,7 +21,7 @@ function Friends({ userData }) {
     return (
         <section className='bodyfriendspage'>
             <div className='margin-div-fr'></div>
-            <TotalFR />
+            <TotalFR totalFriends={userData?.total_fr} />
             <Bonus />
             <Reward />
             <section className='Container-button'>
