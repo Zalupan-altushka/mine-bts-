@@ -60,6 +60,11 @@ function HomePage({ userData }) {
         setIsClaimButton(false);
         setIsButtonDisabled(false);
         setIsLoading(false); // Скрываем индикатор загрузки
+
+        // Сохраняем состояние кнопки после того, как очки были собраны
+        localStorage.setItem('isClaimButton', 'false');
+        localStorage.setItem('isMining', 'false');
+        localStorage.setItem('isButtonDisabled', 'false');
     };
 
     const handleMineFor100 = () => {
@@ -137,34 +142,34 @@ function HomePage({ userData }) {
         return `${hours}:${minutes}:${secs}`;
     };
 
-    useEffect(() => {
-        // Загрузка начального состояния из localStorage
-        const storedIsMining = localStorage.getItem('isMining') === 'true';
-        const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
-        const storedIsClaimButton = localStorage.getItem('isClaimButton') === 'true';
-        const storedEndTime = localStorage.getItem('homePageEndTime');
+   useEffect(() => {
+      // Загрузка начального состояния из localStorage
+      const storedIsMining = localStorage.getItem('isMining') === 'true';
+      const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
+      const storedIsClaimButton = localStorage.getItem('isClaimButton') === 'true';
+      const storedEndTime = localStorage.getItem('homePageEndTime');
 
-        setIsMining(storedIsMining);
-        setIsButtonDisabled(storedIsButtonDisabled);
-        setIsClaimButton(storedIsClaimButton);
+      setIsMining(storedIsMining);
+      setIsButtonDisabled(storedIsButtonDisabled);
+      setIsClaimButton(storedIsClaimButton);
 
-        if (storedEndTime && storedIsButtonDisabled) {
-            const endTime = parseInt(storedEndTime, 10);
-            const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-            setTimeRemaining(remainingTime);
-            if (remainingTime > 0) {
-                startTimer(remainingTime);
-            } else {
-                // Если таймер истек, кнопка должна отображать "Claim 52.033 BTS"
-                setIsClaimButton(true);
-                setIsButtonDisabled(false);
-                setIsMining(false);
-            }
-        } else {
-            // Если таймер не запущен, кнопка должна отображать "Mine 52.033 BTS"
-            setIsClaimButton(false);
-            setIsButtonDisabled(false);
-        }
+      if (storedEndTime && storedIsButtonDisabled) {
+          const endTime = parseInt(storedEndTime, 10);
+          const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+          setTimeRemaining(remainingTime);
+          if (remainingTime > 0) {
+              startTimer(remainingTime);
+          } else {
+              // Если таймер истек, кнопка должна отображать "Claim 52.033 BTS"
+              setIsClaimButton(true);
+              setIsButtonDisabled(false);
+              setIsMining(false);
+          }
+      } else {
+          // Если таймер не запущен, кнопка должна отображать "Mine 52.033 BTS"
+          setIsClaimButton(false);
+          setIsButtonDisabled(false);
+      }
     }, []);
 
     useEffect(() => {
