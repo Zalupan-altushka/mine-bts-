@@ -18,7 +18,7 @@ function HomePage({ userData }) {
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [timeRemaining, setTimeRemaining] = useState(0);
     const [isClaimButton, setIsClaimButton] = useState(false);
-    const [isLoading, setIsLoading] = useState(false); // Состояние для индикатора загрузки
+    const [isLoading, setIsLoading] = useState(false); // Track loading state
     const timerRef = useRef(null);
 
     const fetchUserData = async (userId) => {
@@ -65,6 +65,7 @@ function HomePage({ userData }) {
         localStorage.setItem('isClaimButton', 'false');
         localStorage.setItem('isMining', 'false');
         localStorage.setItem('isButtonDisabled', 'false');
+        localStorage.setItem('isLoading', 'false'); // Save loading state
     };
 
     const handleMineFor100 = () => {
@@ -76,6 +77,9 @@ function HomePage({ userData }) {
         setIsButtonDisabled(true);
         setIsClaimButton(false); // Disable Claim button when mining
         setIsLoading(false); // Скрываем индикатор загрузки
+
+        // Save loading state to localStorage
+        localStorage.setItem('isLoading', 'true');
     };
 
     const startTimer = (duration) => {
@@ -142,34 +146,36 @@ function HomePage({ userData }) {
         return `${hours}:${minutes}:${secs}`;
     };
 
-   useEffect(() => {
-      // Загрузка начального состояния из localStorage
-      const storedIsMining = localStorage.getItem('isMining') === 'true';
-      const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
-      const storedIsClaimButton = localStorage.getItem('isClaimButton') === 'true';
-      const storedEndTime = localStorage.getItem('homePageEndTime');
+    useEffect(() => {
+        // Загрузка начального состояния из localStorage
+        const storedIsMining = localStorage.getItem('isMining') === 'true';
+        const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
+        const storedIsClaimButton = localStorage.getItem('isClaimButton') === 'true';
+        const storedEndTime = localStorage.getItem('homePageEndTime');
+        const storedIsLoading = localStorage.getItem('isLoading') === 'true'; // Load loading state
 
-      setIsMining(storedIsMining);
-      setIsButtonDisabled(storedIsButtonDisabled);
-      setIsClaimButton(storedIsClaimButton);
+        setIsMining(storedIsMining);
+        setIsButtonDisabled(storedIsButtonDisabled);
+        setIsClaimButton(storedIsClaimButton);
+        setIsLoading(storedIsLoading); // Set the loading state
 
-      if (storedEndTime && storedIsButtonDisabled) {
-          const endTime = parseInt(storedEndTime, 10);
-          const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-          setTimeRemaining(remainingTime);
-          if (remainingTime > 0) {
-              startTimer(remainingTime);
-          } else {
-              // Если таймер истек, кнопка должна отображать "Claim 52.033 BTS"
-              setIsClaimButton(true);
-              setIsButtonDisabled(false);
-              setIsMining(false);
-          }
-      } else {
-          // Если таймер не запущен, кнопка должна отображать "Mine 52.033 BTS"
-          setIsClaimButton(false);
-          setIsButtonDisabled(false);
-      }
+        if (storedEndTime && storedIsButtonDisabled) {
+            const endTime = parseInt(storedEndTime, 10);
+            const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+            setTimeRemaining(remainingTime);
+            if (remainingTime > 0) {
+                startTimer(remainingTime);
+            } else {
+                // Если таймер истек, кнопка должна отображать "Claim 52.033 BTS"
+                setIsClaimButton(true);
+                setIsButtonDisabled(false);
+                setIsMining(false);
+            }
+        } else {
+            // Если таймер не запущен, кнопка должна отображать "Mine 52.033 BTS"
+            setIsClaimButton(false);
+            setIsButtonDisabled(false);
+        }
     }, []);
 
     useEffect(() => {
