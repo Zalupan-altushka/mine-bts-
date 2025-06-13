@@ -6,6 +6,7 @@ import Bonus from './Containers-fr/Bonuses/Bonus';
 import Reward from './Containers-fr/Reward/Reward';
 
 function Friends({ userData }) {
+
     const handleInviteClick = () => {
         const inviteLink = userData?.invite_link;
         if (!inviteLink) {
@@ -15,7 +16,6 @@ function Friends({ userData }) {
 
         const message = "Join me in 'Mine BTS!' and let's mine new gold! Use my invite link to join🎉";
         const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent(message)}`;
-        localStorage.setItem('referralCode', userData.telegram_user_id); // Save to localStorage
         window.open(telegramUrl, '_blank');
     };
 

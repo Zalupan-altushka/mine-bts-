@@ -88,12 +88,12 @@ const App = () => {
                 // Log initData just before sending the request
                 console.log("App.jsx: Sending initData:", initData);
 
-                fetch(AUTH_FUNCTION_URL, {
+                 fetch(AUTH_FUNCTION_URL , {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ initData }),
+                    body: JSON.stringify({ initData, referralCode: userData?.telegram_user_id }),
                 })
                 .then(response => {
                     console.log("App.jsx: Response status:", response.status);
