@@ -88,16 +88,13 @@ const App = () => {
                 // Log initData just before sending the request
                 console.log("App.jsx: Sending initData:", initData);
 
-                // Extract referral code from initData
-                const urlParams = new URLSearchParams(initData);
-                const referralCode = urlParams.get('ref');
 
                 fetch(AUTH_FUNCTION_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ initData, referralCode }), // Send referralCode in the body
+                    body: JSON.stringify({ initData }),
                 })
                     .then(response => {
                         console.log("App.jsx: Response status:", response.status);

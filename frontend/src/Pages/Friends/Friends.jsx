@@ -19,13 +19,14 @@ function Friends({ userData }) {
         const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent(message)}`;
         window.open(telegramUrl, '_blank');
 
+
         // Fetch call to update total_fr, include referralCode
         fetch(AUTH_FUNCTION_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ initData: window.Telegram.WebApp.initData, referralCode: userData?.telegram_user_id }),
+            body: JSON.stringify({ referralCode: userData?.telegram_user_id, initData : window.Telegram.WebApp.initData}),
         })
         .then(response => {
             if (!response.ok) {
