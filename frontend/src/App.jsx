@@ -45,7 +45,7 @@ const App = () => {
 
     useEffect(() => {
         // Prevent scrolling on specific routes
-        if (['/', '/friends', '/tasks', '/boost'].includes(location.pathname)) {
+        if (['/', '/tasks', '/boost'].includes(location.pathname)) {
             document.body.classList.add('no-scroll');
         } else {
             document.body.classList.remove('no-scroll');
