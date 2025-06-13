@@ -6,7 +6,7 @@ import Bonus from './Containers-fr/Bonuses/Bonus';
 import Reward from './Containers-fr/Reward/Reward';
 
 function Friends({ userData }) {
-    const AUTH_FUNCTION_URL = 'https://authorezation.netlify.app/.netlify/functions/auth'; // Убедитесь, что URL правильный
+    const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth'; // Убедитесь, что URL правильный
 
     const handleInviteClick = () => {
         const inviteLink = userData?.invite_link;
