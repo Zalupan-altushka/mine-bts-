@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useRef } from 'react';
-import './Home.css';
-import Menu from '../../Most Used/Menu/Menu';
-import Timer from '../../Most Used/Image/Timer';
-import DayCheck from './Containers/Day/DayCheck';
-import BoosterContainer from './Containers/BoostersCon/BoosterContainer';
-import FriendsConnt from './Containers/FriendsCon/FriendsConnt';
-import Game from './Containers/MiniGame/Game';
+import React, { useEffect, useState, useRef } from 'react'; 
+import './Home.css'; 
+import Menu from '../../Most Used/Menu/Menu'; 
+import Timer from '../../Most Used/Image/Timer'; 
+import DayCheck from './Containers/Day/DayCheck'; 
+import BoosterContainer from './Containers/BoostersCon/BoosterContainer'; 
+import FriendsConnt from './Containers/FriendsCon/FriendsConnt'; 
+import Game from './Containers/MiniGame/Game'; 
 
 const tg = window.Telegram.WebApp;
 
@@ -21,6 +21,9 @@ function HomePage({ userData }) {
     const [isLoading, setIsLoading] = useState(false); // Состояние для индикатора загрузки
     const timerRef = useRef(null);
 
+    // Добавляем в состояние для "Mine 52.033 BTS"
+    const [isMineButton, setIsMineButton] = useState(false);
+
     const fetchUserData = async (userId) => {
         const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth';
         try {
@@ -33,7 +36,7 @@ function HomePage({ userData }) {
             });
 
             if (!response.ok) {
-                console.error("Ошибка при получении данных пользователяя:", response.status);
+                console.error("Ошибка при получении данных пользователя:", response.status);
                 return;
             }
 
@@ -60,11 +63,8 @@ function HomePage({ userData }) {
         setIsClaimButton(false);
         setIsButtonDisabled(false);
         setIsLoading(false); // Скрываем индикатор загрузки
-
-        // Сохраняем состояние кнопки после того, как очки были собраны
-        localStorage.setItem('isClaimButton', 'false');
-        localStorage.setItem('isMining', 'false');
-        localStorage.setItem('isButtonDisabled', 'false');
+        setIsMineButton(false); // Кнопка возвращается к состоянию Mine
+        localStorage.setItem('isMineButton', 'false'); // Сохраняем состояние в localStorage
     };
 
     const handleMineFor100 = () => {
@@ -75,6 +75,8 @@ function HomePage({ userData }) {
         setIsMining(true);
         setIsButtonDisabled(true);
         setIsClaimButton(false); // Disable Claim button when mining
+        setIsMineButton(false); // Меняем состояние кнопки на Mine
+        localStorage.setItem('isMineButton', 'false'); // Сохраняем состояние в localStorage
         setIsLoading(false); // Скрываем индикатор загрузки
     };
 
@@ -142,34 +144,36 @@ function HomePage({ userData }) {
         return `${hours}:${minutes}:${secs}`;
     };
 
-   useEffect(() => {
-      // Загрузка начального состояния из localStorage
-      const storedIsMining = localStorage.getItem('isMining') === 'true';
-      const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
-      const storedIsClaimButton = localStorage.getItem('isClaimButton') === 'true';
-      const storedEndTime = localStorage.getItem('homePageEndTime');
+    useEffect(() => {
+        // Загрузка начального состояния из localStorage
+        const storedIsMining = localStorage.getItem('isMining') === 'true';
+        const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
+        const storedIsClaimButton = localStorage.getItem('isClaimButton') === 'true';
+        const storedEndTime = localStorage.getItem('homePageEndTime');
+        const storedIsMineButton = localStorage.getItem('isMineButton') === 'true';
 
-      setIsMining(storedIsMining);
-      setIsButtonDisabled(storedIsButtonDisabled);
-      setIsClaimButton(storedIsClaimButton);
+        setIsMining(storedIsMining);
+        setIsButtonDisabled(storedIsButtonDisabled);
+        setIsClaimButton(storedIsClaimButton);
+        setIsMineButton(storedIsMineButton); // Восстанавливаем состояние кнопки Mine
 
-      if (storedEndTime && storedIsButtonDisabled) {
-          const endTime = parseInt(storedEndTime, 10);
-          const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-          setTimeRemaining(remainingTime);
-          if (remainingTime > 0) {
-              startTimer(remainingTime);
-          } else {
-              // Если таймер истек, кнопка должна отображать "Claim 52.033 BTS"
-              setIsClaimButton(true);
-              setIsButtonDisabled(false);
-              setIsMining(false);
-          }
-      } else {
-          // Если таймер не запущен, кнопка должна отображать "Mine 52.033 BTS"
-          setIsClaimButton(false);
-          setIsButtonDisabled(false);
-      }
+        if (storedEndTime && storedIsButtonDisabled) {
+            const endTime = parseInt(storedEndTime, 10);
+            const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+            setTimeRemaining(remainingTime);
+            if (remainingTime > 0) {
+                startTimer(remainingTime);
+            } else {
+                // Если таймер истек, кнопка должна отображать "Claim 52.033 BTS"
+                setIsClaimButton(true);
+                setIsButtonDisabled(false);
+                setIsMining(false);
+            }
+        } else {
+            // Если таймер не запущен, кнопка должна отображать "Mine 52.033 BTS"
+            setIsClaimButton(false);
+            setIsButtonDisabled(false);
+        }
     }, []);
 
     useEffect(() => {
@@ -211,7 +215,7 @@ function HomePage({ userData }) {
                 ) : (
                     <>
                         {isButtonDisabled && isMining && <Timer style={{ marginRight: '9px' }} />}
-                        {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
+                        {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : (isMineButton ? 'Mine 52.033 BTS' : 'Mine 52.033 BTS'))}
                     </>
                 )}
             </button>
