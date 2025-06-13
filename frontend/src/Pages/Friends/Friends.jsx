@@ -19,7 +19,6 @@ function Friends({ userData }) {
         const url = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent(message)}`;
         setTelegramUrl(url); // Обновляем состояние с URL
         console.log("Friends.jsx: telegramUrl:", url); // Все еще логируем в консоль для отладки
-        window.open(url, '_blank');
     };
 
     return (
