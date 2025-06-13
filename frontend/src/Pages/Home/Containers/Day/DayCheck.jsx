@@ -10,13 +10,9 @@ function DayCheck({ userData, onPointsUpdate }) {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Load stored states from localStorage
     const storedDayCheckCount = localStorage.getItem('dayCheckCount');
     const lastClaimTime = localStorage.getItem('lastClaimTime');
-    const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
-    const storedIsLoading = localStorage.getItem('isLoading') === 'true';
 
-    // Set state based on localStorage
     if (lastClaimTime) {
       const timeSinceLastClaim = Date.now() - parseInt(lastClaimTime, 10);
       if (timeSinceLastClaim > 24 * 60 * 60 * 1000) {
@@ -39,17 +35,10 @@ function DayCheck({ userData, onPointsUpdate }) {
         startTimer(remainingTime);
       }
     }
-
-    // Load the saved button states
-    setIsButtonDisabled(storedIsButtonDisabled);
-    setIsLoading(storedIsLoading);
-
   }, []);
 
   const handleGetPoints = async () => {
     setIsLoading(true);
-    setIsButtonDisabled(true); // Disable button while waiting
-
     const bonusPoints = 30.033;
     const newPoints = parseFloat(localStorage.getItem('points')) + bonusPoints;
     await updatePointsInDatabase(newPoints);
@@ -59,14 +48,10 @@ function DayCheck({ userData, onPointsUpdate }) {
     localStorage.setItem('dayCheckCount', dayCheckCount + 1);
     localStorage.setItem('lastClaimTime', Date.now().toString());
 
+    setIsButtonDisabled(true);
     const twelveHoursInSeconds = 12 * 60 * 60;
     setTimeRemaining(twelveHoursInSeconds);
     startTimer(twelveHoursInSeconds);
-
-    // Save states in localStorage
-    localStorage.setItem('isButtonDisabled', 'true');
-    localStorage.setItem('isLoading', 'true');
-
     setIsLoading(false);
   };
 
@@ -82,10 +67,6 @@ function DayCheck({ userData, onPointsUpdate }) {
         localStorage.removeItem('dayCheckEndTime');
         setIsButtonDisabled(false);
         setTimeRemaining(0);
-
-        // Save updated button state
-        localStorage.setItem('isButtonDisabled', 'false');
-        localStorage.setItem('isLoading', 'false');
       }
     }, 1000);
   };
