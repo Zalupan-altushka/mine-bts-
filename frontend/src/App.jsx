@@ -7,7 +7,7 @@ import Boosters from './Pages/Boosters/Boosters.jsx';
 import PageTransition from './Pages/Transition/PageTransition.jsx';
 import Loader from './Pages/Loader/Loader.jsx';
 
-const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth'; // Убедитесь, что URL правильный
+const AUTH_FUNCTION_URL = 'https://authorezation.netlify.app/.netlify/functions/auth'; // Убедитесь, что URL правильный
 
 const App = () => {
     const location = useLocation();
@@ -88,14 +88,12 @@ const App = () => {
                 // Log initData just before sending the request
                 console.log("App.jsx: Sending initData:", initData);
 
-                const referralCode = userData?.telegram_user_id; // Get the referral code
-
                  fetch(AUTH_FUNCTION_URL , {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ initData, referralCode }), // Pass referralCode in the body
+                    body: JSON.stringify({ initData}), // Remove  referralCode
                 })
                 .then(response => {
                     console.log("App.jsx: Response status:", response.status);
