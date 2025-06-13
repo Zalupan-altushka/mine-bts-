@@ -88,43 +88,47 @@ const App = () => {
                 // Log initData just before sending the request
                 console.log("App.jsx: Sending initData:", initData);
 
-                 fetch(AUTH_FUNCTION_URL , {
+                // Extract referral code from initData
+                const urlParams = new URLSearchParams(initData);
+                const referralCode = urlParams.get('ref');
+
+                fetch(AUTH_FUNCTION_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ initData}), // Remove  referralCode
+                    body: JSON.stringify({ initData, referralCode }), // Send referralCode in the body
                 })
-                .then(response => {
-                    console.log("App.jsx: Response status:", response.status);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("App.jsx: Auth data:", data);
-                    if (data.isValid) {
-                        console.log("App.jsx: Авторизация прошла успешно!");
-                        setUserData(data.userData);
-                        // Задержка перед скрытием Loader
-                        setTimeout(() => {
-                            setAuthCheckLoading(false);
-                        }, 2000);
-                    } else {
-                        console.error("App.jsx: Ошибка авторизации: Недействительные данные Telegram.");
+                    .then(response => {
+                        console.log("App.jsx: Response status:", response.status);
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log("App.jsx: Auth data:", data);
+                        if (data.isValid) {
+                            console.log("App.jsx: Авторизация прошла успешно!");
+                            setUserData(data.userData);
+                            // Задержка перед скрытием Loader
+                            setTimeout(() => {
+                                setAuthCheckLoading(false);
+                            }, 2000);
+                        } else {
+                            console.error("App.jsx: Ошибка авторизации: Недействительные данные Telegram.");
+                            setUserData(null);
+                            setAuthCheckLoading(false); // Скрываем Loader сразу
+                        }
+                    })
+                    .catch(error => {
+                        console.error("App.jsx: Ошибка при запросе к Netlify Function:", error);
                         setUserData(null);
                         setAuthCheckLoading(false); // Скрываем Loader сразу
-                    }
-                })
-                .catch(error => {
-                    console.error("App.jsx: Ошибка при запросе к Netlify Function:", error);
-                    setUserData(null);
-                    setAuthCheckLoading(false); // Скрываем Loader сразу
-                })
-                .finally(() => {
-                    console.log("App.jsx: Auth check complete");
-                });
+                    })
+                    .finally(() => {
+                        console.log("App.jsx: Auth check complete");
+                    });
             } else {
                 console.warn("App.jsx: Нет данных инициализации Telegram.");
                 setAuthCheckLoading(false);
@@ -140,13 +144,13 @@ const App = () => {
                 <Loader success={userData !== null} />
             ) : (
                 <PageTransition location={location}>
-                  <Routes location={location}>
-                      <Route path="/"element={<HomePage isActive={isActive} userData={userData} />}/>
-                      <Route path="/friends" element={<Friends isActive={isActive} userData={userData} />} />
-                      <Route path="/tasks" element={<Tasks isActive={isActive} userData={userData} />} />
-                      <Route path="/boost" element={<Boosters isActive={isActive} userData={userData} />} />
-                  </Routes>
-              </PageTransition>
+                    <Routes location={location}>
+                        <Route path="/" element={<HomePage isActive={isActive} userData={userData} />} />
+                        <Route path="/friends" element={<Friends isActive={isActive} userData={userData} />} />
+                        <Route path="/tasks" element={<Tasks isActive={isActive} userData={userData} />} />
+                        <Route path="/boost" element={<Boosters isActive={isActive} userData={userData} />} />
+                    </Routes>
+                </PageTransition>
 
             )}
         </>

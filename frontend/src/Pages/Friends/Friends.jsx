@@ -7,7 +7,7 @@ import Reward from './Containers-fr/Reward/Reward';
 
 function Friends({ userData }) {
     const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth'; // Убедитесь, что URL правильный
-
+    
     const handleInviteClick = () => {
         const inviteLink = userData?.invite_link;
         if (!inviteLink) {
@@ -19,13 +19,22 @@ function Friends({ userData }) {
         const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent(message)}`;
         window.open(telegramUrl, '_blank');
 
-         fetch(AUTH_FUNCTION_URL , {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ initData : window.Telegram.WebApp.initData , referralCode: userData?.telegram_user_id }),
-                })
+        // Fetch call to update total_fr, include referralCode
+        fetch(AUTH_FUNCTION_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ initData: window.Telegram.WebApp.initData, referralCode: userData?.telegram_user_id }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                console.error("Error updating referral data:", response.status);
+            }
+        })
+        .catch(error => {
+            console.error("Error during fetch:", error);
+        });
     };
 
     return (
