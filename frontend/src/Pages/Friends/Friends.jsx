@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Friends.css';
 import Menu from '../../Most Used/Menu/Menu';
 import TotalFR from './Containers-fr/Total/TotalFR';
