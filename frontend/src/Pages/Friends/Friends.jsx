@@ -7,10 +7,12 @@ import Reward from './Containers-fr/Reward/Reward';
 
 function Friends({ userData }) {
     const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth'; // Убедитесь, что URL правильный
-    
+    const [log, setLog] = useState(''); // Состояние для хранения логов
+
     const handleInviteClick = () => {
         const inviteLink = userData?.invite_link;
         if (!inviteLink) {
+            setLog("Invite link not found, cannot generate invite link.");
             console.warn("Invite link not found, cannot generate invite link.");
             return;
         }
@@ -18,7 +20,14 @@ function Friends({ userData }) {
         const message = "Join me in 'Mine BTS!' and let's mine new gold! Use my invite link to join🎉";
         const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent(message)}`;
         window.open(telegramUrl, '_blank');
-    
+
+        const referralCode = userData?.telegram_user_id;
+        const initData = window.Telegram.WebApp.initData;
+
+        const logMessage = `Sending referralCode: ${referralCode}\nSending initData: ${initData}`;
+        setLog(logMessage); // Обновляем состояние с логом
+        console.log("Friends.jsx: Sending referralCode:", referralCode);
+        console.log("Friends.jsx: Sending initData:", initData);
 
         // Fetch call to update total_fr, include referralCode
         fetch(AUTH_FUNCTION_URL, {
@@ -26,16 +35,18 @@ function Friends({ userData }) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ referralCode: userData?.telegram_user_id, initData : window.Telegram.WebApp.initData}),
+            body: JSON.stringify({ referralCode: userData?.telegram_user_id, initData: window.Telegram.WebApp.initData }),
         })
-        .then(response => {
-            if (!response.ok) {
-                console.error("Error updating referral data:", response.status);
-            }
-        })
-        .catch(error => {
-            console.error("Error during fetch:", error);
-        });
+            .then(response => {
+                if (!response.ok) {
+                    setLog(prevLog => prevLog + `\nError updating referral data: ${response.status}`);
+                    console.error("Error updating referral data:", response.status);
+                }
+            })
+            .catch(error => {
+                setLog(prevLog => prevLog + `\nError during fetch: ${error}`);
+                console.error("Error during fetch:", error);
+            });
     };
 
     return (
@@ -48,6 +59,11 @@ function Friends({ userData }) {
                 <button className='get-reward-button'>Claim Reward</button>
                 <button className='Invite-button' onClick={handleInviteClick}>Invite Friends</button>
             </section>
+            {log && ( // Отображаем логи, если они есть
+                <div className="friends-logs">
+                    <pre>{log}</pre>
+                </div>
+            )}
             <Menu />
         </section>
     );
