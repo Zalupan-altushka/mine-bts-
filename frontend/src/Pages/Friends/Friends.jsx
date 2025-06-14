@@ -7,14 +7,15 @@ import Reward from './Containers-fr/Reward/Reward';
 
 function Friends({ userData }) {
     const handleInviteClick = () => {
-        const inviteLink = userData?.invite_link;
-        if (!inviteLink) {
-            console.warn("Invite link not found, cannot generate invite link.");
+        const telegramUserId = userData?.telegram_user_id;
+        if (!telegramUserId) {
+            console.warn("Telegram User ID not found.");
             return;
         }
 
         const message = "Join me in 'Mine BTS!' and let's mine new gold! Use my invite link to join🎉";
-        const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent(message)}`;
+        const startAppValue = `ref_${telegramUserId}`; // Add a prefix to prevent collisions
+        const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(`https://t.me/mine_bts_bot?startapp=${startAppValue}`)}&text=${encodeURIComponent(message)}`;
         window.open(telegramUrl, '_blank');
     };
 
