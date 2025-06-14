@@ -2,7 +2,8 @@ import React from 'react';
 import Fly from '../../../../Most Used/Image/Fly';
 import './Reward.css';
 
-function Reward({ reward }) {
+function Reward({ userData }) {
+    const reward = userData?.reward_fr || 0; // Получаем значение reward_fr из userData или устанавливаем 0 по умолчанию
 
     return (
         <section className='reward-section-fr'>
