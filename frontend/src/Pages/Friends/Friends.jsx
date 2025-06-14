@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './Friends.css';
 import Menu from '../../Most Used/Menu/Menu';
 import TotalFR from './Containers-fr/Total/TotalFR';
@@ -47,28 +47,31 @@ function Friends({ userData }) {
                 console.log("Reward claimed successfully");
                  setReward(0); // Reset reward after claiming
                  setShowReward(false);
-                window.location.reload(); // or update userData locally to reflect new points
+                 window.location.reload();
             }
         } catch (error) {
             console.error('Error during fetch:', error);
         }
     };
 
-     const handleNewReferral = () => {
+    const handleNewReferral = useCallback(() => {
         setReward(205.033);
-         setShowReward(true);
-     }
+        setShowReward(true);
+    }, []);
 
     useEffect(() => {
+        console.log("useEffect в Friends.jsx выполнен");
         const urlParams = new URLSearchParams(window.location.search);
         const initData = urlParams.get('initData');
+
         if (initData) {
             try {
                 const parsedInitData = JSON.parse(decodeURIComponent(initData));
-                   if (parsedInitData.success) {
-                       handleNewReferral();
-                       window.history.replaceState({}, document.title, window.location.pathname);
-                   }
+                console.log("Parsed telegramWebAppInitData:", parsedInitData);
+                if (parsedInitData.success) {
+                    handleNewReferral();
+                     window.history.replaceState({}, document.title, window.location.pathname);
+                }
             } catch (error) {
                 console.error('Error parsing telegramWebAppInitData:', error);
             }
