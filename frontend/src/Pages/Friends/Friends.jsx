@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Friends.css';
 import Menu from '../../Most Used/Menu/Menu';
 import TotalFR from './Containers-fr/Total/TotalFR';
@@ -6,7 +6,8 @@ import Bonus from './Containers-fr/Bonuses/Bonus';
 import Reward from './Containers-fr/Reward/Reward';
 
 function Friends({ userData }) {
-    const [reward, setReward] = useState(205.033); // Set the reward amount
+    const [reward, setReward] = useState(0); // Изначально 0
+    const [showReward, setShowReward] = useState(false); // Add this line
 
     const handleInviteClick = () => {
         const telegramUserId = userData?.telegram_user_id;
@@ -21,7 +22,9 @@ function Friends({ userData }) {
         window.open(telegramUrl, '_blank');
     };
 
-    const handleClaimReward = async () => {
+    const handleClaimReward = async (event) => {
+        event.preventDefault(); // Prevent the default form submission behavior
+
         const UPDATE_POINTS_URL = 'https://ah-user.netlify.app/.netlify/functions/update-points'; // Update the URL
 
         try {
@@ -42,19 +45,42 @@ function Friends({ userData }) {
                 // Update the local state with the new points
                 const data = await response.json();
                 console.log("Reward claimed successfully");
-                window.location.reload();
+                 setReward(0); // Reset reward after claiming
+                 setShowReward(false);
+                window.location.reload(); // or update userData locally to reflect new points
             }
         } catch (error) {
             console.error('Error during fetch:', error);
         }
     };
 
+     const handleNewReferral = () => {
+        setReward(205.033);
+         setShowReward(true);
+     }
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const initData = urlParams.get('initData');
+        if (initData) {
+            try {
+                const parsedInitData = JSON.parse(decodeURIComponent(initData));
+                   if (parsedInitData.success) {
+                       handleNewReferral();
+                       window.history.replaceState({}, document.title, window.location.pathname);
+                   }
+            } catch (error) {
+                console.error('Error parsing telegramWebAppInitData:', error);
+            }
+        }
+    }, [handleNewReferral]);
+
     return (
         <section className='bodyfriendspage'>
             <div className='margin-div-fr'></div>
             <TotalFR totalFriends={userData?.total_fr} />
             <Bonus />
-            <Reward reward={reward} /> {/* Pass reward to the Reward component */}
+            <Reward reward={showReward ? reward : 0} /> {/* Pass reward to the Reward component */}
             <section className='Container-button'>
                 <button className='get-reward-button' onClick={handleClaimReward}>Claim Reward</button>
                 <button className='Invite-button' onClick={handleInviteClick}>Invite Friends</button>
