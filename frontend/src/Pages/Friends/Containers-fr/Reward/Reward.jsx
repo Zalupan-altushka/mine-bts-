@@ -2,8 +2,7 @@ import React from 'react';
 import Fly from '../../../../Most Used/Image/Fly';
 import './Reward.css';
 
-function Reward({ isNewReferral }) {
-    const reward = isNewReferral ? 205.033 : 0;
+function Reward({ reward }) {
 
     return (
         <section className='reward-section-fr'>
