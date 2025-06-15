@@ -14,14 +14,19 @@ function Boosters({ userData }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ booster: boosterName, price }),
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Server error: ${response.status} ${errorText}`);
+      }
+
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Failed to get invoice link');
 
       if (window.Telegram?.WebApp?.openInvoice) {
         window.Telegram.WebApp.openInvoice(data.invoiceLink, (status) => {
           if (status === 'paid') {
             alert('Покупка успешна!');
-            // Тут можно обновить UI, если нужно
+            // обнови состояние если нужно
           } else {
             alert('Покупка не была завершена.');
           }
