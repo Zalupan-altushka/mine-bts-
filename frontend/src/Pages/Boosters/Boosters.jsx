@@ -1,7 +1,8 @@
-import './Boosters.css'
+import React from 'react';
+import './Boosters.css';
 import Menu from '../../Most Used/Menu/Menu';
-import ListContainerThree from '../Boosters-list/ListContainetThree';
-import ListsContainerFirst from '../Boosters-list/ListContainerFirst';
+import ListContainerThree from '../Boosters-list/ListContainerThree';
+import ListsContainerFirst from '../Boosters-list/ListsContainerFirst';
 import ListsContainerSecond from '../Boosters-list/ListContainerSecond';
 import BoostersBox from './Containers/BoostersBox';
 
@@ -14,14 +15,19 @@ function Boosters({ userData }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ booster: boosterName, price }),
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Server error: ${response.status} ${errorText}`);
+      }
+
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Failed to get invoice link');
 
       if (window.Telegram?.WebApp?.openInvoice) {
         window.Telegram.WebApp.openInvoice(data.invoiceLink, (status) => {
           if (status === 'paid') {
             alert('Покупка успешна!');
-            // Тут можно обновить UI, если нужно
+            // обнови состояние если нужно
           } else {
             alert('Покупка не была завершена.');
           }
@@ -35,17 +41,17 @@ function Boosters({ userData }) {
   };
 
   return (
-      <section className='bodyboostpage'>
-        <BoostersBox />
-        <div className='containers-scroll-wrapper'>
-          <div className='center-content'>
-            <ListsContainerFirst onBuy={handleBuy} />
-            <ListsContainerSecond />
-            <ListContainerThree />
-          </div>
+    <section className='bodyboostpage'>
+      <BoostersBox />
+      <div className='containers-scroll-wrapper'>
+        <div className='center-content'>
+          <ListsContainerFirst onBuy={handleBuy} />
+          <ListsContainerSecond onBuy={handleBuy} />
+          <ListContainerThree onBuy={handleBuy} />
         </div>
-        <Menu />
-      </section>
+      </div>
+      <Menu />
+    </section>
   );
 }
 
