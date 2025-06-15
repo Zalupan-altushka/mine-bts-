@@ -1,14 +1,16 @@
 import React from 'react';
 import TON from '../../Most Used/Image/TON';
 
-function ListsContainerFirst() {
+function ListsContainerFirst({ onBuy }) {
+  const price = 700; // 0.7K Stars
+
   return (
     <section className='lists-container'>
       <div className='list'>
         <article className='boosters-list-ton'>
           <div className='hight-section-list'>
             <span>TON</span>
-            <button className='ListButtonTon'>0.7K</button>
+            <button className='ListButtonTon' onClick={() => onBuy('TON Booster', price)}>0.7K</button>
           </div>
           <section className='mid-section-list'>
             <TON />
