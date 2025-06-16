@@ -42,56 +42,69 @@ function ListsContainerFirst() {
                 return;
             }
 
-            setPrice(priceFromButton); // Update the price state
+            // Update the price state FIRST
+            setPrice(priceFromButton);
 
-            // Check if request body is available before sending the request
-            if (!requestBody) {
-                setLog((prevLog) => prevLog + '\nRequest body is not yet available.');
-                return;
-            }
+            // THEN, since the price is set, the useEffect will run and set the requestBody
+            // No need to do anything else here
 
-            const response = await fetch('https://ah-user.netlify.app/.netlify/functions/create-invoice', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestBody),
-            });
-
-            const responseText = await response.text();
-            console.log('Response text:', responseText);
-
-            if (!response.ok) {
-                console.error('Error creating invoice:', response.status, responseText);
-                setLog((prevLog) => prevLog + `\nОшибка: ${response.status} - ${responseText}`);
-                return;
-            }
-
-            try {
-                const data = await response.json();
-                console.log('Response data:', data);
-                setLog((prevLog) => prevLog + '\nResponse Data: ' + JSON.stringify(data));
-
-                if (data.invoiceUrl) {
-                    window.Telegram.WebApp.openInvoice(data.invoiceUrl, (status) => {
-                        if (status === 'paid') {
-                            window.Telegram.WebApp.showAlert('Payment successful!');
-                        } else {
-                            window.Telegram.WebApp.showAlert('Payment failed or cancelled.');
-                        }
-                    });
-                } else {
-                    setLog((prevLog) => prevLog + '\nОшибка: Не удалось получить ссылку на оплату.');
-                }
-            } catch (jsonError) {
-                console.error('Error parsing JSON:', jsonError);
-                setLog((prevLog) => prevLog + `\nОшибка при обработке ответа: ${jsonError.message}`);
-            }
         } catch (error) {
             console.error('Error during purchase:', error);
             setLog((prevLog) => prevLog + '\nError during purchase: ' + error.message);
         }
   };
+
+    // Function to send request (only called after requestBody is available)
+  const sendRequest = async () => {
+        if (!requestBody) {
+            setLog((prevLog) => prevLog + '\nRequest body is not yet available.');
+            return;
+        }
+
+        const response = await fetch('https://ah-user.netlify.app/.netlify/functions/create-invoice', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+        });
+
+        const responseText = await response.text();
+        console.log('Response text:', responseText);
+
+        if (!response.ok) {
+            console.error('Error creating invoice:', response.status, responseText);
+            setLog((prevLog) => prevLog + `\nОшибка: ${response.status} - ${responseText}`);
+            return;
+        }
+
+        try {
+            const data = await response.json();
+            console.log('Response data:', data);
+            setLog((prevLog) => prevLog + '\nResponse Data: ' + JSON.stringify(data));
+
+            if (data.invoiceUrl) {
+                window.Telegram.WebApp.openInvoice(data.invoiceUrl, (status) => {
+                    if (status === 'paid') {
+                        window.Telegram.WebApp.showAlert('Payment successful!');
+                    } else {
+                        window.Telegram.WebApp.showAlert('Payment failed or cancelled.');
+                    }
+                });
+            } else {
+                setLog((prevLog) => prevLog + '\nОшибка: Не удалось получить ссылку на оплату.');
+            }
+        } catch (jsonError) {
+            console.error('Error parsing JSON:', jsonError);
+            setLog((prevLog) => prevLog + `\nОшибка при обработке ответа: ${jsonError.message}`);
+        }
+  };
+
+  useEffect(() => {
+        if (requestBody) {
+            sendRequest(); // Call sendRequest when requestBody becomes available
+        }
+  }, [requestBody]);
 
   return (
     <section className='lists-container'>
