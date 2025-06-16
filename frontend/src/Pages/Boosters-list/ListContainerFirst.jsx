@@ -2,7 +2,7 @@ import React from 'react';
 import TON from '../../Most Used/Image/TON';
 
 function ListsContainerFirst() {
-  
+
   const handleBuyTon = async () => {
     try {
       const price = 700; // Цена в звездах (указана на кнопке 0.7K)
@@ -22,7 +22,7 @@ function ListsContainerFirst() {
 
       console.log("ListsContainerFirst: Request Body:", requestBody);  // LOG
 
-      const response = await fetch('/.netlify/functions/createInvoice', {
+      const response = await fetch('https://ah-user.netlify.app/.netlify/functions/create-invoice', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
