@@ -2,25 +2,27 @@ import React from 'react';
 import TON from '../../Most Used/Image/TON';
 
 function ListsContainerFirst() {
+  const handleBuyTon = async (event) => {
+    event.preventDefault(); // Предотвращаем перезагрузку страницы
 
-  const handleBuyTon = async () => {
     try {
-      const price = 700; // Цена в звездах (указана на кнопке 0.7K)
+      const price = parseInt(event.target.dataset.price, 10); // Get price from data-price
 
-      // Проверка наличия Telegram WebApp
-      if (!window.Telegram || !window.Telegram.WebApp) {
-        alert('Telegram WebApp недоступен. Пожалуйста, попробуйте позже.');
-        return; // Остановить выполнение, если WebApp отсутствует
+      if (isNaN(price)) {
+        alert('Некорректная цена.');
+        return;
       }
+      const title = 'TON Booster'; // Задаем title
+      const description = 'Boost your TON power!'; // Задаем description
+      const payload = 'ton_booster_purchase'; // Задаем payload
 
       const requestBody = {
-        title: 'TON Booster',
-        description: 'Boost your TON power!',
-        payload: 'ton_booster_purchase',
+        title: title,
+        description: description,
+        payload: payload,
         price: price,
       };
-
-      console.log("ListsContainerFirst: Request Body:", requestBody);  // LOG
+      console.log("ListsContainerFirst: Request Body:", requestBody); // LOG
 
       const response = await fetch('https://ah-user.netlify.app/.netlify/functions/create-invoice', {
         method: 'POST',
@@ -30,30 +32,27 @@ function ListsContainerFirst() {
         body: JSON.stringify(requestBody),
       });
 
-      console.log("ListsContainerFirst: Response Status:", response.status);  // LOG
-
       if (!response.ok) {
-        const errorText = await response.text(); // Получаем текст ошибки
+        const errorText = await response.text();
         console.error('ListsContainerFirst: Error creating invoice:', errorText);
-        alert(`Ошибка при создании инвойса: ${errorText}`); // Отображаем текст ошибки
+        alert(`Ошибка: ${errorText}`);
         return;
       }
 
       const data = await response.json();
-      console.log("ListsContainerFirst: Response Data:", data);  // LOG
+      console.log("ListsContainerFirst: Response Data:", data); // LOG
 
       if (data.invoiceUrl) {
         window.Telegram.WebApp.openInvoice(data.invoiceUrl, (status) => {
           if (status === 'paid') {
-            window.Telegram.WebApp.showAlert('Payment successful! You have received the TON Booster.');
-            // Здесь можно выполнить действия после успешной оплаты
+            window.Telegram.WebApp.showAlert('Payment successful!');
+            // ...
           } else {
-            window.Telegram.WebApp.showAlert('Payment failed or was cancelled.');
-            // Здесь можно обработать неудачную оплату
+            window.Telegram.WebApp.showAlert('Payment failed or cancelled.');
+            // ...
           }
         });
       } else {
-        console.error('ListsContainerFirst: No invoiceUrl in response');
         alert('Ошибка: Не удалось получить ссылку на оплату.');
       }
     } catch (error) {
@@ -68,7 +67,13 @@ function ListsContainerFirst() {
         <article className='boosters-list-ton'>
           <div className='hight-section-list'>
             <span>TON</span>
-            <button className='ListButtonTon' onClick={handleBuyTon}>0.7K</button>
+            <button
+              className='ListButtonTon'
+              onClick={handleBuyTon}
+              data-price="700" // Ensure data-price is set
+            >
+              0.7K
+            </button>
           </div>
           <section className='mid-section-list'>
             <TON />
