@@ -1,20 +1,33 @@
-import React from 'react';
+import React , {useState} from 'react';
 import TON from '../../Most Used/Image/TON';
 
 function ListsContainerFirst() {
+  const [log, setLog] = useState(''); // State to store logs
+  const [price, setPrice] = useState(null);
+  const [title, setTitle] = useState(''); // State for title
+  const [description, setDescription] = useState(''); // State for description
+  const [payload, setPayload] = useState(''); // State for payload
+
   const handleBuyTon = async (event) => {
-    event.preventDefault(); // Предотвращаем перезагрузку страницы
+    event.preventDefault();
 
     try {
-      const price = parseInt(event.target.dataset.price, 10); // Get price from data-price
+      const priceFromButton = parseInt(event.target.dataset.price, 10);
 
-      if (isNaN(price)) {
-        alert('Некорректная цена.');
-        return;
-      }
-      const title = 'TON Booster'; // Задаем title
-      const description = 'Boost your TON power!'; // Задаем description
-      const payload = 'ton_booster_purchase'; // Задаем payload
+        if (isNaN(priceFromButton)) {
+            setLog((prevLog) => prevLog + '\nНекорректная цена.');
+            return;
+        }
+
+      setPrice(priceFromButton);
+      setTitle('TON Booster');
+      setDescription('Boost your TON power!');
+      setPayload('ton_booster_purchase');
+
+      setLog(
+        (prevLog) =>
+          `${prevLog}\nПеред fetch - title: ${title}, description: ${description}, payload: ${payload}, price: ${price}`
+      ); // Log before fetch
 
       const requestBody = {
         title: title,
@@ -22,7 +35,8 @@ function ListsContainerFirst() {
         payload: payload,
         price: price,
       };
-      console.log("ListsContainerFirst: Request Body:", requestBody); // LOG
+
+      setLog((prevLog) => prevLog + '\nRequest Body: ' + JSON.stringify(requestBody));
 
       const response = await fetch('https://ah-user.netlify.app/.netlify/functions/create-invoice', {
         method: 'POST',
@@ -32,32 +46,10 @@ function ListsContainerFirst() {
         body: JSON.stringify(requestBody),
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('ListsContainerFirst: Error creating invoice:', errorText);
-        alert(`Ошибка: ${errorText}`);
-        return;
-      }
-
-      const data = await response.json();
-      console.log("ListsContainerFirst: Response Data:", data); // LOG
-
-      if (data.invoiceUrl) {
-        window.Telegram.WebApp.openInvoice(data.invoiceUrl, (status) => {
-          if (status === 'paid') {
-            window.Telegram.WebApp.showAlert('Payment successful!');
-            // ...
-          } else {
-            window.Telegram.WebApp.showAlert('Payment failed or cancelled.');
-            // ...
-          }
-        });
-      } else {
-        alert('Ошибка: Не удалось получить ссылку на оплату.');
-      }
+      setLog((prevLog) => prevLog + '\nResponse Status: ' + response.status);
+      // ... остальной код ...
     } catch (error) {
-      console.error('ListsContainerFirst: Error during purchase:', error);
-      alert('An error occurred during the purchase process.');
+      setLog((prevLog) => prevLog + '\nError during purchase: ' + error.message);
     }
   };
 
@@ -70,7 +62,7 @@ function ListsContainerFirst() {
             <button
               className='ListButtonTon'
               onClick={handleBuyTon}
-              data-price="700" // Ensure data-price is set
+              data-price="700"
             >
               0.7K
             </button>
@@ -83,6 +75,10 @@ function ListsContainerFirst() {
             <span className='text-power-hr-ton'>0.072 BTS/hr</span>
           </div>
         </article>
+      </div>
+      <div style={{ marginTop: '20px', padding: '10px', border: '1px solid #ccc', whiteSpace: 'pre-wrap' }}>
+        <h2>Logs:</h2>
+        {log}
       </div>
     </section>
   );
