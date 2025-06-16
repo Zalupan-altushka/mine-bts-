@@ -50,7 +50,7 @@ function ListsContainerFirst() {
                 return;
             }
 
-            const response = await fetch('https://ah-user.netlify.app/.netlify/functions/createInvoice', {
+            const response = await fetch('https://ah-user.netlify.app/.netlify/functions/create-invoice', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
