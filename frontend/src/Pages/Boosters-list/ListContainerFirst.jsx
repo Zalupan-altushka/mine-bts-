@@ -45,9 +45,6 @@ function ListsContainerFirst() {
             // Update the price state FIRST
             setPrice(priceFromButton);
 
-            // THEN, since the price is set, the useEffect will run and set the requestBody
-            // No need to do anything else here
-
         } catch (error) {
             console.error('Error during purchase:', error);
             setLog((prevLog) => prevLog + '\nError during purchase: ' + error.message);
@@ -101,8 +98,9 @@ function ListsContainerFirst() {
   };
 
   useEffect(() => {
+        // This useEffect will call sendRequest when requestBody is available
         if (requestBody) {
-            sendRequest(); // Call sendRequest when requestBody becomes available
+            sendRequest();
         }
   }, [requestBody]);
 
