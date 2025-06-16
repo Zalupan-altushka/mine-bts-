@@ -7,6 +7,7 @@ function ListsContainerFirst() {
   const [title, setTitle] = useState('TON Booster'); // Initialize with default value
   const [description, setDescription] = useState('Boost your TON power!'); // Initialize with default value
   const [payload, setPayload] = useState('ton_booster_purchase'); // Initialize with default value
+  const [requestBody, setRequestBody] = useState(null); // State for request body
 
   useEffect(() => {
         // Update the log whenever the relevant state variables change
@@ -15,6 +16,20 @@ function ListsContainerFirst() {
                 `${prevLog}\nПеред fetch - title: ${title}, description: ${description}, payload: ${payload}, price: ${price}`
         );
   }, [title, description, payload, price]); // Re-run the effect if these change
+
+    // Effect to create the request body after price has been set
+  useEffect(() => {
+        if (price !== null) {
+            const newRequestBody = {
+                title: title,
+                description: description,
+                payload: payload,
+                price: price,
+            };
+            setRequestBody(newRequestBody);
+            setLog((prevLog) => prevLog + '\nRequest Body: ' + JSON.stringify(newRequestBody)); // Log Request Body here
+        }
+  }, [title, description, payload, price]); // Run when title, description, payload, or price change
 
   const handleBuyTon = async (event) => {
         event.preventDefault();
@@ -29,16 +44,13 @@ function ListsContainerFirst() {
 
             setPrice(priceFromButton);
 
-            const requestBody = {
-                title: title,
-                description: description,
-                payload: payload,
-                price: priceFromButton,
-            };
+            // Check if request body is available before sending the request
+            if (!requestBody) {
+                setLog((prevLog) => prevLog + '\nRequest body is not yet available.');
+                return;
+            }
 
-            setLog((prevLog) => prevLog + '\nRequest Body: ' + JSON.stringify(requestBody));
-
-            const response = await fetch('https://ah-user.netlify.app/.netlify/functions/create-invoice', {
+            const response = await fetch('/.netlify/functions/createInvoice', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
