@@ -24,7 +24,7 @@ function Boosters({ userData }) {
       const data = await response.json();
 
       if (!data.invoiceLink) {
-        throw new Error("No invoice link received from server.");
+        throw new Error("Сервер не вернул ссылку на оплату.");
       }
 
       // Используем Telegram WebApp SDK для открытия инвойса
@@ -34,17 +34,23 @@ function Boosters({ userData }) {
             alert("Оплата прошла успешно!");
             // TODO: Обновить состояние приложения (например, добавить бустер пользователю)
           } else {
-            alert("Оплата не завершена.");
+            alert("Оплата не завершена. Статус: " + status);
           }
         });
       } else {
-        alert("Telegram WebApp SDK недоступен. Убедитесь, что вы находитесь в Telegram WebApp.");
+        alert("Telegram WebApp SDK недоступен.  Пожалуйста, откройте приложение в Telegram.");
       }
 
 
     } catch (e) {
-      console.error("Ошибка при покупке:", e);
-      alert('Ошибка: ' + e.message + ". Подробности в консоли.");
+      let errorMessage = "Произошла ошибка: " + e.message;
+
+      // Добавляем больше информации, если она доступна
+      if (e.response && e.response.status) {
+        errorMessage += ` (HTTP ${e.response.status})`;
+      }
+
+      alert(errorMessage); // Выводим сообщение об ошибке с дополнительной информацией
     }
   };
 
