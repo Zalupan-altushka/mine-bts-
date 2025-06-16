@@ -1,56 +1,74 @@
-import React , {useState} from 'react';
+import React , {useState , useEffect} from 'react';
 import TON from '../../Most Used/Image/TON';
 
 function ListsContainerFirst() {
-  const [log, setLog] = useState(''); // State to store logs
+  const [log, setLog] = useState('');
   const [price, setPrice] = useState(null);
-  const [title, setTitle] = useState(''); // State for title
-  const [description, setDescription] = useState(''); // State for description
-  const [payload, setPayload] = useState(''); // State for payload
+  const [title, setTitle] = useState('TON Booster'); // Initialize with default value
+  const [description, setDescription] = useState('Boost your TON power!'); // Initialize with default value
+  const [payload, setPayload] = useState('ton_booster_purchase'); // Initialize with default value
+
+  useEffect(() => {
+        // Update the log whenever the relevant state variables change
+        setLog(
+            (prevLog) =>
+                `${prevLog}\nПеред fetch - title: ${title}, description: ${description}, payload: ${payload}, price: ${price}`
+        );
+  }, [title, description, payload, price]); // Re-run the effect if these change
 
   const handleBuyTon = async (event) => {
-    event.preventDefault();
+        event.preventDefault();
 
-    try {
-      const priceFromButton = parseInt(event.target.dataset.price, 10);
+        try {
+            const priceFromButton = parseInt(event.target.dataset.price, 10);
 
-        if (isNaN(priceFromButton)) {
-            setLog((prevLog) => prevLog + '\nНекорректная цена.');
-            return;
+            if (isNaN(priceFromButton)) {
+                setLog((prevLog) => prevLog + '\nНекорректная цена.');
+                return;
+            }
+
+            setPrice(priceFromButton);
+
+            const requestBody = {
+                title: title,
+                description: description,
+                payload: payload,
+                price: priceFromButton,
+            };
+
+            setLog((prevLog) => prevLog + '\nRequest Body: ' + JSON.stringify(requestBody));
+
+            const response = await fetch('/.netlify/functions/createInvoice', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                setLog((prevLog) => prevLog + '\nОшибка: ' + errorText);
+                return;
+            }
+
+            const data = await response.json();
+            setLog((prevLog) => prevLog + '\nResponse Data: ' + JSON.stringify(data));
+
+            if (data.invoiceUrl) {
+                window.Telegram.WebApp.openInvoice(data.invoiceUrl, (status) => {
+                    if (status === 'paid') {
+                        window.Telegram.WebApp.showAlert('Payment successful!');
+                    } else {
+                        window.Telegram.WebApp.showAlert('Payment failed or cancelled.');
+                    }
+                });
+            } else {
+                setLog((prevLog) => prevLog + '\nОшибка: Не удалось получить ссылку на оплату.');
+            }
+        } catch (error) {
+            setLog((prevLog) => prevLog + '\nError during purchase: ' + error.message);
         }
-
-      setPrice(priceFromButton);
-      setTitle('TON Booster');
-      setDescription('Boost your TON power!');
-      setPayload('ton_booster_purchase');
-
-      setLog(
-        (prevLog) =>
-          `${prevLog}\nПеред fetch - title: ${title}, description: ${description}, payload: ${payload}, price: ${price}`
-      ); // Log before fetch
-
-      const requestBody = {
-        title: title,
-        description: description,
-        payload: payload,
-        price: price,
-      };
-
-      setLog((prevLog) => prevLog + '\nRequest Body: ' + JSON.stringify(requestBody));
-
-      const response = await fetch('https://ah-user.netlify.app/.netlify/functions/create-invoice', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      setLog((prevLog) => prevLog + '\nResponse Status: ' + response.status);
-      // ... остальной код ...
-    } catch (error) {
-      setLog((prevLog) => prevLog + '\nError during purchase: ' + error.message);
-    }
   };
 
   return (
