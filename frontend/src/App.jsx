@@ -158,9 +158,7 @@ const App = () => {
 const Main = () => {
     return (
         <Router>
-            <TelegramWebAppProvider> 
-                <App />
-            </TelegramWebAppProvider>
+            <App />
         </Router>
     );
 };
