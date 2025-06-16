@@ -4,21 +4,13 @@ import TON from '../../Most Used/Image/TON';
 function ListsContainerFirst() {
   const [log, setLog] = useState('');
   const [price, setPrice] = useState(null);
-  const [title, setTitle] = useState('TON Booster'); // Initialize with default value
-  const [description, setDescription] = useState('Boost your TON power!'); // Initialize with default value
-  const [payload, setPayload] = useState('ton_booster_purchase'); // Initialize with default value
-  const [requestBody, setRequestBody] = useState(null); // State for request body
+  const [title, setTitle] = useState('TON Booster');
+  const [description, setDescription] = useState('Boost your TON power!');
+  const [payload, setPayload] = useState('ton_booster_purchase');
+  const [requestBody, setRequestBody] = useState(null);
 
   useEffect(() => {
-        // Update the log whenever the relevant state variables change
-        setLog(
-            (prevLog) =>
-                `${prevLog}\nПеред fetch - title: ${title}, description: ${description}, payload: ${payload}, price: ${price}`
-        );
-  }, [title, description, payload, price]); // Re-run the effect if these change
-
-    // Effect to create the request body after price has been set
-  useEffect(() => {
+        // Update requestBody whenever title, description, payload, or price changes
         if (price !== null) {
             const newRequestBody = {
                 title: title,
@@ -27,9 +19,17 @@ function ListsContainerFirst() {
                 price: price,
             };
             setRequestBody(newRequestBody);
-            setLog((prevLog) => prevLog + '\nRequest Body: ' + JSON.stringify(newRequestBody)); // Log Request Body here
+            setLog((prevLog) => prevLog + '\nRequest Body: ' + JSON.stringify(newRequestBody));
         }
-  }, [title, description, payload, price]); // Run when title, description, payload, or price change
+  }, [title, description, payload, price]);
+
+  useEffect(() => {
+        // Log the state variables
+        setLog(
+            (prevLog) =>
+                `${prevLog}\nПеред fetch - title: ${title}, description: ${description}, payload: ${payload}, price: ${price}`
+        );
+  }, [title, description, payload, price]);
 
   const handleBuyTon = async (event) => {
         event.preventDefault();
@@ -42,7 +42,7 @@ function ListsContainerFirst() {
                 return;
             }
 
-            setPrice(priceFromButton);
+            setPrice(priceFromButton); // Update the price state
 
             // Check if request body is available before sending the request
             if (!requestBody) {
@@ -50,7 +50,7 @@ function ListsContainerFirst() {
                 return;
             }
 
-            const response = await fetch('https://ah-user.netlify.app/.netlify/functions/create-invoice', {
+            const response = await fetch('https://ah-user.netlify.app/.netlify/functions/createInvoice', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -58,11 +58,11 @@ function ListsContainerFirst() {
                 body: JSON.stringify(requestBody),
             });
 
-            const responseText = await response.text(); // Get the response text
+            const responseText = await response.text();
             console.log('Response text:', responseText);
 
             if (!response.ok) {
-                console.error('Error creating invoice:', response.status, responseText); // Log status and the text
+                console.error('Error creating invoice:', response.status, responseText);
                 setLog((prevLog) => prevLog + `\nОшибка: ${response.status} - ${responseText}`);
                 return;
             }
@@ -88,6 +88,7 @@ function ListsContainerFirst() {
                 setLog((prevLog) => prevLog + `\nОшибка при обработке ответа: ${jsonError.message}`);
             }
         } catch (error) {
+            console.error('Error during purchase:', error);
             setLog((prevLog) => prevLog + '\nError during purchase: ' + error.message);
         }
   };
