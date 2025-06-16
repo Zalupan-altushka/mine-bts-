@@ -46,25 +46,34 @@ function ListsContainerFirst() {
                 body: JSON.stringify(requestBody),
             });
 
+            const responseText = await response.text(); // Get the response text
+            console.log('Response text:', responseText);
+
             if (!response.ok) {
-                const errorText = await response.text();
-                setLog((prevLog) => prevLog + '\nОшибка: ' + errorText);
+                console.error('Error creating invoice:', response.status, responseText); // Log status and the text
+                setLog((prevLog) => prevLog + `\nОшибка: ${response.status} - ${responseText}`);
                 return;
             }
 
-            const data = await response.json();
-            setLog((prevLog) => prevLog + '\nResponse Data: ' + JSON.stringify(data));
+            try {
+                const data = await response.json();
+                console.log('Response data:', data);
+                setLog((prevLog) => prevLog + '\nResponse Data: ' + JSON.stringify(data));
 
-            if (data.invoiceUrl) {
-                window.Telegram.WebApp.openInvoice(data.invoiceUrl, (status) => {
-                    if (status === 'paid') {
-                        window.Telegram.WebApp.showAlert('Payment successful!');
-                    } else {
-                        window.Telegram.WebApp.showAlert('Payment failed or cancelled.');
-                    }
-                });
-            } else {
-                setLog((prevLog) => prevLog + '\nОшибка: Не удалось получить ссылку на оплату.');
+                if (data.invoiceUrl) {
+                    window.Telegram.WebApp.openInvoice(data.invoiceUrl, (status) => {
+                        if (status === 'paid') {
+                            window.Telegram.WebApp.showAlert('Payment successful!');
+                        } else {
+                            window.Telegram.WebApp.showAlert('Payment failed or cancelled.');
+                        }
+                    });
+                } else {
+                    setLog((prevLog) => prevLog + '\nОшибка: Не удалось получить ссылку на оплату.');
+                }
+            } catch (jsonError) {
+                console.error('Error parsing JSON:', jsonError);
+                setLog((prevLog) => prevLog + `\nОшибка при обработке ответа: ${jsonError.message}`);
             }
         } catch (error) {
             setLog((prevLog) => prevLog + '\nError during purchase: ' + error.message);
