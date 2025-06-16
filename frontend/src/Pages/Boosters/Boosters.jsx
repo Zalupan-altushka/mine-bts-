@@ -22,35 +22,30 @@ function Boosters({ userData }) {
 
       const data = await response.json();
 
-      if (window.Telegram?.WebApp?.openInvoice) {
-        window.Telegram.WebApp.openInvoice(data.invoiceLink, (status) => {
-          if (status === 'paid') {
-            alert('Покупка успешна!');
-            // обнови состояние если нужно
-          } else {
-            alert('Покупка не была завершена.');
-          }
-        });
-      } else {
-        alert('Платёжный интерфейс Telegram недоступен');
+      if (!data.invoiceLink) {
+        throw new Error("No invoice link received from server.");
       }
+
+      // Открываем ссылку на инвойс напрямую, без использования openInvoice
+      window.location.href = data.invoiceLink;
+
     } catch (e) {
       alert('Ошибка: ' + e.message);
     }
   };
 
   return (
-      <section className='bodyboostpage'>
-        <BoostersBox />
-        <div className='containers-scroll-wrapper'>
-          <div className='center-content'>
-            <ListsContainerFirst onBuy={handleBuy} />
-            <ListsContainerSecond />
-            <ListContainetThree />
-          </div>
+    <section className='bodyboostpage'>
+      <BoostersBox />
+      <div className='containers-scroll-wrapper'>
+        <div className='center-content'>
+          <ListsContainerFirst onBuy={handleBuy} />
+          <ListsContainerSecond />
+          <ListContainetThree />
         </div>
-        <Menu />
-      </section>
+      </div>
+      <Menu />
+    </section>
   );
 }
 
