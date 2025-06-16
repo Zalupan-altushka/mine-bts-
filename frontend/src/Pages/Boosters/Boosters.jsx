@@ -1,3 +1,4 @@
+// Boosters.js
 import './Boosters.css'
 import Menu from '../../Most Used/Menu/Menu';
 import ListContainetThree from '../Boosters-list/ListContainetThree';
@@ -26,11 +27,24 @@ function Boosters({ userData }) {
         throw new Error("No invoice link received from server.");
       }
 
-      // Открываем ссылку на инвойс напрямую, без использования openInvoice
-      window.location.href = data.invoiceLink;
+      // Используем Telegram WebApp SDK для открытия инвойса
+      if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openInvoice) {
+        window.Telegram.WebApp.openInvoice(data.invoiceLink, (status) => {
+          if (status === "paid") {
+            alert("Оплата прошла успешно!");
+            // TODO: Обновить состояние приложения (например, добавить бустер пользователю)
+          } else {
+            alert("Оплата не завершена.");
+          }
+        });
+      } else {
+        alert("Telegram WebApp SDK недоступен. Убедитесь, что вы находитесь в Telegram WebApp.");
+      }
+
 
     } catch (e) {
-      alert('Ошибка: ' + e.message);
+      console.error("Ошибка при покупке:", e);
+      alert('Ошибка: ' + e.message + ". Подробности в консоли.");
     }
   };
 
