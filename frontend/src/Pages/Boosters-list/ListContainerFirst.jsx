@@ -7,6 +7,7 @@ function ListsContainerFirst() {
     const [title, setTitle] = useState('TON Booster');
     const [description, setDescription] = useState('Boost your TON power!');
     const [payload, setPayload] = useState('ton_booster_purchase');
+    const [chatId, setChatId] = useState(null)
     const [requestBody, setRequestBody] = useState(null);
 
     // Use useRef to hold a reference to the 'sendRequest' function
@@ -41,8 +42,8 @@ function ListsContainerFirst() {
             console.log('Response data:', data);
             setLog((prevLog) => prevLog + '\nResponse Data: ' + JSON.stringify(data));
 
-            if (data.invoiceUrl) {
-                window.Telegram.WebApp.openInvoice(data.invoiceUrl, (status) => {
+            if (data.invoice) {
+                window.Telegram.WebApp.openInvoice(data.invoice, (status) => {
                     if (status === 'paid') {
                         window.Telegram.WebApp.showAlert('Payment successful!');
                     } else {
@@ -73,18 +74,19 @@ function ListsContainerFirst() {
 
     useEffect(() => {
         // Update requestBody whenever title, description, payload, or price changes
-        if (price !== null) {
+        if (price !== null && chatId != null) {
             const newRequestBody = {
                 title: title,
                 description: description,
                 payload: payload,
                 price: price,
+                chatId: chatId
             };
             setRequestBody(newRequestBody);
             setLog((prevLog) => prevLog + '\nRequest Body: ' + JSON.stringify(newRequestBody));
 
         }
-    }, [title, description, payload, price]);
+    }, [title, description, payload, price, chatId]);
 
     const handleBuyTon = async (event) => {
         event.preventDefault();
@@ -97,6 +99,7 @@ function ListsContainerFirst() {
                 return;
             }
             setPrice(priceFromButton); // Update the price state
+            setChatId(window.Telegram.WebApp.initDataUnsafe.user.id)
 
         } catch (error) {
             console.error('Error during purchase:', error);
