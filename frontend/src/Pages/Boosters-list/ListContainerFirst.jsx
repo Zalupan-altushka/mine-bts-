@@ -81,6 +81,7 @@ function ListsContainerFirst() {
                 payload: payload,
                 price: price,
             };
+            console.log("newRequestBody:", newRequestBody);
             setRequestBody(newRequestBody);
             setLog((prevLog) => prevLog + '\nRequest Body: ' + JSON.stringify(newRequestBody));
         }
