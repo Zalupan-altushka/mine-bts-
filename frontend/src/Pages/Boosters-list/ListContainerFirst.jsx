@@ -4,11 +4,6 @@ import TON from '../../Most Used/Image/TON';
 function ListsContainerFirst() {
     const [log, setLog] = useState('');
     const [invoiceUrl, setInvoiceUrl] = useState('');
-    const [price, setPrice] = useState(null);
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [payload, setPayload] = useState('');
-
 
     const handleBuyTon = async (event) => {
         event.preventDefault();
@@ -23,12 +18,6 @@ function ListsContainerFirst() {
                 setLog((prevLog) => prevLog + '\nНекорректная цена.');
                 return;
             }
-
-             setTitle(titleFromButton);
-             setDescription(descriptionFromButton);
-             setPayload(payloadFromButton);
-             setPrice(priceFromButton);
-
 
             const requestBody = {
                 title: titleFromButton,
@@ -62,7 +51,6 @@ function ListsContainerFirst() {
                 setLog((prevLog) => prevLog + '\nResponse Data: ' + JSON.stringify(data));
 
                 if (data.invoiceUrl) {
-                    setInvoiceUrl(data.invoiceUrl);
                     window.Telegram.WebApp.openInvoice(data.invoiceUrl, (status) => {
                         if (status === 'paid') {
                             window.Telegram.WebApp.showAlert('Payment successful!');
