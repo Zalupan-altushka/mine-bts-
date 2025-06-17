@@ -4,9 +4,9 @@ import TON from '../../Most Used/Image/TON';
 function ListsContainerFirst() {
     const [log, setLog] = useState('');
     const [price, setPrice] = useState(null);
-    const [title, setTitle] = useState('TON Booster');
-    const [description, setDescription] = useState('Boost your TON power!');
-    const [payload, setPayload] = useState('ton_booster_purchase');
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [payload, setPayload] = useState('');
     const [chatId, setChatId] = useState(null)
     const [requestBody, setRequestBody] = useState(null);
 
@@ -74,7 +74,7 @@ function ListsContainerFirst() {
 
     useEffect(() => {
         // Update requestBody whenever title, description, payload, or price changes
-        if (price !== null && chatId != null) {
+        if (price !== null && chatId != null && title !== '' && description !== '' && payload !== '') {
             const newRequestBody = {
                 title: title,
                 description: description,
@@ -88,18 +88,36 @@ function ListsContainerFirst() {
         }
     }, [title, description, payload, price, chatId]);
 
+    useEffect(() => {
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user && window.Telegram.WebApp.initDataUnsafe.user.id) {
+            setChatId(window.Telegram.WebApp.initDataUnsafe.user.id);
+             setLog((prevLog) => prevLog + '\nChat ID получен: ' + window.Telegram.WebApp.initDataUnsafe.user.id);
+
+        } else {
+            setLog((prevLog) => prevLog + '\nChat ID не получен. Telegram WebApp не инициализирован.');
+        }
+    }, []); // Run only once on component mount
+
     const handleBuyTon = async (event) => {
         event.preventDefault();
 
         try {
             const priceFromButton = parseInt(event.target.dataset.price, 10);
+            const titleFromButton = event.target.dataset.title
+            const descriptionFromButton = event.target.dataset.description
+            const payloadFromButton = event.target.dataset.payload
+
+            console.log('Price from button:', priceFromButton);
 
             if (isNaN(priceFromButton)) {
                 setLog((prevLog) => prevLog + '\nНекорректная цена.');
                 return;
             }
             setPrice(priceFromButton); // Update the price state
-            setChatId(window.Telegram.WebApp.initDataUnsafe.user.id)
+            setTitle(titleFromButton)
+            setDescription(descriptionFromButton)
+            setPayload(payloadFromButton)
+
 
         } catch (error) {
             console.error('Error during purchase:', error);
