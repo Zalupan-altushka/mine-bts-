@@ -42,8 +42,8 @@ function ListsContainerFirst() {
             console.log('Response data:', data);
             setLog((prevLog) => prevLog + '\nResponse Data: ' + JSON.stringify(data));
 
-            if (data.invoice) {
-                window.Telegram.WebApp.openInvoice(data.invoice, (status) => {
+            if (data.invoiceUrl) {
+                window.Telegram.WebApp.openInvoice(data.invoiceUrl, (status) => {
                     if (status === 'paid') {
                         window.Telegram.WebApp.showAlert('Payment successful!');
                     } else {
@@ -73,20 +73,18 @@ function ListsContainerFirst() {
     }, [title, description, payload, price]);
 
     useEffect(() => {
-        // Update requestBody whenever title, description, payload, or price changes
-        if (price !== null && chatId != null && title !== '' && description !== '' && payload !== '') {
+        // Update requestBody whenever ALL states are available
+        if (price && title && description && payload) {
             const newRequestBody = {
                 title: title,
                 description: description,
                 payload: payload,
                 price: price,
-                chatId: chatId
             };
             setRequestBody(newRequestBody);
             setLog((prevLog) => prevLog + '\nRequest Body: ' + JSON.stringify(newRequestBody));
-
         }
-    }, [title, description, payload, price, chatId]);
+    }, [title, description, payload, price]);
 
     useEffect(() => {
         if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user && window.Telegram.WebApp.initDataUnsafe.user.id) {
@@ -143,6 +141,9 @@ function ListsContainerFirst() {
                 className='ListButtonTon'
                 onClick={handleBuyTon}
                 data-price="700"
+                data-title ="TON Booster"
+                data-description = "Description"
+                data-payload = "payload"
               >
                 0.7K
               </button>
