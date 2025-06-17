@@ -4,26 +4,37 @@ import TON from '../../Most Used/Image/TON';
 function ListsContainerFirst() {
     const [log, setLog] = useState('');
     const [invoiceUrl, setInvoiceUrl] = useState('');
+    const [price, setPrice] = useState(null);
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [payload, setPayload] = useState('');
+
 
     const handleBuyTon = async (event) => {
         event.preventDefault();
 
         try {
-            const price = parseInt(event.target.dataset.price, 10);
-            const title = event.target.dataset.title;
-            const description = event.target.dataset.description;
-            const payload = event.target.dataset.payload;
+            const priceFromButton = parseInt(event.target.dataset.price, 10);
+            const titleFromButton = event.target.dataset.title;
+            const descriptionFromButton = event.target.dataset.description;
+            const payloadFromButton = event.target.dataset.payload;
 
-            if (isNaN(price)) {
+            if (isNaN(priceFromButton)) {
                 setLog((prevLog) => prevLog + '\nНекорректная цена.');
                 return;
             }
 
+             setTitle(titleFromButton);
+             setDescription(descriptionFromButton);
+             setPayload(payloadFromButton);
+             setPrice(priceFromButton);
+
+
             const requestBody = {
-                title: title,
-                description: description,
-                payload: payload,
-                price: price,
+                title: titleFromButton,
+                description: descriptionFromButton,
+                payload: payloadFromButton,
+                price: priceFromButton,
             };
 
             setLog((prevLog) => prevLog + '\nRequest Body: ' + JSON.stringify(requestBody));
@@ -51,7 +62,7 @@ function ListsContainerFirst() {
                 setLog((prevLog) => prevLog + '\nResponse Data: ' + JSON.stringify(data));
 
                 if (data.invoiceUrl) {
-                     setInvoiceUrl(data.invoiceUrl);
+                    setInvoiceUrl(data.invoiceUrl);
                     window.Telegram.WebApp.openInvoice(data.invoiceUrl, (status) => {
                         if (status === 'paid') {
                             window.Telegram.WebApp.showAlert('Payment successful!');
