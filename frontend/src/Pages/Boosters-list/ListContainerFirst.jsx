@@ -5,8 +5,8 @@ import { useTelegram } from '@twa-dev/sdk'; // Direct import
 function ListsContainerFirst() {
   const tg = useTelegram();
   const WebApp = tg.WebApp; // Access the WebApp object
-  const [invoiceLink, setInvoiceLink] = React.useState('');
-  const [isLoading, setIsLoading] = React.useState(false); // Add loading state
+  const [invoiceLink, setInvoiceLink] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // Add loading state
 
   const handlePurchase = async () => {
       setIsLoading(true); // Start loading
