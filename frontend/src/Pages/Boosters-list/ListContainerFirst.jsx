@@ -3,32 +3,31 @@ import TON from '../../Most Used/Image/TON';
 
 function ListsContainerFirst() {
     const [log, setLog] = useState('');
-    const [invoiceUrl, setInvoiceUrl] = useState('');
 
     const handleBuyTon = async (event) => {
         event.preventDefault();
 
         try {
-            const priceFromButton = parseInt(event.target.dataset.price, 10);
-            const titleFromButton = event.target.dataset.title;
-            const descriptionFromButton = event.target.dataset.description;
-            const payloadFromButton = event.target.dataset.payload;
+            const price = parseInt(event.target.dataset.price, 10);
+            const title = event.target.dataset.title;
+            const description = event.target.dataset.description;
+            const payload = event.target.dataset.payload;
 
-            if (isNaN(priceFromButton)) {
+            if (isNaN(price)) {
                 setLog((prevLog) => prevLog + '\nНекорректная цена.');
                 return;
             }
 
             const requestBody = {
-                title: titleFromButton,
-                description: descriptionFromButton,
-                payload: payloadFromButton,
-                price: priceFromButton,
+                title: title,
+                description: description,
+                payload: payload,
+                price: price,
             };
 
             setLog((prevLog) => prevLog + '\nRequest Body: ' + JSON.stringify(requestBody));
 
-            const response = await fetch('https://ah-user.netlify.app/.netlify/functions/create-invoice', {
+            const response = await fetch('https://ah-user.netlify.app/.netlify/functions/create-invoice', { // URL Netlify Function
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -36,35 +35,25 @@ function ListsContainerFirst() {
                 body: JSON.stringify(requestBody),
             });
 
-            const responseText = await response.text();
-            console.log('Response text:', responseText);
+            const data = await response.json();
 
-            if (!response.ok) {
-                console.error('Error creating invoice:', response.status, responseText);
-                setLog((prevLog) => prevLog + `\nОшибка: ${response.status} - ${responseText}`);
+            if (data.error) {
+                console.error("Error fetching invoice link:", data.error);
+                setLog((prevLog) => prevLog + `\nОшибка: ${data.error}`);
                 return;
             }
 
-            try {
-                const data = await response.json();
-                console.log('Response data:', data);
-                setLog((prevLog) => prevLog + '\nResponse Data: ' + JSON.stringify(data));
+            const invoiceLink = data.invoiceLink;
+            console.log("Invoice Link:", invoiceLink);
 
-                if (data.invoiceUrl) {
-                    window.Telegram.WebApp.openInvoice(data.invoiceUrl, (status) => {
-                        if (status === 'paid') {
-                            window.Telegram.WebApp.showAlert('Payment successful!');
-                        } else {
-                            window.Telegram.WebApp.showAlert('Payment failed or cancelled.');
-                        }
-                    });
+            window.Telegram.WebApp.openInvoice(invoiceLink, (status) => {
+                if (status === 'paid') {
+                    window.Telegram.WebApp.showAlert('Payment successful!');
                 } else {
-                    setLog((prevLog) => prevLog + '\nОшибка: Не удалось получить ссылку на оплату.');
+                    window.Telegram.WebApp.showAlert('Payment failed or cancelled.');
                 }
-            } catch (jsonError) {
-                console.error('Error parsing JSON:', jsonError);
-                setLog((prevLog) => prevLog + `\nОшибка при обработке ответа: ${jsonError.message}`);
-            }
+            });
+
         } catch (error) {
             console.error('Error during purchase:', error);
             setLog((prevLog) => prevLog + '\nError during purchase: ' + error.message);
