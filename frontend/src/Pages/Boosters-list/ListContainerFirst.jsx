@@ -7,7 +7,6 @@ function ListsContainerFirst() {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [payload, setPayload] = useState('');
-    const [chatId, setChatId] = useState(null)
     const [requestBody, setRequestBody] = useState(null);
 
     // Use useRef to hold a reference to the 'sendRequest' function
@@ -87,15 +86,6 @@ function ListsContainerFirst() {
         }
     }, [title, description, payload, price]);
 
-    useEffect(() => {
-        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user && window.Telegram.WebApp.initDataUnsafe.user.id) {
-            setChatId(window.Telegram.WebApp.initDataUnsafe.user.id);
-             setLog((prevLog) => prevLog + '\nChat ID получен: ' + window.Telegram.WebApp.initDataUnsafe.user.id);
-
-        } else {
-            setLog((prevLog) => prevLog + '\nChat ID не получен. Telegram WebApp не инициализирован.');
-        }
-    }, []); // Run only once on component mount
 
     const handleBuyTon = async (event) => {
         event.preventDefault();
