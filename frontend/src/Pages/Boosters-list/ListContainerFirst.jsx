@@ -1,55 +1,65 @@
-import React from 'react';
+import React, { useState } from 'react';
 import TON from '../../Most Used/Image/TON';
-import WebApp from "@twa-dev/sdk";  // Import WebApp// Import CSS
+import { useTelegram } from './useTelegram'; // Предполагается, что у вас есть хук для Telegram Web App
+import axios from 'axios'; // Установите: npm install axios
 
 function ListsContainerFirst() {
+  const [invoiceLink, setInvoiceLink] = useState(null);
+  const { tg } = useTelegram(); // Получаем объект Telegram Web App из хука
 
-    const handleBuyBooster = () => {
-        const price = 700; // Price in Stars
-        const userFromTelegram = window.Telegram.WebApp.initDataUnsafe.user;
-        const userId = userFromTelegram?.id;
+  const handleBuyClick = async () => {
+    try {
+      // Данные для создания Invoice Link (измените на свои)
+      const invoiceData = {
+        title: "TON Boost",
+        description: "Увеличение мощности на 0.072 BTS/hr",
+        payload: JSON.stringify({ item_id: "ton_boost" }), // Важно для отслеживания покупки
+        currency: "XTR", // Telegram Stars
+        prices: [{ amount: 100, label: "TON Boost" }], // Цена в сотых долях звезды (100 = 1 звезда)
+      };
 
-        // Generate a unique payload (order ID)
-        const payload = `order_${Date.now()}_${userId}`; // Use a more robust method
+      // Вызываем Netlify Function для создания Invoice Link
+      const response = await axios.post('https://ah-user.netlify.app/.netlify/functions/create-invoice', invoiceData);
+      const { invoiceLink: newInvoiceLink } = response.data;
+      setInvoiceLink(newInvoiceLink);
 
-        const invoiceParams = {
-            title: `Booster for ${price} Stars`,
-            description: `Buying a booster for ${price} Stars`,
-            payload: payload,
-            provider_token: process.env.REACT_APP_TELEGRAM_TOKEN, // Store token in .env file
-            currency: "XTR", // Or any supported currency
-            prices: [{ label: "Booster", amount: price * 100 }], // Amount in cents
-        };
+      // Открываем Invoice Link в Telegram Web App
+      tg.openInvoice(newInvoiceLink, (status) => {
+        if (status === "paid") {
+          // Обрабатываем успешную оплату (например, отправляем запрос на бэкенд для выдачи предмета)
+          console.log("Оплата прошла успешно!");
+          // TODO: Отправьте запрос на ваш бэкенд для выдачи предмета пользователю
+        } else {
+          // Обрабатываем неудачную оплату или отмену
+          console.log("Оплата не удалась или отменена:", status);
+        }
+      });
 
-        WebApp.openInvoice(invoiceParams);
+    } catch (error) {
+      console.error("Error creating or opening invoice:", error);
+      // TODO: Обработайте ошибку (например, покажите сообщение пользователю)
+    }
+  };
 
-        // WebApp.openInvoice is asynchronous and doesn't directly return a status.
-        // You'll receive updates via the webhook (see backend code)
-        // and the invoiceClosed event.  You can't reliably know if the payment
-        // was successful immediately after calling openInvoice.  You need to
-        // handle the asynchronous notification.
-    };
-
-
-    return (
-        <section className='lists-container'>
-            <div className='list'>
-                <article className='boosters-list-ton'>
-                    <div className='hight-section-list'>
-                        <span>TON</span>
-                        <button className='ListButtonTon' onClick={handleBuyBooster}>0.7K</button>
-                    </div>
-                    <section className='mid-section-list'>
-                        <TON />
-                    </section>
-                    <div className='footer-section-list'>
-                        <span className='text-power'>Power</span>
-                        <span className='text-power-hr-ton'>0.072 BTS/hr</span>
-                    </div>
-                </article>
-            </div>
-        </section>
-    );
+  return (
+    <section className='lists-container'>
+      <div className='list'>
+        <article className='boosters-list-ton'>
+          <div className='hight-section-list'>
+            <span>TON</span>
+            <button className='ListButtonTon' onClick={handleBuyClick}>0.7K</button>
+          </div>
+          <section className='mid-section-list'>
+            <TON />
+          </section>
+          <div className='footer-section-list'>
+            <span className='text-power'>Power</span>
+            <span className='text-power-hr-ton'>0.072 BTS/hr</span>
+          </div>
+        </article>
+      </div>
+    </section>
+  );
 }
 
 export default ListsContainerFirst;
