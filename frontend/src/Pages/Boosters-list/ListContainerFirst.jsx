@@ -1,7 +1,6 @@
 import React from 'react';
 import TON from '../../Most Used/Image/TON';
-import WebApp from "@twa-dev/sdk";  // Import WebApp
-import './ListsContainerFirst.css'; // Import CSS
+import WebApp from "@twa-dev/sdk";  // Import WebApp// Import CSS
 
 function ListsContainerFirst() {
 
