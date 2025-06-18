@@ -20,8 +20,18 @@ function ListsContainerFirst({ isActive }) { // Get isActive as a prop
         prices: [{ amount: 100, label: "TON Boost" }], // Price in hundredths of a star (100 = 1 star)
       };
 
+      console.log("invoiceData:", invoiceData); // Add this line to check invoiceData
+
       // Call the Netlify Function to create the Invoice Link
-      const response = await axios.post('https://ah-user.netlify.app/.netlify/functions/create-invoice', invoiceData);
+      const response = await axios.post(
+        'https://ah-user.netlify.app/.netlify/functions/create-invoice',
+        invoiceData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
       const { invoiceLink: newInvoiceLink } = response.data;
       setInvoiceLink(newInvoiceLink);
 
@@ -51,7 +61,13 @@ function ListsContainerFirst({ isActive }) { // Get isActive as a prop
         <article className='boosters-list-ton'>
           <div className='hight-section-list'>
             <span>TON</span>
-            <button className='ListButtonTon'>0.7K</button>
+            <button
+              className='ListButtonTon'
+              onClick={handleBuyClick}
+              disabled={!isActive || isLoading}
+            >
+              {isLoading ? "Loading..." : "0.7K"}
+            </button>
           </div>
           <section className='mid-section-list'>
             <TON />
@@ -60,10 +76,6 @@ function ListsContainerFirst({ isActive }) { // Get isActive as a prop
             <span className='text-power'>Power</span>
             <span className='text-power-hr-ton'>0.072 BTS/hr</span>
           </div>
-          <button onClick={handleBuyClick} disabled={!isActive || isLoading}>
-            {isLoading ? "Loading..." : "Buy for 1 star"}
-          </button>
-          {error && <p style={{ color: 'red' }}>Error: {error}</p>} {/* Display error message */}
         </article>
       </div>
     </section>
