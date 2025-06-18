@@ -17,7 +17,7 @@ function ListsContainerFirst( ) { // Получаем isActive как пропс
       };
 
       // Вызываем Netlify Function для создания Invoice Link
-      const response = await axios.post('/.netlify/functions/create-invoice', invoiceData);
+      const response = await axios.post('https://ah-user.netlify.app/.netlify/functions/create-invoice', invoiceData);
       const { invoiceLink: newInvoiceLink } = response.data;
       setInvoiceLink(newInvoiceLink);
 
