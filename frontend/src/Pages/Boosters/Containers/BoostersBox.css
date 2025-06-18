@@ -1,5 +1,5 @@
 .boosters-box {
-  background-color: #0f0f0f; /* Задайте нужный цвет фона */
+  background-color: rgba(0, 0, 0, 0.6); /* Задайте нужный цвет фона */
   width: 365px;
   padding: 20px; /* Можно настроить отступы по желанию */
   box-sizing: border-box;
