@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import TON from '../../Most Used/Image/TON';
 import axios from 'axios';
-import CheckIcon from '../../../../Most Used/Image/CheckIcon'; // Укажите правильный путь к CheckIcon
+import CheckIcon from '../../Most Used/Image/CheckIcon';
+
 
 function ListsContainerFirst({ isActive }) {
   const [invoiceLink, setInvoiceLink] = useState(null);
