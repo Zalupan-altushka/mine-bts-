@@ -3,7 +3,7 @@ import TON from '../../Most Used/Image/TON';
 import { useTelegram } from './useTelegram'; // Предполагается, что у вас есть хук для Telegram Web App
 import axios from 'axios'; // Установите: npm install axios
 
-function ListsContainerFirst() {
+function ListContainerFirst() {
   const [invoiceLink, setInvoiceLink] = useState(null);
   const { tg } = useTelegram(); // Получаем объект Telegram Web App из хука
 
@@ -62,4 +62,4 @@ function ListsContainerFirst() {
   );
 }
 
-export default ListsContainerFirst;
+export default ListContainerFirst;
