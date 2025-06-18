@@ -3,18 +3,25 @@ import TON from '../../Most Used/Image/TON';
 import axios from 'axios';
 import CheckIcon from '../../Most Used/Image/CheckIcon';
 
-
 function ListsContainerFirst({ isActive }) {
   const [invoiceLink, setInvoiceLink] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isPurchased, setIsPurchased] = useState(false);
-  const [boosterStatus, setBoosterStatus] = useState(null); // Состояние для отображения статуса
+  const [boosterStatus, setBoosterStatus] = useState(null);
+  const [logs, setLogs] = useState([]); // Состояние для хранения логов
+
+  const addLog = (message) => {
+    setLogs((prevLogs) => [...prevLogs, message]);
+  };
 
   const handleBuyClick = async () => {
     setIsLoading(true);
     setError(null);
-    setBoosterStatus(null); // Clear previous status
+    setBoosterStatus(null);
+    setLogs([]); // Clear previous logs
+    addLog("Starting purchase process...");
+
     try {
       const invoiceData = {
         title: "TON Booster",
@@ -23,6 +30,7 @@ function ListsContainerFirst({ isActive }) {
         currency: "XTR",
         prices: [{ amount: 1, label: "TON Boost" }],
       };
+      addLog(`Invoice data: ${JSON.stringify(invoiceData)}`);
 
       const response = await axios.post(
         'https://ah-user.netlify.app/.netlify/functions/create-invoice',
@@ -35,39 +43,42 @@ function ListsContainerFirst({ isActive }) {
       );
       const { invoiceLink: newInvoiceLink } = response.data;
       setInvoiceLink(newInvoiceLink);
+      addLog(`Generated invoice link: ${newInvoiceLink}`);
 
-      window.Telegram.WebApp.openInvoice(newInvoiceLink, async (status) => { // Используем async/await
-        console.log("Invoice status:", status);
-
+      window.Telegram.WebApp.openInvoice(newInvoiceLink, async (status) => {
+        addLog(`Invoice status: ${status}`);
         if (status === "paid") {
-          console.log("Payment successful!");
+          addLog("Payment successful!");
           const telegram_user_id = window.Telegram.WebApp.initDataUnsafe.user.id;
           const item_id = JSON.parse(invoiceData.payload).item_id;
+          addLog(`Applying booster - telegram_user_id: ${telegram_user_id}, item_id: ${item_id}`);
 
           try {
             const applyBoosterResponse = await axios.post('https://ah-user.netlify.app/.netlify/functions/apply-booster', { telegram_user_id, item_id });
-            console.log("Booster applied:", applyBoosterResponse.data);
-            setBoosterStatus("Booster applied successfully!"); // Set success status
+            addLog(`apply-booster response: ${JSON.stringify(applyBoosterResponse.data)}`);
+            setBoosterStatus("Booster applied successfully!");
             setIsPurchased(true);
           } catch (applyBoosterError) {
             console.error("Error applying booster:", applyBoosterError);
             setError(applyBoosterError.message);
-            setBoosterStatus("Error applying booster.  Please try again."); // Set error status
+            setBoosterStatus("Error applying booster. Please try again.");
             setIsPurchased(false);
+            addLog(`Error applying booster: ${applyBoosterError.message}`);
           }
         } else {
-          console.log("Payment failed or canceled:", status);
-          setBoosterStatus("Payment failed or cancelled."); // Set cancelled/failed status
+          addLog("Payment failed or cancelled.");
+          setBoosterStatus("Payment failed or cancelled.");
           setIsPurchased(false);
         }
-        setIsLoading(false); // Stop loading, regardless of the result
+        setIsLoading(false);
       });
 
     } catch (error) {
       console.error("Error creating or opening invoice:", error);
       setError(error.message);
-      setBoosterStatus("Error creating or opening invoice. Please try again.");  // Set error status
+      setBoosterStatus("Error creating or opening invoice. Please try again.");
       setIsLoading(false);
+      addLog(`Error creating invoice: ${error.message}`);
     }
   };
 
@@ -102,6 +113,11 @@ function ListsContainerFirst({ isActive }) {
           </div>
           {error && <p style={{ color: 'red' }}>Error: {error}</p>}
           {boosterStatus && <p>{boosterStatus}</p>}
+          <div>
+            {logs.map((log, index) => (
+              <p key={index}>{log}</p>
+            ))}
+          </div>
         </article>
       </div>
     </section>
