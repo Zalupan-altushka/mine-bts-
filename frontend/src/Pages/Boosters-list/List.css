@@ -176,3 +176,23 @@
     width: 110px;
   }
 }
+
+@media (min-height: 860px) and (max-height: 900px) {
+  .boosters-list-ton {
+    width: 330px;
+    height: 210px;
+  }
+  .boosters-list-BTS, .boosters-list-ETH, .boosters-list-center, .boosters-list-prm{
+    width: 140px;
+  }
+}
+
+@media (min-height: 900px) and (max-height: 940px) {
+  .boosters-list-ton {
+    width: 320px;
+    height: 210px;
+  }
+  .boosters-list-BTS, .boosters-list-ETH, .boosters-list-center, .boosters-list-prm{
+    width: 130px;
+  }
+}

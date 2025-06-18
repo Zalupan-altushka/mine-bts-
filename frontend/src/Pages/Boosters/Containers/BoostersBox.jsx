@@ -27,7 +27,7 @@ function BoostersBox() {
                 <span className='green-background'></span><span className='storage-fill'>100%</span>
               </div>
             </div>
-            <button className='Claim-button-br'>🡲 Claim 🡰</button>
+            <button className='Claim-button-br'>Claim</button>
           </article>
         </section>
   );
