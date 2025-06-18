@@ -1,26 +1,26 @@
 import React, { useState } from 'react';
 import TON from '../../Most Used/Image/TON';
 import axios from 'axios';
+import CheckIcon from '../../../../Most Used/Image/CheckIcon'; // Укажите правильный путь к CheckIcon
 
-function ListsContainerFirst({ isActive }) { // Get isActive as a prop
+function ListsContainerFirst({ isActive }) {
   const [invoiceLink, setInvoiceLink] = useState(null);
-  const [isLoading, setIsLoading] = useState(false); // Add loading state
-  const [error, setError] = useState(null); // Add error state
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [isPurchased, setIsPurchased] = useState(false);
 
   const handleBuyClick = async () => {
-    setIsLoading(true); // Start loading
-    setError(null); // Clear any previous errors
+    setIsLoading(true);
+    setError(null);
     try {
-      // Data for creating the Invoice Link
       const invoiceData = {
         title: "TON Booster",
         description: "Increase power by 0.072 BTS/hr",
-        payload: JSON.stringify({ item_id: "ton_boost" }), // Important for tracking purchases
-        currency: "XTR", // Telegram Stars
-        prices: [{ amount: 100, label: "TON Boost" }], // Price in hundredths of a star (100 = 1 star)
+        payload: JSON.stringify({ item_id: "ton_boost" }),
+        currency: "XTR",
+        prices: [{ amount: 1, label: "TON Boost" }],
       };
 
-      // Call the Netlify Function to create the Invoice Link
       const response = await axios.post(
         'https://ah-user.netlify.app/.netlify/functions/create-invoice',
         invoiceData,
@@ -33,23 +33,33 @@ function ListsContainerFirst({ isActive }) { // Get isActive as a prop
       const { invoiceLink: newInvoiceLink } = response.data;
       setInvoiceLink(newInvoiceLink);
 
-      // Open the Invoice Link in the Telegram Web App
-      window.Telegram.WebApp.openInvoice(newInvoiceLink, (status) => {
+      window.Telegram.WebApp.openInvoice(newInvoiceLink, async (status) => {
         if (status === "paid") {
-          // Handle successful payment (e.g., send a request to the backend to issue the item)
           console.log("Payment successful!");
-          // TODO: Send a request to your backend to issue the item to the user
+          const telegram_user_id = window.Telegram.WebApp.initDataUnsafe.user.id;
+          const item_id = JSON.parse(invoiceData.payload).item_id;
+
+          try {
+            const applyBoosterResponse = await axios.post('https://ah-user.netlify.app/.netlify/functions/apply-booster', { telegram_user_id, item_id });
+            console.log("Booster applied:", applyBoosterResponse.data);
+            setIsPurchased(true); // Set isPurchased to true after successful payment and booster application
+          } catch (applyBoosterError) {
+            console.error("Error applying booster:", applyBoosterError);
+            setError(applyBoosterError.message);
+            setIsPurchased(false); // Reset isPurchased if applying booster fails
+          }
+
         } else {
-          // Handle failed or canceled payment
           console.log("Payment failed or canceled:", status);
+          setIsPurchased(false); // Reset isPurchased if payment fails
         }
-        setIsLoading(false); // Stop loading
+        setIsLoading(false);
       });
 
     } catch (error) {
       console.error("Error creating or opening invoice:", error);
-      setError(error.message); // Set the error message
-      setIsLoading(false); // Stop loading
+      setError(error.message);
+      setIsLoading(false);
     }
   };
 
@@ -62,9 +72,17 @@ function ListsContainerFirst({ isActive }) { // Get isActive as a prop
             <button
               className='ListButtonTon'
               onClick={handleBuyClick}
-              disabled={!isActive || isLoading} 
+              disabled={!isActive || isLoading || isPurchased}
+              style={{
+                backgroundColor: isPurchased ? '#1c1c1e' : '',
+                color: isPurchased ? '#b9bbbc' : '',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '16px' // Adjusted font size for the icon
+              }}
             >
-              {isLoading ? <span style={{ fontSize: '9px' }}>Wait...</span> : "0.1K"}
+              {isLoading ? <span style={{ fontSize: '9px' }}>Wait...</span> : (isPurchased ? <CheckIcon /> : "0.1K")}
             </button>
           </div>
           <section className='mid-section-list'>
