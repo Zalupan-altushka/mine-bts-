@@ -1,41 +1,47 @@
 import React, { useState } from 'react';
 import TON from '../../Most Used/Image/TON';
-import axios from 'axios'; // Установите: npm install axios
+import axios from 'axios';
 
-function ListsContainerFirst( ) { // Получаем isActive как пропс
+function ListsContainerFirst({ isActive }) { // Get isActive as a prop
   const [invoiceLink, setInvoiceLink] = useState(null);
+  const [isLoading, setIsLoading] = useState(false); // Add loading state
+  const [error, setError] = useState(null); // Add error state
 
   const handleBuyClick = async () => {
+    setIsLoading(true); // Start loading
+    setError(null); // Clear any previous errors
     try {
-      // Данные для создания Invoice Link (измените на свои)
+      // Data for creating the Invoice Link
       const invoiceData = {
         title: "TON Boost",
-        description: "Увеличение мощности на 0.072 BTS/hr",
-        payload: JSON.stringify({ item_id: "ton_boost" }), // Важно для отслеживания покупки
+        description: "Increase power by 0.072 BTS/hr",
+        payload: JSON.stringify({ item_id: "ton_boost" }), // Important for tracking purchases
         currency: "XTR", // Telegram Stars
-        prices: [{ amount: 100, label: "TON Boost" }], // Цена в сотых долях звезды (100 = 1 звезда)
+        prices: [{ amount: 100, label: "TON Boost" }], // Price in hundredths of a star (100 = 1 star)
       };
 
-      // Вызываем Netlify Function для создания Invoice Link
+      // Call the Netlify Function to create the Invoice Link
       const response = await axios.post('https://ah-user.netlify.app/.netlify/functions/create-invoice', invoiceData);
       const { invoiceLink: newInvoiceLink } = response.data;
       setInvoiceLink(newInvoiceLink);
 
-      // Открываем Invoice Link в Telegram Web App
-      window.Telegram.WebApp.openInvoice(newInvoiceLink, (status) => { // Используем window.Telegram.WebApp напрямую
+      // Open the Invoice Link in the Telegram Web App
+      window.Telegram.WebApp.openInvoice(newInvoiceLink, (status) => {
         if (status === "paid") {
-          // Обрабатываем успешную оплату (например, отправляем запрос на бэкенд для выдачи предмета)
-          console.log("Оплата прошла успешно!");
-          // TODO: Отправьте запрос на ваш бэкенд для выдачи предмета пользователю
+          // Handle successful payment (e.g., send a request to the backend to issue the item)
+          console.log("Payment successful!");
+          // TODO: Send a request to your backend to issue the item to the user
         } else {
-          // Обрабатываем неудачную оплату или отмену
-          console.log("Оплата не удалась или отменена:", status);
+          // Handle failed or canceled payment
+          console.log("Payment failed or canceled:", status);
         }
+        setIsLoading(false); // Stop loading
       });
 
     } catch (error) {
       console.error("Error creating or opening invoice:", error);
-      // TODO: Обработайте ошибку (например, покажите сообщение пользователю)
+      setError(error.message); // Set the error message
+      setIsLoading(false); // Stop loading
     }
   };
 
@@ -45,7 +51,7 @@ function ListsContainerFirst( ) { // Получаем isActive как пропс
         <article className='boosters-list-ton'>
           <div className='hight-section-list'>
             <span>TON</span>
-            <button className='ListButtonTon' onClick={handleBuyClick}>0.7K</button>
+            <button className='ListButtonTon'>0.7K</button>
           </div>
           <section className='mid-section-list'>
             <TON />
@@ -54,6 +60,10 @@ function ListsContainerFirst( ) { // Получаем isActive как пропс
             <span className='text-power'>Power</span>
             <span className='text-power-hr-ton'>0.072 BTS/hr</span>
           </div>
+          <button onClick={handleBuyClick} disabled={!isActive || isLoading}>
+            {isLoading ? "Loading..." : "Buy for 1 star"}
+          </button>
+          {error && <p style={{ color: 'red' }}>Error: {error}</p>} {/* Display error message */}
         </article>
       </div>
     </section>

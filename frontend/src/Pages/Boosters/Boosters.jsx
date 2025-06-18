@@ -5,14 +5,14 @@ import ListsContainerFirst from '../Boosters-list/ListContainerFirst';
 import ListsContainerSecond from '../Boosters-list/ListContainerSecond';
 import BoostersBox from './Containers/BoostersBox';
 
-function Boosters({ userData }) {
+function Boosters({ userData, isActive  }) {
 
   return (
     <section className='bodyboostpage'>
       <BoostersBox />
       <div className='containers-scroll-wrapper'>
         <div className='center-content'>
-          <ListsContainerFirst />
+          <ListsContainerFirst isActive={isActive} />
           <ListsContainerSecond />
           <ListContainetThree />
         </div>
