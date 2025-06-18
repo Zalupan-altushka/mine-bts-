@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import TON from '../../Most Used/Image/TON';
-import { useTelegram } from './useTelegram'; // Предполагается, что у вас есть хук для Telegram Web App
 import axios from 'axios'; // Установите: npm install axios
 
-function ListsContainerFirst() {
+function ListsContainerFirst( ) { // Получаем isActive как пропс
   const [invoiceLink, setInvoiceLink] = useState(null);
-  const { tg } = useTelegram(); // Получаем объект Telegram Web App из хука
 
   const handleBuyClick = async () => {
     try {
@@ -19,12 +17,12 @@ function ListsContainerFirst() {
       };
 
       // Вызываем Netlify Function для создания Invoice Link
-      const response = await axios.post('https://ah-user.netlify.app/.netlify/functions/create-invoice', invoiceData);
+      const response = await axios.post('/.netlify/functions/create-invoice', invoiceData);
       const { invoiceLink: newInvoiceLink } = response.data;
       setInvoiceLink(newInvoiceLink);
 
       // Открываем Invoice Link в Telegram Web App
-      tg.openInvoice(newInvoiceLink, (status) => {
+      window.Telegram.WebApp.openInvoice(newInvoiceLink, (status) => { // Используем window.Telegram.WebApp напрямую
         if (status === "paid") {
           // Обрабатываем успешную оплату (например, отправляем запрос на бэкенд для выдачи предмета)
           console.log("Оплата прошла успешно!");
