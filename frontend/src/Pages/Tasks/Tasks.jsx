@@ -1,11 +1,13 @@
 import './Tasks.css'
 import Menu from '../../Most Used/Menu/Menu';
+import Star from '../../Most Used/Image/Star';
+
 
 
 function Tasks() {
  
   return (
-      <section className='bodytaskspage'>        
+      <section className='bodytaskspage'>       
         <Menu />
       </section>
   );

@@ -18,9 +18,16 @@ function BoostersBox() {
           <div className='polosa' />
           <article className='middle-section-box'>
             <div className='center-section-middle'>
-              <span>Balance: 0.0333</span>
+              <div>
+                Balance:
+                <span className='points-balance'>0.033</span><button className='info-button'>inf</button>
+              </div>
+              <div>
+                Storage:
+                <span className='green-background'></span><span className='storage-fill'>100%</span>
+              </div>
             </div>
-            <button>Claim</button>
+            <button className='Claim-button-br'>🡲 Claim 🡰</button>
           </article>
         </section>
   );

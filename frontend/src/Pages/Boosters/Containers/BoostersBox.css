@@ -1,5 +1,5 @@
 .boosters-box {
-  background-color: rgba(0, 0, 0, 0.6); /* Задайте нужный цвет фона */
+  background-color: #0f0f0f; /* Задайте нужный цвет фона */
   width: 365px;
   padding: 20px; /* Можно настроить отступы по желанию */
   box-sizing: border-box;
@@ -51,17 +51,17 @@
   font-size: 15px;
   font-weight: bold;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column; /* Располагаем элементы вертикально */
+  align-items: flex-start; /* Выравниваем по левому краю */
   margin-top: 10px;
-  margin-bottom: 10px; /* Немного отступа перед кнопкой */
+  margin-bottom: 10px;
+  text-align: left; /* Убеждаемся, что текст внутри span тоже выровнен по левому краю */
+  gap: 10px;
 }
 
-/* Кнопка занимает 100% ширины и расположена у нижнего края */
-.middle-section-box button {
-  background-color: var(--background-color);
-  color: var(--text-color);
-  border: 1px solid var(--text-color);
+.Claim-button-br {
+  background-color: var(--green-color);
+  color: var(--background-color);
   border-radius: 15px;
   width: 100%;
   align-self: stretch;
@@ -91,6 +91,33 @@
   background-color: var(--container-color-two);
 }
 
+.green-background {
+  margin-left: 50px;
+  background-color: var(--green-color); /* Или другой зеленый цвет */
+  height: 15px;
+  border-radius: 15px;
+  width: 100px; /* Или другую ширину, если нужно */
+  display: inline-block; /* Важно, чтобы span занимал только необходимую область */
+  vertical-align: middle; /* Выравнивание по вертикали с текстом "Storage:" */
+}
+
+.storage-fill {
+  margin-left: 65px;
+  color: var(--container-color-two);
+}
+
+.info-button {
+  background-color: var(--container-color);
+  color: var(--container-color-two);
+  border-radius: 25px;
+  font-size: 12px;
+  margin-left: 88px;
+}
+
+.points-balance {
+  margin-left: 80px;
+}
+
 @media (max-height: 800px) {
   .boosters-box {
     width: 340px;
@@ -102,7 +129,7 @@
   .first-span-box{
     font-size: 12px;
   }
-  .middle-section-box button {
+  .Claim-button-br {
     font-size: 11px;
     padding: 8px;
   }
@@ -111,6 +138,19 @@
   }
   .polosa {
     width: calc(100% + 30px);
+  }
+  .points-balance {
+    margin-left: 93px;
+  }
+  .info-button {
+    margin-left: 89px;
+  }
+  .green-background {
+    margin-left: 50px;
+    width: 120px; /* Или другую ширину, если нужно */
+  }
+  .storage-fill {
+    margin-left: 52px;
   }
 }
 
@@ -124,7 +164,7 @@
   .first-span-box{
    font-size: 15px;
   }
-  .middle-section-box button {
+  .Claim-button-br {
     height: 45px;
     font-size: 15px;
   }
@@ -144,7 +184,7 @@
   .first-span-box{
     font-size: 12px;
   }
-  .middle-section-box button {
+  .Claim-button-br {
     font-size: 11px;
     padding: 8px;
   }
