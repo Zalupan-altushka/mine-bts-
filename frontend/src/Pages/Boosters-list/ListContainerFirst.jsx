@@ -13,14 +13,12 @@ function ListsContainerFirst({ isActive }) { // Get isActive as a prop
     try {
       // Data for creating the Invoice Link
       const invoiceData = {
-        title: "TON Boost",
+        title: "TON Booster",
         description: "Increase power by 0.072 BTS/hr",
         payload: JSON.stringify({ item_id: "ton_boost" }), // Important for tracking purchases
         currency: "XTR", // Telegram Stars
         prices: [{ amount: 100, label: "TON Boost" }], // Price in hundredths of a star (100 = 1 star)
       };
-
-      console.log("invoiceData:", invoiceData); // Add this line to check invoiceData
 
       // Call the Netlify Function to create the Invoice Link
       const response = await axios.post(
