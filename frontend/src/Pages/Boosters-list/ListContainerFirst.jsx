@@ -34,14 +34,16 @@ function ListsContainerFirst({ isActive }) {
       const { invoiceLink: newInvoiceLink } = response.data;
       setInvoiceLink(newInvoiceLink);
 
-      window.Telegram.WebApp.openInvoice(newInvoiceLink, async (status) => {
+      window.Telegram.WebApp.openInvoice(newInvoiceLink, async (status) => { // Используем async/await
+        console.log("Invoice status:", status); // Log the status
+
         if (status === "paid") {
           console.log("Payment successful!");
           const telegram_user_id = window.Telegram.WebApp.initDataUnsafe.user.id;
           const item_id = JSON.parse(invoiceData.payload).item_id;
 
           try {
-            const applyBoosterResponse = await axios.post('https://ah-user.netlify.app/.netlify/functions/apply-booster', { telegram_user_id, item_id });
+            const applyBoosterResponse = await axios.post('/.netlify/functions/apply-booster', { telegram_user_id, item_id }); // Используем await
             console.log("Booster applied:", applyBoosterResponse.data);
             setIsPurchased(true); // Set isPurchased to true after successful payment and booster application
           } catch (applyBoosterError) {
@@ -49,12 +51,11 @@ function ListsContainerFirst({ isActive }) {
             setError(applyBoosterError.message);
             setIsPurchased(false); // Reset isPurchased if applying booster fails
           }
-
         } else {
           console.log("Payment failed or canceled:", status);
-          setIsPurchased(false); // Reset isPurchased if payment fails
+          setIsPurchased(false); // Reset isPurchased if payment fails or is canceled
         }
-        setIsLoading(false);
+        setIsLoading(false); // Stop loading, regardless of the result
       });
 
     } catch (error) {
@@ -80,10 +81,10 @@ function ListsContainerFirst({ isActive }) {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '16px' // Adjusted font size for the icon
+                fontSize: '10px' // Adjusted font size for the icon
               }}
             >
-              {isLoading ? <span style={{ fontSize: '9px' }}>Wait...</span> : (isPurchased ? <CheckIcon /> : "0.1K")}
+              {isLoading ? <span style={{ fontSize: '9px' }}>Wait...</span> : (isPurchased ? <span style={{ fontSize: '9px' }}><CheckIcon /></span> : "0.1K")}
             </button>
           </div>
           <section className='mid-section-list'>
