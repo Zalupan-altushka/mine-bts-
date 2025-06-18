@@ -43,7 +43,7 @@ function ListsContainerFirst({ isActive }) {
           const item_id = JSON.parse(invoiceData.payload).item_id;
 
           try {
-            const applyBoosterResponse = await axios.post('/.netlify/functions/apply-booster', { telegram_user_id, item_id }); // Используем await
+            const applyBoosterResponse = await axios.post('https://ah-user.netlify.app/.netlify/functions/apply-booster', { telegram_user_id, item_id }); // Используем await
             console.log("Booster applied:", applyBoosterResponse.data);
             setIsPurchased(true); // Set isPurchased to true after successful payment and booster application
           } catch (applyBoosterError) {
