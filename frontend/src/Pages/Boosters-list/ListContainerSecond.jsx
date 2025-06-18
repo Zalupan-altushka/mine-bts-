@@ -80,7 +80,7 @@ function ListContainerSecond({ isActive }) {
               onClick={() => handleBuyClick("apps")}
               disabled={!isActive || isLoadingApps}
             >
-              {isLoadingApps ? "Loading..." : "1.5K"}
+              {isLoadingApps ? <span style={{ fontSize: '8px' }}>Wait...</span> : "1.5K"}
             </button>
           </div>
           <section className='mid-section-list'>
@@ -102,7 +102,7 @@ function ListContainerSecond({ isActive }) {
               onClick={() => handleBuyClick("prem")}
               disabled={!isActive || isLoadingPrem}
             >
-              {isLoadingPrem ? "Loading..." : "2.7k"}
+              {isLoadingPrem ? <span style={{ fontSize: '8px' }}>Wait...</span> : "2.7k"}
             </button>
           </div>
           <section className='mid-section-list'>
