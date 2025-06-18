@@ -9,10 +9,12 @@ function ListsContainerFirst({ isActive }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isPurchased, setIsPurchased] = useState(false);
+  const [boosterStatus, setBoosterStatus] = useState(null); // Состояние для отображения статуса
 
   const handleBuyClick = async () => {
     setIsLoading(true);
     setError(null);
+    setBoosterStatus(null); // Clear previous status
     try {
       const invoiceData = {
         title: "TON Booster",
@@ -35,7 +37,7 @@ function ListsContainerFirst({ isActive }) {
       setInvoiceLink(newInvoiceLink);
 
       window.Telegram.WebApp.openInvoice(newInvoiceLink, async (status) => { // Используем async/await
-        console.log("Invoice status:", status); // Log the status
+        console.log("Invoice status:", status);
 
         if (status === "paid") {
           console.log("Payment successful!");
@@ -43,17 +45,20 @@ function ListsContainerFirst({ isActive }) {
           const item_id = JSON.parse(invoiceData.payload).item_id;
 
           try {
-            const applyBoosterResponse = await axios.post('https://ah-user.netlify.app/.netlify/functions/apply-booster', { telegram_user_id, item_id }); // Используем await
+            const applyBoosterResponse = await axios.post('https://ah-user.netlify.app/.netlify/functions/apply-booster', { telegram_user_id, item_id });
             console.log("Booster applied:", applyBoosterResponse.data);
-            setIsPurchased(true); // Set isPurchased to true after successful payment and booster application
+            setBoosterStatus("Booster applied successfully!"); // Set success status
+            setIsPurchased(true);
           } catch (applyBoosterError) {
             console.error("Error applying booster:", applyBoosterError);
             setError(applyBoosterError.message);
-            setIsPurchased(false); // Reset isPurchased if applying booster fails
+            setBoosterStatus("Error applying booster.  Please try again."); // Set error status
+            setIsPurchased(false);
           }
         } else {
           console.log("Payment failed or canceled:", status);
-          setIsPurchased(false); // Reset isPurchased if payment fails or is canceled
+          setBoosterStatus("Payment failed or cancelled."); // Set cancelled/failed status
+          setIsPurchased(false);
         }
         setIsLoading(false); // Stop loading, regardless of the result
       });
@@ -61,6 +66,7 @@ function ListsContainerFirst({ isActive }) {
     } catch (error) {
       console.error("Error creating or opening invoice:", error);
       setError(error.message);
+      setBoosterStatus("Error creating or opening invoice. Please try again.");  // Set error status
       setIsLoading(false);
     }
   };
@@ -81,10 +87,10 @@ function ListsContainerFirst({ isActive }) {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '10px' // Adjusted font size for the icon
+                fontSize: '12px' // Adjusted font size for the icon
               }}
             >
-              {isLoading ? <span style={{ fontSize: '9px' }}>Wait...</span> : (isPurchased ? <span style={{ fontSize: '9px' }}><CheckIcon /></span> : "0.1K")}
+              {isLoading ? <span style={{ fontSize: '10px' }}>Wait...</span> : (isPurchased ? <span style={{ fontSize: '12px' }}><CheckIcon /></span> : "0.1K")}
             </button>
           </div>
           <section className='mid-section-list'>
@@ -94,6 +100,8 @@ function ListsContainerFirst({ isActive }) {
             <span className='text-power'>Power</span>
             <span className='text-power-hr-ton'>0.072 BTS/hr</span>
           </div>
+          {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+          {boosterStatus && <p>{boosterStatus}</p>}
         </article>
       </div>
     </section>
