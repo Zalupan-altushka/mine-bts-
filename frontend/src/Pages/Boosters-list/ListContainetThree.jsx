@@ -18,13 +18,13 @@ function ListContainerThree({ isActive }) {
       setError = setErrorETH;
       title = "ETH Boost";
       description = "Increase power by 48.472 BTS/hr";
-      prices = [{ amount: 390, label: "ETH Boost" }]; // 3.9 Stars
+      prices = [{ amount: 1000, label: "ETH Boost" }]; // 3.9 Stars
     } else if (itemType === "btc") {
       setIsLoading = setIsLoadingBTC;
       setError = setErrorBTC;
       title = "BTC Boost";
       description = "Increase power by 68.172 BTS/hr";
-      prices = [{ amount: 590, label: "BTC Boost" }]; // 5.9 Stars
+      prices = [{ amount: 1300, label: "BTC Boost" }]; // 5.9 Stars
     } else {
       console.error("Invalid itemType:", itemType);
       return;
@@ -81,7 +81,7 @@ function ListContainerThree({ isActive }) {
               onClick={() => handleBuyClick("eth")}
               disabled={!isActive || isLoadingETH}
             >
-              {isLoadingETH ? <span style={{ fontSize: '8px' }}>Wait...</span> : "3.9K"}
+              {isLoadingETH ? <span style={{ fontSize: '8px' }}>Wait...</span> : "1.0K"}
             </button>
           </div>
           <div className='mid-section-list'>
@@ -102,7 +102,7 @@ function ListContainerThree({ isActive }) {
               onClick={() => handleBuyClick("btc")}
               disabled={!isActive || isLoadingBTC}
             >
-              {isLoadingBTC ? <span style={{ fontSize: '8px' }}>Wait...</span> : "5.9k"}
+              {isLoadingBTC ? <span style={{ fontSize: '8px' }}>Wait...</span> : "1.3k"}
             </button>
           </div>
           <section className='mid-section-list'>

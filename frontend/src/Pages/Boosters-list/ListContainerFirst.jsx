@@ -64,7 +64,7 @@ function ListsContainerFirst({ isActive }) { // Get isActive as a prop
               onClick={handleBuyClick}
               disabled={!isActive || isLoading} 
             >
-              {isLoading ? <span style={{ fontSize: '9px' }}>Wait...</span> : "0.7K"}
+              {isLoading ? <span style={{ fontSize: '9px' }}>Wait...</span> : "0.1K"}
             </button>
           </div>
           <section className='mid-section-list'>

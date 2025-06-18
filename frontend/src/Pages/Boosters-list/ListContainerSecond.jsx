@@ -17,13 +17,13 @@ function ListContainerSecond({ isActive }) {
       setError = setErrorApps;
       title = "Apps Booster";
       description = "Increase power by 18.472 BTS/hr";
-      prices = [{ amount: 150, label: "Apps Boost" }]; // 1.5 Stars
+      prices = [{ amount: 300, label: "Apps Boost" }]; // 1.5 Stars
     } else if (itemType === "prem") {
       setIsLoading = setIsLoadingPrem;
       setError = setErrorPrem;
       title = "Prem Booster";
       description = "Increase power by 38.172 BTS/hr";
-      prices = [{ amount: 270, label: "Prem Boost" }]; // 2.7 Stars
+      prices = [{ amount: 500, label: "Prem Boost" }]; // 2.7 Stars
     } else {
       console.error("Invalid itemType:", itemType);
       return;
@@ -80,7 +80,7 @@ function ListContainerSecond({ isActive }) {
               onClick={() => handleBuyClick("apps")}
               disabled={!isActive || isLoadingApps}
             >
-              {isLoadingApps ? <span style={{ fontSize: '8px' }}>Wait...</span> : "1.5K"}
+              {isLoadingApps ? <span style={{ fontSize: '8px' }}>Wait...</span> : "0.3K"}
             </button>
           </div>
           <section className='mid-section-list'>
@@ -102,7 +102,7 @@ function ListContainerSecond({ isActive }) {
               onClick={() => handleBuyClick("prem")}
               disabled={!isActive || isLoadingPrem}
             >
-              {isLoadingPrem ? <span style={{ fontSize: '8px' }}>Wait...</span> : "2.7k"}
+              {isLoadingPrem ? <span style={{ fontSize: '8px' }}>Wait...</span> : "0.5k"}
             </button>
           </div>
           <section className='mid-section-list'>
