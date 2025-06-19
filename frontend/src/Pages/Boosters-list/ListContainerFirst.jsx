@@ -78,6 +78,12 @@ function ListsContainerFirst({ isActive }) {
         setIsLoading(false);
       });
 
+      setTimeout(() => {
+        addLog(`WebApp is_active: ${window.Telegram.WebApp.isActive}`);
+        addLog(`WebApp is_ready: ${window.Telegram.WebApp.isReady}`);
+        // Добавьте другие свойства WebApp, которые могут быть полезны
+      }, 5000);
+
     } catch (error) {
       console.error("Error creating or opening invoice:", error);
       setError(error.message);
