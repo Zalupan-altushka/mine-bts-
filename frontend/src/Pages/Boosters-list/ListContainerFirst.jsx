@@ -16,46 +16,26 @@ function ListsContainerFirst({ isActive }) {
   };
 
   useEffect(() => {
-    // Function to handle pre_checkout_query
-    const handlePreCheckoutQuery = async (queryId, ok = true, errorMessage = null) => {
-      addLog(`Handling pre_checkout_query with queryId: ${queryId}, ok: ${ok}, errorMessage: ${errorMessage}`);
-      try {
-        const response = await axios.post(
-          'https://ah-user.netlify.app/.netlify/functions/handle-pre-checkout-query', // Replace with your Netlify Function URL
-          {
-            query_id: queryId,
-            ok: ok,
-            error_message: errorMessage,
-          },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-
-        if (response.status !== 200) {
-          console.error("Error handling pre_checkout_query:", response);
-          addLog(`Error handling pre_checkout_query: ${response.status} - ${response.statusText}`);
-        } else {
-          addLog(`pre_checkout_query handled successfully: ${JSON.stringify(response.data)}`);
-        }
-      } catch (error) {
-        console.error("Error handling pre_checkout_query:", error);
-        addLog(`Error handling pre_checkout_query: ${error.message}`);
-      }
-    };
-
     // Listen for pre_checkout_query event
     window.Telegram.WebApp.onEvent('preCheckoutQuery', (query) => {
       addLog(`Received pre_checkout_query: ${JSON.stringify(query)}`);
       if (query && query.id) {
         // Validate the query (e.g., check if the item is available)
         const isValid = true; // Replace with your validation logic
+
         if (isValid) {
-          handlePreCheckoutQuery(query.id);
+          addLog(`Answering pre_checkout_query with success`);
+          window.Telegram.WebApp.answerPreCheckoutQuery({
+            pre_checkout_query_id: query.id,
+            ok: true,
+          });
         } else {
-          handlePreCheckoutQuery(query.id, false, "Item is not available.");
+          addLog(`Answering pre_checkout_query with error: Item is not available.`);
+          window.Telegram.WebApp.answerPreCheckoutQuery({
+            pre_checkout_query_id: query.id,
+            ok: false,
+            error_message: "Item is not available.",
+          });
         }
       } else {
         console.warn("Invalid pre_checkout_query received.");
