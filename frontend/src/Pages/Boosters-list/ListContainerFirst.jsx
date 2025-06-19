@@ -25,18 +25,9 @@ function ListsContainerFirst({ isActive }) {
             <span>TON</span>
             <button
               className='ListButtonTon'
-              onClick={() => handleBuyClick("ton_boost")} // Передаем boosterId
-              disabled={!isActive}
-              style={{
-                backgroundColor:  '#1c1c1e',
-                color:  '#b9bbbc',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '12px' // Adjusted font size for the icon
-              }}
+              onClick={() => handleBuyClick("ton_boost")}
             >
-              <span style={{ fontSize: '12px' }}><CheckIcon /></span>
+              0.1k
             </button>
           </div>
           <section className='mid-section-list'>
