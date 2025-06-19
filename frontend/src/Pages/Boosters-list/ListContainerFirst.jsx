@@ -4,7 +4,6 @@ import axios from 'axios';
 import CheckIcon from '../../Most Used/Image/CheckIcon';
 
 function ListsContainerFirst({ isActive }) {
-
   const [invoiceLink, setInvoiceLink] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -29,7 +28,7 @@ function ListsContainerFirst({ isActive }) {
         description: "Increase power by 0.072 BTS/hr",
         payload: JSON.stringify({ item_id: "ton_boost" }),
         currency: "XTR",
-        prices: [{ amount: 1, label: "TON Boost" }], // Убедитесь, что цена правильная (100 XTR = 10000)
+        prices: [{ amount: 100, label: "TON Boost" }], // Установили цену в 1 звезду (100 сотых XTR)
       };
       addLog(`Invoice data: ${JSON.stringify(invoiceData)}`);
 
@@ -49,10 +48,10 @@ function ListsContainerFirst({ isActive }) {
       window.Telegram.WebApp.openInvoice(newInvoiceLink, async (status) => {
         addLog(`Invoice status: ${status}`);
         if (status === "paid") {
-          addLog("Payment successful! Sending data to apply-booster..."); // Добавили этот лог
+          addLog("Payment successful! Sending data to apply-booster...");
           const telegram_user_id = window.Telegram.WebApp.initDataUnsafe.user.id;
           const item_id = JSON.parse(invoiceData.payload).item_id;
-          addLog(`Aplying booster - telegram_user_id: ${telegram_user_id}, item_id: ${item_id}`);
+          addLog(`Applying booster - telegram_user_id: ${telegram_user_id}, item_id: ${item_id}`);
 
           try {
             const applyBoosterResponse = await axios.post('https://ah-user.netlify.app/.netlify/functions/apply-booster', { telegram_user_id, item_id });
