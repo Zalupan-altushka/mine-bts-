@@ -32,6 +32,54 @@ function ListsContainerFirst({ isActive }) {
       };
       addLog(`Invoice data: ${JSON.stringify(invoiceData)}`);
 
+      // Function to handle pre_checkout_query
+      const handlePreCheckoutQuery = async (queryId, ok = true, errorMessage = null) => {
+        addLog(`Handling pre_checkout_query with queryId: ${queryId}, ok: ${ok}, errorMessage: ${errorMessage}`);
+        try {
+          const response = await axios.post(
+            'https://ah-user.netlify.app/.netlify/functions/handle-pre-checkout-query', // Replace with your Netlify Function URL
+            {
+              query_id: queryId,
+              ok: ok,
+              error_message: errorMessage,
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+
+          if (response.status !== 200) {
+            console.error("Error handling pre_checkout_query:", response);
+            addLog(`Error handling pre_checkout_query: ${response.status} - ${response.statusText}`);
+          } else {
+            addLog(`pre_checkout_query handled successfully: ${JSON.stringify(response.data)}`);
+          }
+        } catch (error) {
+          console.error("Error handling pre_checkout_query:", error);
+          addLog(`Error handling pre_checkout_query: ${error.message}`);
+        }
+      };
+
+
+      // Listen for pre_checkout_query event
+      window.Telegram.WebApp.onEvent('preCheckoutQuery', (query) => {
+        addLog(`Received pre_checkout_query: ${JSON.stringify(query)}`);
+        if (query && query.id) {
+          // Validate the query (e.g., check if the item is available)
+          const isValid = true; // Replace with your validation logic
+          if (isValid) {
+            handlePreCheckoutQuery(query.id);
+          } else {
+            handlePreCheckoutQuery(query.id, false, "Item is not available.");
+          }
+        } else {
+          console.warn("Invalid pre_checkout_query received.");
+          addLog("Invalid pre_checkout_query received.");
+        }
+      });
+
       const response = await axios.post(
         'https://ah-user.netlify.app/.netlify/functions/create-invoice',
         invoiceData,
@@ -53,23 +101,9 @@ function ListsContainerFirst({ isActive }) {
       window.Telegram.WebApp.openInvoice(newInvoiceLink, async (status) => {
         addLog(`Invoice status: ${status}`);
         if (status === "paid") {
-          addLog("Payment successful! Sending data to apply-booster...");
-          const telegram_user_id = window.Telegram.WebApp.initDataUnsafe.user.id;
-          const item_id = JSON.parse(invoiceData.payload).item_id;
-          addLog(`Applying booster - telegram_user_id: ${telegram_user_id}, item_id: ${item_id}`);
-
-          try {
-            const applyBoosterResponse = await axios.post('https://ah-user.netlify.app/.netlify/functions/apply-booster', { telegram_user_id, item_id }); // Полный URL
-            addLog(`apply-booster response: ${JSON.stringify(applyBoosterResponse.data)}`);
-            setBoosterStatus("Booster applied successfully!");
-            setIsPurchased(true);
-          } catch (applyBoosterError) {
-            console.error("Error applying booster:", applyBoosterError);
-            setError(applyBoosterError.message);
-            setBoosterStatus("Error applying booster. Please try again.");
-            setIsPurchased(false);
-            addLog(`Error applying booster: ${applyBoosterError.message}`);
-          }
+          addLog("Payment successful!");
+          setBoosterStatus("Payment successful!");
+          setIsPurchased(true);
         } else {
           addLog("Payment failed or cancelled.");
           setBoosterStatus("Payment failed or cancelled.");
@@ -77,12 +111,6 @@ function ListsContainerFirst({ isActive }) {
         }
         setIsLoading(false);
       });
-
-      setTimeout(() => {
-        addLog(`WebApp is_active: ${window.Telegram.WebApp.isActive}`);
-        addLog(`WebApp is_ready: ${window.Telegram.WebApp.isReady}`);
-        // Добавьте другие свойства WebApp, которые могут быть полезны
-      }, 5000);
 
     } catch (error) {
       console.error("Error creating or opening invoice:", error);
