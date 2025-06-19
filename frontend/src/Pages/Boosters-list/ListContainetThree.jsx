@@ -18,13 +18,13 @@ function ListContainerThree({ isActive }) {
       setError = setErrorETH;
       title = "ETH Boost";
       description = "Increase power by 48.472 BTS/hr";
-      prices = [{ amount: 1000, label: "ETH Boost" }]; // 3.9 Stars
+      prices = [{ amount: 10, label: "ETH Boost" }]; // 3.9 Stars
     } else if (itemType === "btc") {
       setIsLoading = setIsLoadingBTC;
       setError = setErrorBTC;
       title = "BTC Boost";
       description = "Increase power by 68.172 BTS/hr";
-      prices = [{ amount: 1300, label: "BTC Boost" }]; // 5.9 Stars
+      prices = [{ amount: 10, label: "BTC Boost" }]; // 5.9 Stars
     } else {
       console.error("Invalid itemType:", itemType);
       return;
