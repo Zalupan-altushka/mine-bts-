@@ -62,7 +62,6 @@ function ListsContainerFirst({ isActive }) {
         }
       };
 
-
       // Listen for pre_checkout_query event
       window.Telegram.WebApp.onEvent('preCheckoutQuery', (query) => {
         addLog(`Received pre_checkout_query: ${JSON.stringify(query)}`);
@@ -78,6 +77,14 @@ function ListsContainerFirst({ isActive }) {
           console.warn("Invalid pre_checkout_query received.");
           addLog("Invalid pre_checkout_query received.");
         }
+      });
+
+      // Listen for successfulPayment event
+      window.Telegram.WebApp.onEvent('successfulPayment', () => {
+        addLog("Received successful_payment event");
+        setBoosterStatus("Payment successful!");
+        setIsPurchased(true);
+        setIsLoading(false);
       });
 
       const response = await axios.post(
