@@ -99,10 +99,17 @@ function ListsContainerFirst({ isActive }) {
           addLog("Payment successful!");
           setBoosterStatus("Payment successful!");
           setIsPurchased(true);
-        } else {
-          addLog("Payment failed or cancelled.");
-          setBoosterStatus("Payment failed or cancelled.");
+        } else if (status === "failed") {
+          addLog("Payment failed.");
+          setBoosterStatus("Payment failed.");
           setIsPurchased(false);
+        } else if (status === "cancelled") {
+          addLog("Payment cancelled.");
+          setBoosterStatus("Payment cancelled.");
+          setIsPurchased(false);
+        } else {
+          addLog("Unknown payment status.");
+          setBoosterStatus("Unknown payment status.");
         }
         setIsLoading(false);
       });
