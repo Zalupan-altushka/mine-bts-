@@ -29,7 +29,7 @@ function ListsContainerFirst({ isActive }) {
         description: "Increase power by 0.072 BTS/hr",
         payload: JSON.stringify({ item_id: "ton_boost" }),
         currency: "XTR",
-        prices: [{ amount: 10000, label: "TON Boost" }], // Убедитесь, что цена правильная (100 XTR = 10000)
+        prices: [{ amount: 1, label: "TON Boost" }], // Убедитесь, что цена правильная (100 XTR = 10000)
       };
       addLog(`Invoice data: ${JSON.stringify(invoiceData)}`);
 
