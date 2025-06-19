@@ -52,7 +52,7 @@ function ListsContainerFirst({ isActive }) {
           addLog("Payment successful! Sending data to apply-booster..."); // Добавили этот лог
           const telegram_user_id = window.Telegram.WebApp.initDataUnsafe.user.id;
           const item_id = JSON.parse(invoiceData.payload).item_id;
-          addLog(`Applying booster - telegram_user_id: ${telegram_user_id}, item_id: ${item_id}`);
+          addLog(`Aplying booster - telegram_user_id: ${telegram_user_id}, item_id: ${item_id}`);
 
           try {
             const applyBoosterResponse = await axios.post('https://ah-user.netlify.app/.netlify/functions/apply-booster', { telegram_user_id, item_id });
