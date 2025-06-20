@@ -37,7 +37,7 @@ function ListsContainerFirst({ isActive }) {
       console.log("invoiceData:", invoiceData);
 
       const response = await axios.post(
-        '/.netlify/functions/create-invoice', // Обновленный URL - УБРАЛИ АДРЕС СЕТИ
+        'https://ah-user.netlify.app/.netlify/functions/create-invoice', // Обновленный URL - УБРАЛИ АДРЕС СЕТИ
         invoiceData,
         {
           headers: {
@@ -57,7 +57,7 @@ function ListsContainerFirst({ isActive }) {
           // Верификация платежа на сервере
           try {
             const verificationResponse = await axios.post(
-              '/.netlify/functions/verify-payment', //  URL для верификации
+              'https://ah-user.netlify.app/.netlify/functions/verify-payment', //  URL для верификации
               {
                 payload: invoiceData.payload, // Отправляем payload для идентификации покупки
                 user_id: webApp.initDataUnsafe.user.id // Отправляем ID пользователя
