@@ -5,7 +5,7 @@ function CheckIconTon() {
 
   return(
     <div>
-      <img src={checkicon2} alt="Star" />
+      <img src={checkicon2} style={{marginBottom: "10px"}}alt="Star" />
     </div>
   );
 }
