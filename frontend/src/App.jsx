@@ -57,16 +57,16 @@ const App = () => {
         };
     }, [location.pathname]);
 
-    useEffect(() => {
-        // Check Telegram WebApp activity and request fullscreen
-        if (window.Telegram && window.Telegram.WebApp) {
-            setIsActive(window.Telegram.WebApp.isActive);
-            if (window.Telegram.WebApp.isActive) {
-                window.Telegram.WebApp.requestFullscreen();
-               window.Telegram.WebApp.isVerticalSwipesEnabled = false; // Disable vertical swipes
-            }
-        }
-    }, []);
+  //  useEffect(() => {
+  //      // Check Telegram WebApp activity and request fullscreen
+  //      if (window.Telegram && window.Telegram.WebApp) {
+  //          setIsActive(window.Telegram.WebApp.isActive);
+  //          if (window.Telegram.WebApp.isActive) {
+  //              window.Telegram.WebApp.requestFullscreen();
+ //              window.Telegram.WebApp.isVerticalSwipesEnabled = false; // Disable vertical swipes
+ //           }
+ //      }
+ //   }, []);
 
     useEffect(() => {
         // Authenticate user with Telegram initData
@@ -145,7 +145,7 @@ const App = () => {
                         <Route path="/" element={<HomePage isActive={isActive} userData={userData} />} />
                         <Route path="/friends" element={<Friends isActive={isActive} userData={userData} />} />
                         <Route path="/tasks" element={<Tasks isActive={isActive} userData={userData} />} />
-                       <Route path="/boost" element={<Boosters isActive={isActive} userData={userData} />} />
+                        <Route path="/boost" element={<Boosters isActive={isActive} userData={userData} />} />
                     </Routes>
                 </PageTransition>
 
