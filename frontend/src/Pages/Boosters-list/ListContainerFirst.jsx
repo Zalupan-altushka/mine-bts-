@@ -111,7 +111,7 @@ function ListsContainerFirst({ isActive }) {
             <TON />
           </section>
           <div className='footer-section-list'>
-            <span className='text-power'>Power</span>More actions
+            <span className='text-power'>Power</span>
             <span className='text-power-hr-ton'>0.072 BTS/hr</span>
           </div>
         </article>
