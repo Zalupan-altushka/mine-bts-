@@ -57,7 +57,7 @@ function ListsContainerFirst({ isActive }) {
       log(`invoiceData: ${JSON.stringify(invoiceData)}`);
 
       const response = await axios.post(
-        '/.netlify/functions/create-invoice',
+        'https://ah-user.netlify.app/.netlify/functions/create-invoice',
         invoiceData,
         {
           headers: {
@@ -82,7 +82,7 @@ function ListsContainerFirst({ isActive }) {
           try {
             log("Вызов verify-payment...");
             const verificationResponse = await axios.post(
-              '/.netlify/functions/verify-payment',
+              'https://ah-user.netlify.app/.netlify/functions/verify-payment',
               {
                 payload: invoiceData.payload,
                 user_id: webApp.initDataUnsafe.user.id
