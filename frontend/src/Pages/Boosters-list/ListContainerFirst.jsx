@@ -57,7 +57,7 @@ function ListsContainerFirst({ isActive }) {
       log(`invoiceData: ${JSON.stringify(invoiceData)}`);
 
       const response = await axios.post(
-        'https://ah-user.netlify.app/.netlify/functions/create-invoice',
+        '/.netlify/functions/create-invoice',
         invoiceData,
         {
           headers: {
@@ -78,10 +78,41 @@ function ListsContainerFirst({ isActive }) {
         if (status === "paid") {
           log("Payment considered successful by openInvoice!");
 
-          // **БЕЗ ВЕРИФИКАЦИИ НА СЕРВЕРЕ - ОЧЕНЬ ОПАСНО!**
-          log("Выдача товара пользователю...");
-          // TODO: Выдать товар пользователю (увеличить баланс, выдать предмет и т.д.)
-          log("Товар выдан пользователю.");
+          // Верификация платежа на сервере
+          try {
+            log("Вызов verify-payment...");
+            const verificationResponse = await axios.post(
+              '/.netlify/functions/verify-payment',
+              {
+                payload: invoiceData.payload,
+                user_id: webApp.initDataUnsafe.user.id
+              },
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+
+            log(`verify-payment response status: ${verificationResponse.status}`);
+            log(`verify-payment response data: ${JSON.stringify(verificationResponse.data)}`);
+
+            if (verificationResponse.data.success) {
+              log("Payment verified successfully by server!");
+              // TODO:  Обработка успешной верификации (выдача товара пользователю)
+              log("Выдача товара пользователю...");
+              // TODO: Выдать товар пользователю (увеличить баланс, выдать предмет и т.д.)
+              log("Товар выдан пользователю.");
+
+            } else {
+              log(`Payment verification failed by server: ${verificationResponse.data.error}`);
+              setError("Payment verification failed. Please contact support.");
+            }
+          } catch (verificationError) {
+            log(`Error verifying payment: ${verificationError}`);
+            setError("Error verifying payment. Please contact support.");
+          }
+
 
         } else if (status === "closed") {
           log("Invoice was closed by user (possible payment pending).");
