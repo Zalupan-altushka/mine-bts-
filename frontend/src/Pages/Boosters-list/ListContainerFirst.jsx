@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import TON from '../../Most Used/Image/TON';
 import axios from 'axios';
-import CheckIcon2 from '../../Most Used/Image/IMG/CheckIconTon';
+import CheckIconTon from '../../Most Used/Image/CheckIconTon';
+
 
 function ListsContainerFirst({ isActive }) {
   const [invoiceLink, setInvoiceLink] = useState(null);
@@ -91,7 +92,7 @@ function ListsContainerFirst({ isActive }) {
     }
   };
 
-  let buttonContent = isPurchased ? <CheckIcon2 /> : "0.7K";
+  let buttonContent = isPurchased ? <CheckIconTon /> : "0.7K";
 
   return (
     <section className='lists-container'>
