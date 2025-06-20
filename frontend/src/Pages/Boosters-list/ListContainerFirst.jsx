@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import TON from '../../Most Used/Image/TON';
 import axios from 'axios';
 
@@ -7,17 +7,21 @@ function ListsContainerFirst({ isActive }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [webApp, setWebApp] = useState(null);
+  const [logs, setLogs] = useState([]); // Состояние для хранения логов
+  const logsRef = useRef(logs); // Ref для доступа к logs в асинхронных функциях
 
   useEffect(() => {
-    // Инициализация Telegram WebApp
-    if (window.Telegram && window.Telegram.WebApp) {
-      setWebApp(window.Telegram.WebApp);
-    }
-  }, []);
+    logsRef.current = logs;
+  }, [logs]);
+
+  const log = (message) => {
+    setLogs((prevLogs) => [...prevLogs, message]);
+  };
 
   const handleBuyClick = async () => {
     setIsLoading(true);
     setError(null);
+    setLogs([]); // Очищаем логи при каждом клике
 
     if (!webApp) {
       setError("Telegram WebApp не инициализирован");
@@ -34,10 +38,10 @@ function ListsContainerFirst({ isActive }) {
         prices: [{ amount: 1, label: "TON Boost" }],
       };
 
-      console.log("invoiceData:", invoiceData);
+      log(`invoiceData: ${JSON.stringify(invoiceData)}`);
 
       const response = await axios.post(
-        'https://ah-user.netlify.app/.netlify/functions/create-invoice', // Обновленный URL - УБРАЛИ АДРЕС СЕТИ
+        'https://ah-user.netlify.app/.netlify/functions/create-invoice',
         invoiceData,
         {
           headers: {
@@ -49,18 +53,23 @@ function ListsContainerFirst({ isActive }) {
       const { invoiceLink: newInvoiceLink } = response.data;
       setInvoiceLink(newInvoiceLink);
 
+      log(`invoiceLink: ${newInvoiceLink}`);
+
       webApp.openInvoice(newInvoiceLink, async (status) => {
         setIsLoading(false);
+        log(`openInvoice status: ${status}`);
+
         if (status === "paid") {
-          console.log("Payment successful!");
+          log("Payment successful!");
 
           // Верификация платежа на сервере
           try {
+            log("Вызов verify-payment...");
             const verificationResponse = await axios.post(
-              'https://ah-user.netlify.app/.netlify/functions/verify-payment', //  URL для верификации
+              'https://ah-user.netlify.app/.netlify/functions/verify-payment',
               {
-                payload: invoiceData.payload, // Отправляем payload для идентификации покупки
-                user_id: webApp.initDataUnsafe.user.id // Отправляем ID пользователя
+                payload: invoiceData.payload,
+                user_id: webApp.initDataUnsafe.user.id
               },
               {
                 headers: {
@@ -69,28 +78,31 @@ function ListsContainerFirst({ isActive }) {
               }
             );
 
+            log(`verify-payment response status: ${verificationResponse.status}`);
+            log(`verify-payment response data: ${JSON.stringify(verificationResponse.data)}`);
+
             if (verificationResponse.data.success) {
-              console.log("Payment verified successfully!");
+              log("Payment verified successfully!");
               // TODO:  Обработка успешной верификации (выдача товара, обновление БД)
             } else {
-              console.error("Payment verification failed:", verificationResponse.data.error);
+              log(`Payment verification failed: ${verificationResponse.data.error}`);
               setError("Payment verification failed. Please contact support.");
             }
           } catch (verificationError) {
-            console.error("Error verifying payment:", verificationError);
+            log(`Error verifying payment: ${verificationError}`);
             setError("Error verifying payment. Please contact support.");
           }
 
 
         } else {
-          console.log("Payment failed or canceled:", status);
+          log(`Payment failed or canceled: ${status}`);
           setError(`Payment failed or canceled: ${status}`);
         }
 
       });
 
     } catch (error) {
-      console.error("Error creating or opening invoice:", error);
+      log(`Error creating or opening invoice: ${error}`);
       setError(error.message);
       setIsLoading(false);
     }
@@ -118,6 +130,12 @@ function ListsContainerFirst({ isActive }) {
             <span className='text-power-hr-ton'>0.072 BTS/hr</span>
           </div>
           {error && <div className="error-message">{error}</div>}
+          <div className="logs-container"> {/* Добавляем контейнер для логов */}
+            <h3>Logs:</h3>
+            <pre>{logs.map((log, index) => (
+              <div key={index}>{log}</div>
+            ))}</pre>
+          </div>
         </article>
       </div>
     </section>
