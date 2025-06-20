@@ -110,6 +110,19 @@
   box-shadow: 0 0 15px var(--blue-color), 0 0 25px var(--container-color-two);
 }
 
+.ListButtonTon:disabled {
+    /* Стиль для заблокированной кнопки во время загрузки */
+    background: linear-gradient(45deg, #376991, #2d3c4a); /* Более темные цвета */
+    cursor: not-allowed; /* Изменяем курсор */
+}
+
+.ListButtonTon.purchased {
+    background-color: #1c1c1e;
+    color: #b9bbbc;
+    box-shadow: none;
+    cursor: default; /* Изменяем курсор */
+}
+
 .ListButtonPrm {
   background: linear-gradient(45deg, var(--purple-color), var(--container-color-two));
   color: var(--background-color);

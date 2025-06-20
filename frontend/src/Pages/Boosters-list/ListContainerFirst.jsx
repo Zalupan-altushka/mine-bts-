@@ -1,60 +1,44 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import TON from '../../Most Used/Image/TON';
 import axios from 'axios';
+import CheckIcon from '../../../../Most Used/Image/CheckIcon';
 
 function ListsContainerFirst({ isActive }) {
   const [invoiceLink, setInvoiceLink] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [webApp, setWebApp] = useState(null);
-  const [logs, setLogs] = useState([]);
-  const logsRef = useRef(logs);
+  const [isPurchased, setIsPurchased] = useState(false);
 
   useEffect(() => {
-    // Инициализация Telegram WebApp
     if (window.Telegram && window.Telegram.WebApp) {
       setWebApp(window.Telegram.WebApp);
     }
   }, []);
 
-  useEffect(() => {
-    logsRef.current = logs;
-  }, [logs]);
-
-  const log = (message) => {
-    setLogs((prevLogs) => [...prevLogs, message]);
-  };
-
-  // Информация о бустере (должна соответствовать информации в боте)
   const boosterInfo = {
     item_id: "ton_boost",
     title: "TON Booster",
     description: "Increase power by 0.072 BTS/hr",
-    price: 100, // Цена в копейках/центах (100 = 1 XTR)
+    price: 100,
     currency: "XTR",
   };
 
   const handleBuyClick = async () => {
     setIsLoading(true);
-    setError(null);
-    setLogs([]);
 
     if (!webApp) {
-      setError("Telegram WebApp не инициализирован");
       setIsLoading(false);
       return;
     }
 
     try {
       const invoiceData = {
-        title: boosterInfo.title, // Используем информацию о бустере
-        description: boosterInfo.description, // Используем информацию о бустере
-        payload: JSON.stringify({ item_id: boosterInfo.item_id, user_id: webApp.initDataUnsafe.user.id }), // Добавляем user_id
-        currency: boosterInfo.currency, // Используем информацию о бустере
-        prices: [{ amount: boosterInfo.price / 100, label: boosterInfo.title }], // Цена в XTR (1 XTR = 100 копеек/центов)
+        title: boosterInfo.title,
+        description: boosterInfo.description,
+        payload: JSON.stringify({ item_id: boosterInfo.item_id, user_id: webApp.initDataUnsafe.user.id }),
+        currency: boosterInfo.currency,
+        prices: [{ amount: boosterInfo.price / 100, label: boosterInfo.title }],
       };
-
-      log(`invoiceData: ${JSON.stringify(invoiceData)}`);
 
       const response = await axios.post(
         'https://ah-user.netlify.app/.netlify/functions/create-invoice',
@@ -69,18 +53,11 @@ function ListsContainerFirst({ isActive }) {
       const { invoiceLink: newInvoiceLink } = response.data;
       setInvoiceLink(newInvoiceLink);
 
-      log(`invoiceLink: ${newInvoiceLink}`);
-
       webApp.openInvoice(newInvoiceLink, async (status) => {
         setIsLoading(false);
-        log(`openInvoice status: ${status}`);
 
         if (status === "paid") {
-          log("Payment considered successful by openInvoice!");
-
-          // Верификация платежа на сервере
           try {
-            log("Вызов verify-payment...");
             const verificationResponse = await axios.post(
               'https://ah-user.netlify.app/.netlify/functions/verify-payment',
               {
@@ -94,43 +71,27 @@ function ListsContainerFirst({ isActive }) {
               }
             );
 
-            log(`verify-payment response status: ${verificationResponse.status}`);
-            log(`verify-payment response data: ${JSON.stringify(verificationResponse.data)}`);
-
             if (verificationResponse.data.success) {
-              log("Payment verified successfully by server!");
-              // TODO:  Обработка успешной верификации (выдача товара пользователю)
-              log("Выдача товара пользователю...");
-              // TODO: Выдать товар пользователю (увеличить баланс, выдать предмет и т.д.)
-              log("Товар выдан пользователю.");
-
-            } else {
-              log(`Payment verification failed by server: ${verificationResponse.data.error}`);
-              setError("Payment verification failed. Please contact support.");
+              setIsPurchased(true);
             }
           } catch (verificationError) {
-            log(`Error verifying payment: ${verificationError}`);
-            setError("Error verifying payment. Please contact support.");
+            console.error("Verification Error", verificationError);
           }
 
-
         } else if (status === "closed") {
-          log("Invoice was closed by user (possible payment pending).");
-          setError("Invoice was closed.  Please check your Telegram Stars balance or try again later.");
+            console.log("Invoice Closed");
+        } else {
+          console.log("Payment Failed or Canceled", status);
         }
-         else {
-          log(`Payment failed or canceled: ${status}`);
-          setError(`Payment failed or canceled: ${status}`);
-        }
-
       });
 
     } catch (error) {
-      log(`Error creating or opening invoice: ${error}`);
-      setError(error.message);
       setIsLoading(false);
+      console.error("Invoice Creation Error", error);
     }
   };
+
+  let buttonContent = isPurchased ? <CheckIcon /> : "0.7K";
 
   return (
     <section className='lists-container'>
@@ -139,11 +100,11 @@ function ListsContainerFirst({ isActive }) {
           <div className='hight-section-list'>
             <span>TON</span>
             <button
-              className='ListButtonTon'
+              className={`ListButtonTon ${isPurchased ? 'purchased' : ''}`}
               onClick={handleBuyClick}
-              disabled={!isActive || isLoading || !webApp}
+              disabled={!isActive || isLoading || !webApp || isPurchased}
             >
-              {isLoading ? "Loading..." : "0.7K"}
+              {buttonContent}
             </button>
           </div>
           <section className='mid-section-list'>
@@ -152,13 +113,6 @@ function ListsContainerFirst({ isActive }) {
           <div className='footer-section-list'>
             <span className='text-power'>Power</span>More actions
             <span className='text-power-hr-ton'>0.072 BTS/hr</span>
-          </div>
-          {error && <div className="error-message">{error}</div>}
-          <div className="logs-container">
-            <h3>Logs:</h3>
-            <pre>{logs.map((log, index) => (
-              <div key={index}>{log}</div>
-            ))}</pre>
           </div>
         </article>
       </div>
