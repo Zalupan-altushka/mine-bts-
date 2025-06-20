@@ -82,3 +82,5 @@ function ListsContainerFirst({ isActive }) { // Get isActive as a prop
     </section>
   );
 }
+
+export default ListsContainerFirst;
