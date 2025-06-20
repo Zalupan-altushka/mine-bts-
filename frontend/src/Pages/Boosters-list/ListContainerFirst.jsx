@@ -6,30 +6,38 @@ function ListsContainerFirst({ isActive }) {
   const [invoiceLink, setInvoiceLink] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [webApp, setWebApp] = useState(null);
 
-  // Эффект для инициализации Telegram Web App
   useEffect(() => {
+    // Инициализация Telegram WebApp
     if (window.Telegram && window.Telegram.WebApp) {
-      window.Telegram.WebApp.ready();
+      setWebApp(window.Telegram.WebApp);
     }
   }, []);
 
   const handleBuyClick = async () => {
     setIsLoading(true);
     setError(null);
+
+    if (!webApp) {
+      setError("Telegram WebApp не инициализирован");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const invoiceData = {
         title: "TON Booster",
-        description: "Увеличение мощности на 0.072 BTS/час",
-        payload: JSON.stringify({ item_id: "ton_boost" }),
+        description: "Increase power by 0.072 BTS/hr",
+        payload: JSON.stringify({ item_id: "ton_boost", user_id: webApp.initDataUnsafe.user.id }), // Добавляем user_id
         currency: "XTR",
-        prices: [{ amount: 1, label: "TON Boost" }], // 700 = 0.7K звезд (цена в наименьших единицах XTR)
+        prices: [{ amount: 1, label: "TON Boost" }],
       };
 
       console.log("invoiceData:", invoiceData);
 
       const response = await axios.post(
-        'https://ah-user.netlify.app/.netlify/functions/create-invoice',  // Замените на URL вашей Netlify Function
+        '/.netlify/functions/create-invoice', // Обновленный URL - УБРАЛИ АДРЕС СЕТИ
         invoiceData,
         {
           headers: {
@@ -41,43 +49,50 @@ function ListsContainerFirst({ isActive }) {
       const { invoiceLink: newInvoiceLink } = response.data;
       setInvoiceLink(newInvoiceLink);
 
-      window.Telegram.WebApp.openInvoice(newInvoiceLink, async (status) => {
-        setIsLoading(false); // Перемещено сюда для гарантированного запуска
-
+      webApp.openInvoice(newInvoiceLink, async (status) => {
+        setIsLoading(false);
         if (status === "paid") {
-          console.log("Оплата успешна!");
-          try {
-            // Отправка на бэкенд
-            const purchaseResult = await axios.post('https://ah-user.netlify.app/.netlify/functions/process', { // Замените на ваш фактический эндпоинт
-              item_id: "ton_boost",
-              user_id: window.Telegram.WebApp.initDataUnsafe.user.id, // Или как вы идентифицируете пользователя
-              invoice_link: newInvoiceLink,
-              status: status
-            });
+          console.log("Payment successful!");
 
-            if (purchaseResult.status === 200) {
-              console.log("Покупка обработана успешно на бэкенде.");
-              // Отобразите сообщение об успехе пользователю, обновите UI и т.д.
+          // Верификация платежа на сервере
+          try {
+            const verificationResponse = await axios.post(
+              '/.netlify/functions/verify-payment', //  URL для верификации
+              {
+                payload: invoiceData.payload, // Отправляем payload для идентификации покупки
+                user_id: webApp.initDataUnsafe.user.id // Отправляем ID пользователя
+              },
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+
+            if (verificationResponse.data.success) {
+              console.log("Payment verified successfully!");
+              // TODO:  Обработка успешной верификации (выдача товара, обновление БД)
             } else {
-              console.error("Бэкенд не смог обработать покупку:", purchaseResult);
-              setError("Не удалось подтвердить покупку. Пожалуйста, попробуйте еще раз."); // Сообщите пользователю.
+              console.error("Payment verification failed:", verificationResponse.data.error);
+              setError("Payment verification failed. Please contact support.");
             }
-          } catch (backendError) {
-            console.error("Ошибка при отправке подтверждения покупки на бэкенд:", backendError);
-            setError("Не удалось подтвердить покупку. Пожалуйста, попробуйте еще раз.");
+          } catch (verificationError) {
+            console.error("Error verifying payment:", verificationError);
+            setError("Error verifying payment. Please contact support.");
           }
+
+
         } else {
-          console.log("Оплата не удалась или отменена:", status);
-          setError("Оплата не удалась или отменена."); // Сообщите пользователю.
+          console.log("Payment failed or canceled:", status);
+          setError(`Payment failed or canceled: ${status}`);
         }
+
       });
 
     } catch (error) {
-      console.error("Ошибка при создании или открытии инвойса:", error);
-      setError(error.message || "Произошла ошибка во время покупки."); //Предоставьте сообщение об ошибке пользователю
+      console.error("Error creating or opening invoice:", error);
+      setError(error.message);
       setIsLoading(false);
-    } finally {
-      setIsLoading(false); // Убедитесь, что загрузка остановлена в любом случае
     }
   };
 
@@ -90,7 +105,7 @@ function ListsContainerFirst({ isActive }) {
             <button
               className='ListButtonTon'
               onClick={handleBuyClick}
-              disabled={!isActive || isLoading}
+              disabled={!isActive || isLoading || !webApp}
             >
               {isLoading ? "Loading..." : "0.7K"}
             </button>
@@ -99,12 +114,12 @@ function ListsContainerFirst({ isActive }) {
             <TON />
           </section>
           <div className='footer-section-list'>
-            <span className='text-power'>Power</span>Больше действий
-            <span className='text-power-hr-ton'>0.072 BTS/час</span>
+            <span className='text-power'>Power</span>More actions
+            <span className='text-power-hr-ton'>0.072 BTS/hr</span>
           </div>
+          {error && <div className="error-message">{error}</div>}
         </article>
       </div>
-      {error && <div className="error-message">{error}</div>}
     </section>
   );
 }
