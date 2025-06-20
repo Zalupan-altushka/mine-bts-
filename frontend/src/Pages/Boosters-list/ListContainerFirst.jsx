@@ -28,7 +28,7 @@ function ListsContainerFirst({ isActive }) {
   const handleBuyClick = async () => {
     setIsLoading(true);
     setError(null);
-    setLogs([]); // Очищаем логи при каждом клике
+    setLogs([]);
 
     if (!webApp) {
       setError("Telegram WebApp не инициализирован");
@@ -40,7 +40,7 @@ function ListsContainerFirst({ isActive }) {
       const invoiceData = {
         title: "TON Booster",
         description: "Increase power by 0.072 BTS/hr",
-        payload: JSON.stringify({ item_id: "ton_boost", user_id: webApp.initDataUnsafe.user.id }), // Добавляем user_id
+        payload: JSON.stringify({ item_id: "ton_boost", user_id: webApp.initDataUnsafe.user.id }),
         currency: "XTR",
         prices: [{ amount: 1, label: "TON Boost" }],
       };
@@ -62,12 +62,13 @@ function ListsContainerFirst({ isActive }) {
 
       log(`invoiceLink: ${newInvoiceLink}`);
 
+      //  Важно: Обновляем обработку openInvoice
       webApp.openInvoice(newInvoiceLink, async (status) => {
         setIsLoading(false);
         log(`openInvoice status: ${status}`);
 
         if (status === "paid") {
-          log("Payment successful!");
+          log("Payment considered successful by openInvoice!"); // <-- Важно
 
           // Верификация платежа на сервере
           try {
@@ -89,10 +90,10 @@ function ListsContainerFirst({ isActive }) {
             log(`verify-payment response data: ${JSON.stringify(verificationResponse.data)}`);
 
             if (verificationResponse.data.success) {
-              log("Payment verified successfully!");
+              log("Payment verified successfully by server!");
               // TODO:  Обработка успешной верификации (выдача товара, обновление БД)
             } else {
-              log(`Payment verification failed: ${verificationResponse.data.error}`);
+              log(`Payment verification failed by server: ${verificationResponse.data.error}`);
               setError("Payment verification failed. Please contact support.");
             }
           } catch (verificationError) {
@@ -101,7 +102,12 @@ function ListsContainerFirst({ isActive }) {
           }
 
 
-        } else {
+        } else if (status === "closed") { //  Дополнительная обработка "closed"
+          log("Invoice was closed by user (possible payment pending).");
+          setError("Invoice was closed.  Please check your Telegram Stars balance or try again later."); // Информируем пользователя
+          // **Можно добавить логику проверки баланса пользователя через Telegram Bot API, если это возможно**
+        }
+         else {
           log(`Payment failed or canceled: ${status}`);
           setError(`Payment failed or canceled: ${status}`);
         }
@@ -137,7 +143,7 @@ function ListsContainerFirst({ isActive }) {
             <span className='text-power-hr-ton'>0.072 BTS/hr</span>
           </div>
           {error && <div className="error-message">{error}</div>}
-          <div className="logs-container"> {/* Добавляем контейнер для логов */}
+          <div className="logs-container">
             <h3>Logs:</h3>
             <pre>{logs.map((log, index) => (
               <div key={index}>{log}</div>
