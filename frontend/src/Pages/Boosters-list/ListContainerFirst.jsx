@@ -48,7 +48,7 @@ function ListsContainerFirst({ isActive }) {
           console.log("Оплата успешна!");
           try {
             // Отправка на бэкенд
-            const purchaseResult = await axios.post('/api/process-purchase', { // Замените на ваш фактический эндпоинт
+            const purchaseResult = await axios.post('https://ah-user.netlify.app/.netlify/functions/process', { // Замените на ваш фактический эндпоинт
               item_id: "ton_boost",
               user_id: window.Telegram.WebApp.initDataUnsafe.user.id, // Или как вы идентифицируете пользователя
               invoice_link: newInvoiceLink,
