@@ -91,7 +91,7 @@ function ListsContainerFirst({ isActive }) {
     }
   };
 
-  let buttonContent = isPurchased ? <span style={style={ fontSize: '7px' }}><CheckIcon /></span> : "0.7K";
+  let buttonContent = isPurchased ? <CheckIcon /> : "0.7K";
 
   return (
     <section className='lists-container'>
