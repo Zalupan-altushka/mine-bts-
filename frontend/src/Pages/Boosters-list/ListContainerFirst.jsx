@@ -7,15 +7,8 @@ function ListsContainerFirst({ isActive }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [webApp, setWebApp] = useState(null);
-  const [logs, setLogs] = useState([]); // Состояние для хранения логов
-  const logsRef = useRef(logs); // Ref для доступа к logs в асинхронных функциях
-
-  useEffect(() => {
-    // Инициализация Telegram WebApp
-    if (window.Telegram && window.Telegram.WebApp) {
-      setWebApp(window.Telegram.WebApp);
-    }
-  }, []);
+  const [logs, setLogs] = useState([]);
+  const logsRef = useRef(logs);
 
   useEffect(() => {
     logsRef.current = logs;
@@ -23,6 +16,15 @@ function ListsContainerFirst({ isActive }) {
 
   const log = (message) => {
     setLogs((prevLogs) => [...prevLogs, message]);
+  };
+
+  // Информация о бустере (должна соответствовать информации в боте)
+  const boosterInfo = {
+    item_id: "ton_boost",
+    title: "TON Booster",
+    description: "Increase power by 0.072 BTS/hr",
+    price: 100, // Цена в копейках/центах (100 = 1 XTR)
+    currency: "XTR",
   };
 
   const handleBuyClick = async () => {
@@ -38,17 +40,17 @@ function ListsContainerFirst({ isActive }) {
 
     try {
       const invoiceData = {
-        title: "TON Booster",
-        description: "Increase power by 0.072 BTS/hr",
-        payload: JSON.stringify({ item_id: "ton_boost", user_id: webApp.initDataUnsafe.user.id }),
-        currency: "XTR",
-        prices: [{ amount: 1, label: "TON Boost" }],
+        title: boosterInfo.title, // Используем информацию о бустере
+        description: boosterInfo.description, // Используем информацию о бустере
+        payload: JSON.stringify({ item_id: boosterInfo.item_id, user_id: webApp.initDataUnsafe.user.id }), // Добавляем user_id
+        currency: boosterInfo.currency, // Используем информацию о бустере
+        prices: [{ amount: boosterInfo.price / 100, label: boosterInfo.title }], // Цена в XTR (1 XTR = 100 копеек/центов)
       };
 
       log(`invoiceData: ${JSON.stringify(invoiceData)}`);
 
       const response = await axios.post(
-        'https://ah-user.netlify.app/.netlify/functions/create-invoice',
+        '/.netlify/functions/create-invoice',
         invoiceData,
         {
           headers: {
@@ -62,50 +64,21 @@ function ListsContainerFirst({ isActive }) {
 
       log(`invoiceLink: ${newInvoiceLink}`);
 
-      //  Важно: Обновляем обработку openInvoice
       webApp.openInvoice(newInvoiceLink, async (status) => {
         setIsLoading(false);
         log(`openInvoice status: ${status}`);
 
         if (status === "paid") {
-          log("Payment considered successful by openInvoice!"); // <-- Важно
+          log("Payment considered successful by openInvoice!");
 
-          // Верификация платежа на сервере
-          try {
-            log("Вызов verify-payment...");
-            const verificationResponse = await axios.post(
-              'https://ah-user.netlify.app/.netlify/functions/verify-payment',
-              {
-                payload: invoiceData.payload,
-                user_id: webApp.initDataUnsafe.user.id
-              },
-              {
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-              }
-            );
+          // **БЕЗ ВЕРИФИКАЦИИ НА СЕРВЕРЕ - ОЧЕНЬ ОПАСНО!**
+          log("Выдача товара пользователю...");
+          // TODO: Выдать товар пользователю (увеличить баланс, выдать предмет и т.д.)
+          log("Товар выдан пользователю.");
 
-            log(`verify-payment response status: ${verificationResponse.status}`);
-            log(`verify-payment response data: ${JSON.stringify(verificationResponse.data)}`);
-
-            if (verificationResponse.data.success) {
-              log("Payment verified successfully by server!");
-              // TODO:  Обработка успешной верификации (выдача товара, обновление БД)
-            } else {
-              log(`Payment verification failed by server: ${verificationResponse.data.error}`);
-              setError("Payment verification failed. Please contact support.");
-            }
-          } catch (verificationError) {
-            log(`Error verifying payment: ${verificationError}`);
-            setError("Error verifying payment. Please contact support.");
-          }
-
-
-        } else if (status === "closed") { //  Дополнительная обработка "closed"
+        } else if (status === "closed") {
           log("Invoice was closed by user (possible payment pending).");
-          setError("Invoice was closed.  Please check your Telegram Stars balance or try again later."); // Информируем пользователя
-          // **Можно добавить логику проверки баланса пользователя через Telegram Bot API, если это возможно**
+          setError("Invoice was closed.  Please check your Telegram Stars balance or try again later.");
         }
          else {
           log(`Payment failed or canceled: ${status}`);
