@@ -57,7 +57,7 @@ function ListsContainerFirst({ isActive }) {
       log(`invoiceData: ${JSON.stringify(invoiceData)}`);
 
       const response = await axios.post(
-        '/.netlify/functions/create-invoice',
+        'https://ah-user.netlify.app/.netlify/functions/create-invoice',
         invoiceData,
         {
           headers: {
