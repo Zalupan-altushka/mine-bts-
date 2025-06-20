@@ -1,7 +1,7 @@
 import React from 'react';
 import checkicon2 from './checkicon2.svg'; 
 
-function CheckIcon2() {
+function CheckIconTon() {
 
   return(
     <div>
@@ -10,4 +10,4 @@ function CheckIcon2() {
   );
 }
 
-export default CheckIcon2;
+export default CheckIconTon;
