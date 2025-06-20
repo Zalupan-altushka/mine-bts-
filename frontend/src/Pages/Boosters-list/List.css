@@ -110,6 +110,9 @@
   box-shadow: 0 0 15px var(--blue-color), 0 0 25px var(--container-color-two);
   width: 53px;
   height: 28px;
+  display: flex; /* Превращаем кнопку в flex контейнер */
+  align-items: center; /* Выравнивание по вертикали */
+  justify-content: center; /* Выравнивание по горизонтали */
 }
 
 .ListButtonTon:disabled {
@@ -117,8 +120,6 @@
     background: linear-gradient(45deg, #376991, #2d3c4a); /* Более темные цвета */
     cursor: not-allowed; /* Изменяем курсор */
     box-shadow: none;
-    text-align: center;
-    justify-content: center;
 }
 
 .ListButtonTon.purchased {
@@ -126,9 +127,6 @@
     color: #b9bbbc;
     box-shadow: none;
     cursor: default; /* Изменяем курсор */
-    box-shadow: none;
-    text-align: center;
-    justify-content: center;
 }
 
 .ListButtonPrm {
