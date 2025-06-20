@@ -117,6 +117,8 @@
     background: linear-gradient(45deg, #376991, #2d3c4a); /* Более темные цвета */
     cursor: not-allowed; /* Изменяем курсор */
     box-shadow: none;
+    text-align: center;
+    justify-content: center;
 }
 
 .ListButtonTon.purchased {
@@ -125,6 +127,8 @@
     box-shadow: none;
     cursor: default; /* Изменяем курсор */
     box-shadow: none;
+    text-align: center;
+    justify-content: center;
 }
 
 .ListButtonPrm {
