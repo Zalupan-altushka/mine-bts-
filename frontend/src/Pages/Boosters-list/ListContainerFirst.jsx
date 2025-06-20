@@ -1,31 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TON from '../../Most Used/Image/TON';
 import axios from 'axios';
 
-function ListsContainerFirst({ isActive }) { // Get isActive as a prop
+function ListsContainerFirst({ isActive }) {
   const [invoiceLink, setInvoiceLink] = useState(null);
-  const [isLoading, setIsLoading] = useState(false); // Add loading state
-  const [error, setError] = useState(null); // Add error state
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Эффект для инициализации Telegram Web App
+  useEffect(() => {
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.ready();
+    }
+  }, []);
 
   const handleBuyClick = async () => {
-    setIsLoading(true); // Start loading
-    setError(null); // Clear any previous errors
+    setIsLoading(true);
+    setError(null);
     try {
-      // Data for creating the Invoice Link
       const invoiceData = {
-        title: "TON Boost",
         title: "TON Booster",
-        description: "Increase power by 0.072 BTS/hr",
-        payload: JSON.stringify({ item_id: "ton_boost" }), // Important for tracking purchases
-        currency: "XTR", // Telegram Stars
-        prices: [{ amount: 1, label: "TON Boost" }], // Price in hundredths of a star (100 = 1 star)
+        description: "Увеличение мощности на 0.072 BTS/час",
+        payload: JSON.stringify({ item_id: "ton_boost" }),
+        currency: "XTR",
+        prices: [{ amount: 1, label: "TON Boost" }], // 700 = 0.7K звезд (цена в наименьших единицах XTR)
       };
 
-      console.log("invoiceData:", invoiceData); // Add this line to check invoiceData
+      console.log("invoiceData:", invoiceData);
 
-      // Call the Netlify Function to create the Invoice Link
       const response = await axios.post(
-        'https://ah-user.netlify.app/.netlify/functions/create-invoice',
+        'https://ah-user.netlify.app/.netlify/functions/create-invoice',  // Замените на URL вашей Netlify Function
         invoiceData,
         {
           headers: {
@@ -33,26 +37,47 @@ function ListsContainerFirst({ isActive }) { // Get isActive as a prop
           },
         }
       );
+
       const { invoiceLink: newInvoiceLink } = response.data;
       setInvoiceLink(newInvoiceLink);
 
-      // Open the Invoice Link in the Telegram Web App
-      window.Telegram.WebApp.openInvoice(newInvoiceLink, (status) => {
+      window.Telegram.WebApp.openInvoice(newInvoiceLink, async (status) => {
+        setIsLoading(false); // Перемещено сюда для гарантированного запуска
+
         if (status === "paid") {
-          // Handle successful payment (e.g., send a request to the backend to issue the item)
-          console.log("Payment successful!");
-          // TODO: Send a request to your backend to issue the item to the user
+          console.log("Оплата успешна!");
+          try {
+            // Отправка на бэкенд
+            const purchaseResult = await axios.post('/api/process-purchase', { // Замените на ваш фактический эндпоинт
+              item_id: "ton_boost",
+              user_id: window.Telegram.WebApp.initDataUnsafe.user.id, // Или как вы идентифицируете пользователя
+              invoice_link: newInvoiceLink,
+              status: status
+            });
+
+            if (purchaseResult.status === 200) {
+              console.log("Покупка обработана успешно на бэкенде.");
+              // Отобразите сообщение об успехе пользователю, обновите UI и т.д.
+            } else {
+              console.error("Бэкенд не смог обработать покупку:", purchaseResult);
+              setError("Не удалось подтвердить покупку. Пожалуйста, попробуйте еще раз."); // Сообщите пользователю.
+            }
+          } catch (backendError) {
+            console.error("Ошибка при отправке подтверждения покупки на бэкенд:", backendError);
+            setError("Не удалось подтвердить покупку. Пожалуйста, попробуйте еще раз.");
+          }
         } else {
-          // Handle failed or canceled payment
-          console.log("Payment failed or canceled:", status);
+          console.log("Оплата не удалась или отменена:", status);
+          setError("Оплата не удалась или отменена."); // Сообщите пользователю.
         }
-        setIsLoading(false); // Stop loading
       });
 
     } catch (error) {
-      console.error("Error creating or opening invoice:", error);
-      setError(error.message); // Set the error message
-      setIsLoading(false); // Stop loading
+      console.error("Ошибка при создании или открытии инвойса:", error);
+      setError(error.message || "Произошла ошибка во время покупки."); //Предоставьте сообщение об ошибке пользователю
+      setIsLoading(false);
+    } finally {
+      setIsLoading(false); // Убедитесь, что загрузка остановлена в любом случае
     }
   };
 
@@ -74,11 +99,12 @@ function ListsContainerFirst({ isActive }) { // Get isActive as a prop
             <TON />
           </section>
           <div className='footer-section-list'>
-            <span className='text-power'>Power</span>More actions
-            <span className='text-power-hr-ton'>0.072 BTS/hr</span>
+            <span className='text-power'>Power</span>Больше действий
+            <span className='text-power-hr-ton'>0.072 BTS/час</span>
           </div>
         </article>
       </div>
+      {error && <div className="error-message">{error}</div>}
     </section>
   );
 }
