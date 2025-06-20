@@ -11,6 +11,13 @@ function ListsContainerFirst({ isActive }) {
   const logsRef = useRef(logs); // Ref для доступа к logs в асинхронных функциях
 
   useEffect(() => {
+    // Инициализация Telegram WebApp
+    if (window.Telegram && window.Telegram.WebApp) {
+      setWebApp(window.Telegram.WebApp);
+    }
+  }, []);
+
+  useEffect(() => {
     logsRef.current = logs;
   }, [logs]);
 
