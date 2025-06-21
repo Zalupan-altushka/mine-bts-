@@ -7,7 +7,7 @@ function ListsContainerFirst({ isActive, userData }) {
   const [invoiceLink, setInvoiceLink] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [webApp, setWebApp] = useState(null);
-  const [isPurchased, setIsPurchased] = useState(userData?.ton_boost >= 1); // Проверяем значение ton_boost из userData
+  const [isPurchased, setIsPurchased] = useState(userData?.ton_boost >= 1);
 
   useEffect(() => {
     if (window.Telegram && window.Telegram.WebApp) {
@@ -20,13 +20,13 @@ function ListsContainerFirst({ isActive, userData }) {
         item_id: "ton_boost",
         title: "TON Booster",
         description: "Increase power by 0.072 BTS/hr",
-        price: 1,
+        price: 0.7,
         currency: "XTR",
       }
     };
 
   const handleBuyClick = async () => {
-     setIsLoading(true);
+    setIsLoading(true);
 
     if (!webApp) {
       setIsLoading(false);
@@ -73,9 +73,26 @@ function ListsContainerFirst({ isActive, userData }) {
               }
             );
 
-            if (verificationResponse.data.success) {
-              setIsPurchased(true);
-            }
+              if (verificationResponse.status === 200) { // Проверяем код ответа
+                const data = verificationResponse.data;
+
+                if (data.success) {
+                  if (data.duplicate) {
+                    console.log("Дубликат платежа, не списываем звезды");
+                    // Здесь можно показать сообщение пользователю о том, что платеж уже был обработан
+                  } else {
+                    console.log("Оплата прошла успешно, обновляем UI");
+                    setIsPurchased(true);
+                  }
+                } else {
+                  console.error("Payment verification failed:", data.error);
+                  // Обработка ошибки верификации
+                }
+              } else {
+                console.error("Ошибка при верификации:", verificationResponse.status);
+                // Обработка ошибки HTTP
+              }
+
           } catch (verificationError) {
             console.error("Verification Error", verificationError);
           }
