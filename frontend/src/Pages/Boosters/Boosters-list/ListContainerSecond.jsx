@@ -18,20 +18,22 @@ function ListContainerSecond({ isActive }) {
   }, []);
 
   const handleBuyClick = async (itemType) => {
-    let setIsLoading, setIsPurchased, title, description, prices;
+    let setIsLoading, setIsPurchased, title, description, prices, item_id;
 
     if (itemType === "apps") {
       setIsLoading = setIsLoadingApps;
       setIsPurchased = setIsPurchasedApps;
       title = "Apps Booster";
       description = "Increase power by 18.472 BTS/hr";
-      prices = [{ amount: 1, label: "Apps Boost" }]; // 1.5 Stars
+      prices = [{ amount: 0.3, label: "Apps Boost" }]; // 0.3 Stars
+      item_id = "apps_boost";
     } else if (itemType === "prem") {
       setIsLoading = setIsLoadingPrem;
       setIsPurchased = setIsPurchasedPrem;
       title = "Prem Booster";
       description = "Increase power by 38.172 BTS/hr";
-      prices = [{ amount: 1, label: "Prem Boost" }]; // 2.7 Stars
+      prices = [{ amount: 0.5, label: "Prem Boost" }]; // 0.5 Stars
+      item_id = "prem_boost";
     } else {
       console.error("Invalid itemType:", itemType);
       return;
@@ -40,10 +42,10 @@ function ListContainerSecond({ isActive }) {
     setIsLoading(true);
 
     try {
-       const invoiceData = {
+      const invoiceData = {
         title: title,
         description: description,
-        payload: JSON.stringify({ item_id: itemType + "_boost", user_id: webApp.initDataUnsafe.user.id }),
+        payload: JSON.stringify({ item_id: item_id, user_id: webApp.initDataUnsafe.user.id }),
         currency: "XTR",
         prices: prices,
       };
@@ -103,20 +105,25 @@ function ListContainerSecond({ isActive }) {
 
   const getButtonContent = (itemType) => {
     if (itemType === "apps") {
-      return isLoadingApps ? null : isPurchasedApps ? <CheckIconBr /> : "0.3K";
+      return isPurchasedApps ? <CheckIconBr /> : "0.3K";
     } else if (itemType === "prem") {
-      return isLoadingPrem ? null : isPurchasedPrem ? <CheckIconBr /> : "0.5k";
+      return isPurchasedPrem ? <CheckIconBr /> : "0.5k";
     }
     return null;
   };
 
   const getButtonClassName = (itemType) => {
+    let className = "";
     if (itemType === "apps") {
-      return `ListButtonCenter ${isPurchasedApps ? 'purchased' : ''}`;
+      className = "ListButtonCenter";
+      if (isLoadingApps) className += " loading";
+      if (isPurchasedApps) className += " purchased";
     } else if (itemType === "prem") {
-      return `ListButtonPrm ${isPurchasedPrem ? 'purchased' : ''}`;
+      className = "ListButtonPrm";
+      if (isLoadingPrem) className += " loading";
+      if (isPurchasedPrem) className += " purchased";
     }
-    return '';
+    return className;
   };
 
   return (

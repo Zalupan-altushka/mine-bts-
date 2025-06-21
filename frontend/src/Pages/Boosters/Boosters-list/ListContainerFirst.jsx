@@ -20,7 +20,7 @@ function ListsContainerFirst({ isActive }) {
         item_id: "ton_boost",
         title: "TON Booster",
         description: "Increase power by 0.072 BTS/hr",
-        price: 1,
+        price: 0.7,
         currency: "XTR",
       }
     };
@@ -39,7 +39,7 @@ function ListsContainerFirst({ isActive }) {
         description: boosterInfo.ton_boost.description, //ton_boost
         payload: JSON.stringify({ item_id: boosterInfo.ton_boost.item_id, user_id: webApp.initDataUnsafe.user.id }), //ton_boost
         currency: boosterInfo.ton_boost.currency, //ton_boost
-        prices: [{ amount: boosterInfo.ton_boost.price / 100, label: boosterInfo.ton_boost.title }], //ton_boost
+        prices: [{ amount: boosterInfo.ton_boost.price, label: boosterInfo.ton_boost.title }], //ton_boost
       };
 
       const response = await axios.post(
