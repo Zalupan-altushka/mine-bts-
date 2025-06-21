@@ -25,13 +25,13 @@ function ListContainerSecond({ isActive }) {
       setIsPurchased = setIsPurchasedApps;
       title = "Apps Booster";
       description = "Increase power by 18.472 BTS/hr";
-      prices = [{ amount: 10, label: "Apps Boost" }]; // 1.5 Stars
+      prices = [{ amount: 1, label: "Apps Boost" }]; // 1.5 Stars
     } else if (itemType === "prem") {
       setIsLoading = setIsLoadingPrem;
       setIsPurchased = setIsPurchasedPrem;
       title = "Prem Booster";
       description = "Increase power by 38.172 BTS/hr";
-      prices = [{ amount: 10, label: "Prem Boost" }]; // 2.7 Stars
+      prices = [{ amount: 1, label: "Prem Boost" }]; // 2.7 Stars
     } else {
       console.error("Invalid itemType:", itemType);
       return;
