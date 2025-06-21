@@ -3,17 +3,41 @@ import axios from 'axios';
 import CheckIconBr from '../img-jsx-br/CheckIconBr';
 import Tonlogo from '../img-jsx-br/Tonlogo';
 
-function ListsContainerFirst({ isActive, userData }) {
+function ListsContainerFirst({ isActive }) {
   const [invoiceLink, setInvoiceLink] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [webApp, setWebApp] = useState(null);
-  const [isPurchased, setIsPurchased] = useState(userData?.ton_boost >= 1);
+  const [userData, setUserData] = useState(null);
+  const [isPurchased, setIsPurchased] = useState(false); // Initial state is false
 
-  useEffect(() => {
-    if (window.Telegram && window.Telegram.WebApp) {
-      setWebApp(window.Telegram.WebApp);
-    }
-  }, []);
+    useEffect(() => {
+        if (window.Telegram && window.Telegram.WebApp) {
+            setWebApp(window.Telegram.WebApp);
+        }
+    }, []);
+
+    useEffect(() => {
+        // Function to fetch user data from auth.js
+        const fetchUserData = async () => {
+            try {
+                // Get initData (assumed getTelegramInitData is available here)
+                const initData = getTelegramInitData();
+                const response = await axios.post('https://ah-user.netlify.app/.netlify/functions/auth', { initData });
+
+                if (response.data) {
+                    setUserData(response.data);
+                      setIsPurchased(response.data?.ton_boost >= 1);
+                } else {
+                    console.error('Error fetching user data');
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+
+        // Call fetchUserData on component mount
+        fetchUserData();
+    }, []);
 
    const boosterInfo = { // Прямой импорт
       ton_boost: {
@@ -73,24 +97,20 @@ function ListsContainerFirst({ isActive, userData }) {
               }
             );
 
-              if (verificationResponse.status === 200) { // Проверяем код ответа
+             if (verificationResponse.status === 200) {
                 const data = verificationResponse.data;
 
                 if (data.success) {
-                  if (data.duplicate) {
-                    console.log("Дубликат платежа, не списываем звезды");
-                    // Здесь можно показать сообщение пользователю о том, что платеж уже был обработан
-                  } else {
-                    console.log("Оплата прошла успешно, обновляем UI");
-                    setIsPurchased(true);
-                  }
+                     setUserData(response.data);
+                      setIsPurchased(true);
+
                 } else {
                   console.error("Payment verification failed:", data.error);
-                  // Обработка ошибки верификации
+                  // Payment verification error handling
                 }
               } else {
-                console.error("Ошибка при верификации:", verificationResponse.status);
-                // Обработка ошибки HTTP
+                console.error("Verification error:", verificationResponse.status);
+                // HTTP error handling
               }
 
           } catch (verificationError) {
@@ -110,7 +130,14 @@ function ListsContainerFirst({ isActive, userData }) {
     }
   };
 
-  let buttonContent = isPurchased ? <CheckIconBr /> : "0.7K";
+    useEffect(() => {
+        // Update isPurchased when userData changes
+        if (userData) {
+            setIsPurchased(userData.ton_boost >= 1);
+        }
+    }, [userData]);
+
+  let buttonContent = isPurchased ? <CheckIconBr /> : "0.7K"; // Use CheckIconBr
 
   return (
     <section className='lists-container'>
