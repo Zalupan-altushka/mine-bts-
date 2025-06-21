@@ -15,16 +15,18 @@ function ListsContainerFirst({ isActive }) {
     }
   }, []);
 
-  const boosterInfo = {
-    item_id: "ton_boost",
-    title: "TON Booster",
-    description: "Increase power by 0.072 BTS/hr",
-    price: 1,
-    currency: "XTR",
-  };
+   const boosterInfo = { // Прямой импорт
+      ton_boost: {
+        item_id: "ton_boost",
+        title: "TON Booster",
+        description: "Increase power by 0.072 BTS/hr",
+        price: 1,
+        currency: "XTR",
+      }
+    };
 
   const handleBuyClick = async () => {
-    setIsLoading(true);
+     setIsLoading(true);
 
     if (!webApp) {
       setIsLoading(false);
@@ -33,11 +35,11 @@ function ListsContainerFirst({ isActive }) {
 
     try {
       const invoiceData = {
-        title: boosterInfo.title,
-        description: boosterInfo.description,
-        payload: JSON.stringify({ item_id: boosterInfo.item_id, user_id: webApp.initDataUnsafe.user.id }),
-        currency: boosterInfo.currency,
-        prices: [{ amount: boosterInfo.price / 100, label: boosterInfo.title }],
+        title: boosterInfo.ton_boost.title, //ton_boost
+        description: boosterInfo.ton_boost.description, //ton_boost
+        payload: JSON.stringify({ item_id: boosterInfo.ton_boost.item_id, user_id: webApp.initDataUnsafe.user.id }), //ton_boost
+        currency: boosterInfo.ton_boost.currency, //ton_boost
+        prices: [{ amount: boosterInfo.ton_boost.price / 100, label: boosterInfo.ton_boost.title }], //ton_boost
       };
 
       const response = await axios.post(
