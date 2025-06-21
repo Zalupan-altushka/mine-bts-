@@ -20,7 +20,7 @@ function ListsContainerFirst({ isActive, userData }) {
         item_id: "ton_boost",
         title: "TON Booster",
         description: "Increase power by 0.072 BTS/hr",
-        price: 0.7,
+        price: 1,
         currency: "XTR",
       }
     };

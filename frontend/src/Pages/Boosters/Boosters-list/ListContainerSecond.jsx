@@ -32,7 +32,7 @@ function ListContainerSecond({ isActive, userData }) {
       setIsPurchased = setIsPurchasedPrem;
       title = "Prem Booster";
       description = "Increase power by 38.172 BTS/hr";
-      prices = [{ amount: 0.5, label: "Prem Boost" }]; // 0.5 Stars
+      prices = [{ amount: 1, label: "Prem Boost" }]; // 0.5 Stars
       item_id = "prem_boost";
     } else {
       console.error("Invalid itemType:", itemType);
