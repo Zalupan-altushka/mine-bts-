@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './Home.css';
-import Menu from '../../Most Used/Menu/Menu';
-import Timer from '../../Most Used/Image/Timer';
 import DayCheck from './Containers/Day/DayCheck';
 import BoosterContainer from './Containers/BoostersCon/BoosterContainer';
 import FriendsConnt from './Containers/FriendsCon/FriendsConnt';
 import Game from './Containers/MiniGame/Game';
+import Menu from '../Menus/Menu/Menu';
+import TimerHm from './Containers/img-jsx/Timer';
 
 const tg = window.Telegram.WebApp;
 
@@ -220,12 +220,12 @@ function HomePage({ userData }) {
                     <span className="loading-indicator">Loading...</span>
                 ) : (
                     <>
-                        {isButtonDisabled && isMining && <Timer style={{ marginRight: '9px' }} />}
+                        {isButtonDisabled && isMining && <TimerHm style={{ marginRight: '9px' }} />}
                         {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
                     </>
                 )}
             </button>
-            <Menu />
+          <Menu />
         </section>
     );
 }

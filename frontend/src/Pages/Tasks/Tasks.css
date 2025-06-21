@@ -24,7 +24,7 @@ html, .bodytaskspage {
   flex: 1;
   min-height: 100vh;
   width: 100vw;
-  background-image: url('../../Most Used/Image/333.jpg');
+  background-image: url('./Containers/img-jsx-ts/Screen.jpg');
   background-size: cover;
   background-position: center;
   display: flex;

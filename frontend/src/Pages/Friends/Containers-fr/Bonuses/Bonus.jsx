@@ -1,5 +1,5 @@
 import './Bonus.css'
-import DiamondFR from "../../../../Most Used/Image/DiamondFR";
+import DiamondGifFr from '../img-jsx-fr/DiamondGifFr';
 
 function Bonus() {
   
@@ -22,7 +22,7 @@ function Bonus() {
             </div>
           </section>
           <section className='left-section-gif-bonus-fr'>
-            <DiamondFR />
+            <DiamondGifFr />
           </section>
         </article>
     </section>

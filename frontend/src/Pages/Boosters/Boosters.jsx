@@ -1,9 +1,9 @@
 import './Boosters.css'
-import Menu from '../../Most Used/Menu/Menu';
-import ListContainetThree from '../Boosters-list/ListContainetThree';
-import ListsContainerFirst from '../Boosters-list/ListContainerFirst';
-import ListsContainerSecond from '../Boosters-list/ListContainerSecond';
+import ListContainerThree from './Boosters-list/ListContainetThree';
+import ListsContainerFirst from './Boosters-list/ListContainerFirst';
+import ListsContainerSecond from './Boosters-list/ListContainerSecond';
 import BoostersBox from './Containers/BoostersBox';
+import Menu from '../Menus/Menu/Menu';
 
 function Boosters({ userData, isActive  }) {
 
@@ -14,7 +14,7 @@ function Boosters({ userData, isActive  }) {
         <div className='center-content'>
           <ListsContainerFirst isActive={isActive} />
           <ListsContainerSecond isActive={isActive} />
-          <ListContainetThree isActive={isActive} />
+          <ListContainerThree isActive={isActive} />
         </div>
       </div>
       <Menu />

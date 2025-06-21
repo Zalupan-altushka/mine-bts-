@@ -1,4 +1,4 @@
-import GrHeart from '../../../../Most Used/Image/GrHeart';
+import GrHeartHome from '../img-jsx/GrHeartHome';
 import './Game.css';
 
 function Game() {
@@ -6,7 +6,7 @@ function Game() {
   return (
     <div className='container-game'>
         <div className='left-section-gif-game'>
-          <GrHeart />
+          <GrHeartHome />
         </div>
         <div className='mid-section-textabout-game'>
           <span className='first-span-game'>Mini Game!</span> 

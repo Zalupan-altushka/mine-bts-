@@ -1,6 +1,5 @@
-import React from 'react';
-import Star from '../../../Most Used/Image/Star';
 import './BoostersBox.css'
+import StarBr from '../img-jsx-br/StarBr';
 
 function BoostersBox() {
 
@@ -12,7 +11,7 @@ function BoostersBox() {
               <span className='two-span'>Please buy boosters with TG Stars</span>
             </div>
             <div className='right-section-box'>
-              <Star />
+              <StarBr />
             </div>
           </article>
           <div className='polosa' />

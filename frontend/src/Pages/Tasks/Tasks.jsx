@@ -1,6 +1,7 @@
+import Menu from '../Menus/Menu/Menu';
 import './Tasks.css'
-import Menu from '../../Most Used/Menu/Menu';
-import Star from '../../Most Used/Image/Star';
+
+
 
 
 

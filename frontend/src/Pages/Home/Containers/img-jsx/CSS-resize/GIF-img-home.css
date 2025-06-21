@@ -1,0 +1,33 @@
+.all-image {
+  width: 80px;
+  height: 80px;
+}
+
+.mini-image {
+  width: 36px;
+  height: 36px;
+}
+
+.check-icon {
+  vertical-align: middle;
+}
+
+.check-icon-ton {
+  vertical-align: middle;
+}
+
+
+@media (min-height: 600px) and (max-height: 800px) {
+  .all-image {
+    width: 60px;
+    height: 60px;
+  }
+  .mini-image{
+    width: 25px;
+    height: 25px;
+  }
+  .check-icon {
+    width: 13px;
+    height: 13px;
+  }
+}

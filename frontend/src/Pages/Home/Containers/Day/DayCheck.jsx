@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './DayCheck.css';
-import Moom from '../../../../Most Used/Image/Moom';
-import CheckIcon from '../../../../Most Used/Image/CheckIcon';
+import CheckIconDay from '../img-jsx/CheckIconDay';
+import MoomDay from '../img-jsx/MoomDay';
 
 function DayCheck({ userData, onPointsUpdate }) {
   const [dayCheckCount, setDayCheckCount] = useState(0);
@@ -120,7 +120,7 @@ function DayCheck({ userData, onPointsUpdate }) {
   return (
     <div className='container-check-day'>
       <div className='left-section-gif'>
-        <Moom />
+        <MoomDay />
       </div>
       <div className='mid-section-textabout'>
         <span className='first-span'>{dayCheckCount} day-check</span>
@@ -134,7 +134,7 @@ function DayCheck({ userData, onPointsUpdate }) {
           onClick={handleGetPoints}
           disabled={isButtonDisabled || isLoading}
         >
-          {isLoading ? <span style={{ fontSize: '10px' }}>Wait...</span> : (isButtonDisabled ? <CheckIcon /> : 'Get')}
+          {isLoading ? <span style={{ fontSize: '10px' }}>Wait...</span> : (isButtonDisabled ? <CheckIconDay /> : 'Get')}
         </button>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import './BosterContainer.css'
-import Thunder from '../../../../Most Used/Image/Thunder';
 import { Link } from 'react-router-dom';
+import ThunderBoost from '../img-jsx/ThunderBoost';
 
 function BoosterContainer(){
   
@@ -14,7 +14,7 @@ function BoosterContainer(){
         </Link>
       </div>
       <div className='right-section-gif'>
-        <Thunder />
+        <ThunderBoost />
       </div>
     </div>
   );

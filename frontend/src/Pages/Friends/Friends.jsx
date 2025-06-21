@@ -1,8 +1,9 @@
 import './Friends.css';
-import Menu from '../../Most Used/Menu/Menu';
+
 import TotalFR from './Containers-fr/Total/TotalFR';
 import Bonus from './Containers-fr/Bonuses/Bonus';
 import Reward from './Containers-fr/Reward/Reward';
+import Menu from '../Menus/Menu/Menu';
 
 function Friends({ userData }) {
 
@@ -29,7 +30,7 @@ function Friends({ userData }) {
                 <button className='get-reward-button'>About the Referral Program</button>
                 <button className='Invite-button' onClick={handleInviteClick}>Invite Friends</button>
             </section>
-            <Menu />
+          <Menu />
         </section>
     );
 }
