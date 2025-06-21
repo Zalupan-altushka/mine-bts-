@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import TON from '../../Most Used/Image/TON';
 import axios from 'axios';
-import CheckIcon from '../../../../Most Used/Image/CheckIcon';
+import CheckIconBr from '../img-jsx-br/CheckIconBr';
+import Tonlogo from '../img-jsx-br/Tonlogo';
 
 function ListsContainerFirst({ isActive, userData }) {
   const [invoiceLink, setInvoiceLink] = useState(null);
@@ -93,7 +93,7 @@ function ListsContainerFirst({ isActive, userData }) {
     }
   };
 
-  let buttonContent = isPurchased ? <CheckIcon /> : "0.7K";
+  let buttonContent = isPurchased ? <CheckIconBr /> : "0.7K";
 
   return (
     <section className='lists-container'>
@@ -110,7 +110,7 @@ function ListsContainerFirst({ isActive, userData }) {
             </button>
           </div>
           <section className='mid-section-list'>
-            <TON />
+            <Tonlogo />
           </section>
           <div className='footer-section-list'>
             <span className='text-power'>Power</span>
