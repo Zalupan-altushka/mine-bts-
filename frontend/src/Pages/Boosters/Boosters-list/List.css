@@ -189,7 +189,26 @@
   font-size: 12px;
   border-radius: 25px;
   border: none;
-  box-shadow: 0 0 15px gold , 0 0 25px orange;
+  width: 53px;
+  height: 28px;
+  box-shadow: 0 0 15px gold, 0 0 25px orange;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ListButtonBTC:disabled,
+.ListButtonBTC.loading {
+  background: linear-gradient(45deg, #a98200, #a85100);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.ListButtonBTC.purchased {
+  background: linear-gradient(45deg, gold, orange);
+  color: var(--background-color);
+  box-shadow: none;
+  cursor: default;
 }
 
 .ListButtonETH {
@@ -198,7 +217,26 @@
   font-size: 12px;
   border-radius: 25px;
   border: none;
-  box-shadow: 0 0 15px var(--background-color) , 0 0 25px var(--text-color);
+  width: 53px;
+  height: 28px;
+  box-shadow: 0 0 15px var(--background-color), 0 0 25px var(--text-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ListButtonETH:disabled,
+.ListButtonETH.loading {
+  background: linear-gradient(45deg, #1c1c1e, #545454);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.ListButtonETH.purchased {
+  background: linear-gradient(45deg, var(--background-color), var(--text-color));
+  color: var(--background-color);
+  box-shadow: none;
+  cursor: default;
 }
 
 
