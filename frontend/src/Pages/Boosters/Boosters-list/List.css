@@ -136,6 +136,24 @@
   border-radius: 25px;
   border: none;
   box-shadow: 0 0 15px var(--purple-color), 0 0 25px var(--container-color-two);
+  width: 53px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ListButtonPrm:disabled {
+  background: linear-gradient(45deg, #5e3c7d, #2d3c4a);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.ListButtonPrm.purchased {
+  background: linear-gradient(45deg, var(--purple-color), var(--container-color-two));
+  color: var(--background-color);
+  box-shadow: none;
+  cursor: default;
 }
 
 .ListButtonCenter {
@@ -145,6 +163,24 @@
   border-radius: 25px;
   border: none;
   box-shadow: 0 0 15px var(--blue-another-color), 0 0 25px var(--container-color-two);
+  width: 53px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ListButtonCenter:disabled {
+  background: linear-gradient(45deg, #2c537d, #2d3c4a);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.ListButtonCenter.purchased {
+  background: linear-gradient(45deg, var(--blue-another-color), var(--container-color-two));
+  color: var(--background-color);
+  box-shadow: none;
+  cursor: default;
 }
 
 .ListButtonBTC {
