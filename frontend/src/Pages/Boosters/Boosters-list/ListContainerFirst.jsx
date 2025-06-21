@@ -10,44 +10,44 @@ function ListsContainerFirst({ isActive }) {
   const [userData, setUserData] = useState(null);
   const [isPurchased, setIsPurchased] = useState(false); // Initial state is false
 
-    useEffect(() => {
-        if (window.Telegram && window.Telegram.WebApp) {
-            setWebApp(window.Telegram.WebApp);
+  useEffect(() => {
+    if (window.Telegram && window.Telegram.WebApp) {
+      setWebApp(window.Telegram.WebApp);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Function to fetch user data from auth.js
+    const fetchUserData = async () => {
+      try {
+        // Get initData (assumed getTelegramInitData is available here)
+        const initData = getTelegramInitData();
+        const response = await axios.post('https://ah-user.netlify.app/.netlify/functions/auth', { initData });
+
+        if (response.data) {
+          setUserData(response.data);
+          setIsPurchased(response.data?.ton_boost >= 1); // Обновляем isPurchased при получении данных
+        } else {
+          console.error('Error fetching user data');
         }
-    }, []);
-
-    useEffect(() => {
-        // Function to fetch user data from auth.js
-        const fetchUserData = async () => {
-            try {
-                // Get initData (assumed getTelegramInitData is available here)
-                const initData = getTelegramInitData();
-                const response = await axios.post('https://ah-user.netlify.app/.netlify/functions/auth', { initData });
-
-                if (response.data) {
-                    setUserData(response.data);
-                      setIsPurchased(response.data?.ton_boost >= 1);
-                } else {
-                    console.error('Error fetching user data');
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-            }
-        };
-
-        // Call fetchUserData on component mount
-        fetchUserData();
-    }, []);
-
-   const boosterInfo = { // Прямой импорт
-      ton_boost: {
-        item_id: "ton_boost",
-        title: "TON Booster",
-        description: "Increase power by 0.072 BTS/hr",
-        price: 1,
-        currency: "XTR",
+      } catch (error) {
+        console.error('Error fetching user data:', error);
       }
     };
+
+    // Call fetchUserData on component mount
+    fetchUserData();
+  }, []);
+
+  const boosterInfo = { // Прямой импорт
+    ton_boost: {
+      item_id: "ton_boost",
+      title: "TON Booster",
+      description: "Increase power by 0.072 BTS/hr",
+      price: 0.7,
+      currency: "XTR",
+    }
+  };
 
   const handleBuyClick = async () => {
     setIsLoading(true);
@@ -97,28 +97,27 @@ function ListsContainerFirst({ isActive }) {
               }
             );
 
-             if (verificationResponse.status === 200) {
-                const data = verificationResponse.data;
+            if (verificationResponse.status === 200) {
+              const data = verificationResponse.data;
 
-                if (data.success) {
-                     setUserData(response.data);
-                      setIsPurchased(true);
-
-                } else {
-                  console.error("Payment verification failed:", data.error);
-                  // Payment verification error handling
-                }
+              if (data.success) {
+                setUserData(response.data);
+                setIsPurchased(true); // Set isPurchased to true
               } else {
-                console.error("Verification error:", verificationResponse.status);
-                // HTTP error handling
+                console.error("Payment verification failed:", data.error);
+                // Payment verification error handling
               }
+            } else {
+              console.error("Verification error:", verificationResponse.status);
+              // HTTP error handling
+            }
 
           } catch (verificationError) {
             console.error("Verification Error", verificationError);
           }
 
         } else if (status === "closed") {
-            console.log("Invoice Closed");
+          console.log("Invoice Closed");
         } else {
           console.log("Payment Failed or Canceled", status);
         }
@@ -130,14 +129,14 @@ function ListsContainerFirst({ isActive }) {
     }
   };
 
-    useEffect(() => {
-        // Update isPurchased when userData changes
-        if (userData) {
-            setIsPurchased(userData.ton_boost >= 1);
-        }
-    }, [userData]);
+  // Update isPurchased when userData changes
+  useEffect(() => {
+    if (userData) {
+      setIsPurchased(userData.ton_boost >= 1);
+    }
+  }, [userData]);
 
-  let buttonContent = isPurchased ? <CheckIconBr /> : "0.7K"; // Use CheckIconBr
+  let buttonContent = isPurchased ? <CheckIconBr /> : "0.7K";
 
   return (
     <section className='lists-container'>
