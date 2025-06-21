@@ -1,26 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PremiumTG from '../img-jsx-br/PremiumTG';
 import TGcenter from '../img-jsx-br/TGcenter';
+import CheckIconBr from '../img-jsx-br/CheckIconBr';
 
 function ListContainerSecond({ isActive }) {
   const [isLoadingApps, setIsLoadingApps] = useState(false);
   const [isLoadingPrem, setIsLoadingPrem] = useState(false);
-  const [errorApps, setErrorApps] = useState(null);
-  const [errorPrem, setErrorPrem] = useState(null);
+  const [isPurchasedApps, setIsPurchasedApps] = useState(false);
+  const [isPurchasedPrem, setIsPurchasedPrem] = useState(false);
+  const [webApp, setWebApp] = useState(null);
+
+  useEffect(() => {
+    if (window.Telegram && window.Telegram.WebApp) {
+      setWebApp(window.Telegram.WebApp);
+    }
+  }, []);
 
   const handleBuyClick = async (itemType) => {
-    let setIsLoading, setError, title, description, prices;
+    let setIsLoading, setIsPurchased, title, description, prices;
 
     if (itemType === "apps") {
       setIsLoading = setIsLoadingApps;
-      setError = setErrorApps;
+      setIsPurchased = setIsPurchasedApps;
       title = "Apps Booster";
       description = "Increase power by 18.472 BTS/hr";
       prices = [{ amount: 10, label: "Apps Boost" }]; // 1.5 Stars
     } else if (itemType === "prem") {
       setIsLoading = setIsLoadingPrem;
-      setError = setErrorPrem;
+      setIsPurchased = setIsPurchasedPrem;
       title = "Prem Booster";
       description = "Increase power by 38.172 BTS/hr";
       prices = [{ amount: 10, label: "Prem Boost" }]; // 2.7 Stars
@@ -30,13 +38,12 @@ function ListContainerSecond({ isActive }) {
     }
 
     setIsLoading(true);
-    setError(null);
 
     try {
-      const invoiceData = {
+       const invoiceData = {
         title: title,
         description: description,
-        payload: JSON.stringify({ item_id: itemType + "_boost" }),
+        payload: JSON.stringify({ item_id: itemType + "_boost", user_id: webApp.initDataUnsafe.user.id }),
         currency: "XTR",
         prices: prices,
       };
@@ -53,20 +60,63 @@ function ListContainerSecond({ isActive }) {
 
       const { invoiceLink: newInvoiceLink } = response.data;
 
-      window.Telegram.WebApp.openInvoice(newInvoiceLink, (status) => {
+      webApp.openInvoice(newInvoiceLink, async (status) => {
+        setIsLoading(false);
+
         if (status === "paid") {
-          console.log("Payment successful!");
-          // TODO: Send a request to your backend to issue the item to the user
+          try {
+            const verificationResponse = await axios.post(
+              'https://ah-user.netlify.app/.netlify/functions/verify-payment',
+              {
+                payload: invoiceData.payload,
+                user_id: webApp.initDataUnsafe.user.id
+              },
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+
+            if (verificationResponse.data.success) {
+              if (itemType === "apps") {
+                setIsPurchasedApps(true);
+              } else if (itemType === "prem") {
+                setIsPurchasedPrem(true);
+              }
+            } else {
+              console.error("Payment verification failed:", verificationResponse.data.error);
+            }
+          } catch (verificationError) {
+            console.error("Error verifying payment:", verificationError);
+          }
+
         } else {
           console.log("Payment failed or canceled:", status);
         }
-        setIsLoading(false);
       });
     } catch (error) {
       console.error("Error creating or opening invoice:", error);
-      setError(error.message);
       setIsLoading(false);
     }
+  };
+
+  const getButtonContent = (itemType) => {
+    if (itemType === "apps") {
+      return isLoadingApps ? null : isPurchasedApps ? <CheckIconBr /> : "0.3K";
+    } else if (itemType === "prem") {
+      return isLoadingPrem ? null : isPurchasedPrem ? <CheckIconBr /> : "0.5k";
+    }
+    return null;
+  };
+
+  const getButtonClassName = (itemType) => {
+    if (itemType === "apps") {
+      return `ListButtonCenter ${isPurchasedApps ? 'purchased' : ''}`;
+    } else if (itemType === "prem") {
+      return `ListButtonPrm ${isPurchasedPrem ? 'purchased' : ''}`;
+    }
+    return '';
   };
 
   return (
@@ -76,11 +126,11 @@ function ListContainerSecond({ isActive }) {
           <div className='hight-section-list'>
             <span>Apps</span>
             <button
-              className='ListButtonCenter'
+              className={getButtonClassName("apps")}
               onClick={() => handleBuyClick("apps")}
-              disabled={!isActive || isLoadingApps}
+              disabled={!isActive || isLoadingApps || isPurchasedApps || !webApp}
             >
-              {isLoadingApps ? <span style={{ fontSize: '8px' }}>Wait...</span> : "0.3K"}
+              {getButtonContent("apps")}
             </button>
           </div>
           <section className='mid-section-list'>
@@ -90,7 +140,6 @@ function ListContainerSecond({ isActive }) {
             <span className='text-power'>Power</span>
             <span className='text-power-hr-center'>18.472 BTS/hr</span>
           </div>
-          {errorApps && <p style={{ color: 'red' }}>Error: {errorApps}</p>}
         </div>
       </article>
       <article className='boosters-list-prm'>
@@ -98,11 +147,11 @@ function ListContainerSecond({ isActive }) {
           <div className='hight-section-list'>
             <span>Prem</span>
             <button
-              className='ListButtonPrm'
+              className={getButtonClassName("prem")}
               onClick={() => handleBuyClick("prem")}
-              disabled={!isActive || isLoadingPrem}
+              disabled={!isActive || isLoadingPrem || isPurchasedPrem || !webApp}
             >
-              {isLoadingPrem ? <span style={{ fontSize: '8px' }}>Wait...</span> : "0.5k"}
+              {getButtonContent("prem")}
             </button>
           </div>
           <section className='mid-section-list'>
@@ -112,7 +161,6 @@ function ListContainerSecond({ isActive }) {
             <span className='text-power'>Power</span>
             <span className='text-power-hr-bts'>38.172 BTS/hr</span>
           </div>
-          {errorPrem && <p style={{ color: 'red' }}>Error: {errorPrem}</p>}
         </div>
       </article>
     </section>
