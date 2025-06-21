@@ -27,14 +27,14 @@ function ListContainerThree({ isActive }) {
       setIsPurchased = setIsPurchasedETH;
       title = "ETH Boost";
       description = "Increase power by 48.472 BTS/hr";
-      prices = [{ amount: 3.9, label: "ETH Boost" }]; // 3.9 Stars
+      prices = [{ amount: 1, label: "ETH Boost" }]; // 3.9 Stars
       item_id = "eth_boost";
     } else if (itemType === "btc") {
       setIsLoading = setIsLoadingBTC;
       setIsPurchased = setIsPurchasedBTC;
       title = "BTC Boost";
       description = "Increase power by 68.172 BTS/hr";
-      prices = [{ amount: 5.9, label: "BTC Boost" }]; // 5.9 Stars
+      prices = [{ amount: 1, label: "BTC Boost" }]; // 5.9 Stars
       item_id = "btc_boost";
     } else {
       console.error("Invalid itemType:", itemType);
