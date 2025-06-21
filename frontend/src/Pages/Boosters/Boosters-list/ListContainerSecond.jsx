@@ -4,11 +4,11 @@ import PremiumTG from '../img-jsx-br/PremiumTG';
 import TGcenter from '../img-jsx-br/TGcenter';
 import CheckIconBr from '../img-jsx-br/CheckIconBr';
 
-function ListContainerSecond({ isActive }) {
+function ListContainerSecond({ isActive, userData }) {
   const [isLoadingApps, setIsLoadingApps] = useState(false);
   const [isLoadingPrem, setIsLoadingPrem] = useState(false);
-  const [isPurchasedApps, setIsPurchasedApps] = useState(false);
-  const [isPurchasedPrem, setIsPurchasedPrem] = useState(false);
+  const [isPurchasedApps, setIsPurchasedApps] = useState(userData?.apps_boost >= 1); // Проверяем значение apps_boost из userData
+  const [isPurchasedPrem, setIsPurchasedPrem] = useState(userData?.prem_boost >= 1); // Проверяем значение prem_boost из userData
   const [webApp, setWebApp] = useState(null);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ function ListContainerSecond({ isActive }) {
       setIsPurchased = setIsPurchasedPrem;
       title = "Prem Booster";
       description = "Increase power by 38.172 BTS/hr";
-      prices = [{ amount: 1, label: "Prem Boost" }]; // 0.5 Stars
+      prices = [{ amount: 0.5, label: "Prem Boost" }]; // 0.5 Stars
       item_id = "prem_boost";
     } else {
       console.error("Invalid itemType:", itemType);

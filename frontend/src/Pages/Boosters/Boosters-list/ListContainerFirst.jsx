@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import TON from '../../Most Used/Image/TON';
 import axios from 'axios';
-import Tonlogo from '../img-jsx-br/Tonlogo';
-import CheckIconBr from '../img-jsx-br/CheckIconBr';
+import CheckIcon from '../../../../Most Used/Image/CheckIcon';
 
-function ListsContainerFirst({ isActive }) {
+function ListsContainerFirst({ isActive, userData }) {
   const [invoiceLink, setInvoiceLink] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [webApp, setWebApp] = useState(null);
-  const [isPurchased, setIsPurchased] = useState(false);
+  const [isPurchased, setIsPurchased] = useState(userData?.ton_boost >= 1); // Проверяем значение ton_boost из userData
 
   useEffect(() => {
     if (window.Telegram && window.Telegram.WebApp) {
@@ -93,7 +93,7 @@ function ListsContainerFirst({ isActive }) {
     }
   };
 
-  let buttonContent = isPurchased ? <CheckIconBr /> : "0.7K";
+  let buttonContent = isPurchased ? <CheckIcon /> : "0.7K";
 
   return (
     <section className='lists-container'>
@@ -110,7 +110,7 @@ function ListsContainerFirst({ isActive }) {
             </button>
           </div>
           <section className='mid-section-list'>
-            <Tonlogo />
+            <TON />
           </section>
           <div className='footer-section-list'>
             <span className='text-power'>Power</span>

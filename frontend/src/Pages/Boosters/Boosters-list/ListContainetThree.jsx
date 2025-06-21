@@ -5,12 +5,11 @@ import BitcoinBr from '../img-jsx-br/BitcoinBr';
 import EthereumBr from '../img-jsx-br/EthereumBr';
 import CheckIconBr from '../img-jsx-br/CheckIconBr';
 
-
-function ListContainerThree({ isActive }) {
+function ListContainerThree({ isActive, userData }) {
   const [isLoadingETH, setIsLoadingETH] = useState(false);
   const [isLoadingBTC, setIsLoadingBTC] = useState(false);
-  const [isPurchasedETH, setIsPurchasedETH] = useState(false);
-  const [isPurchasedBTC, setIsPurchasedBTC] = useState(false);
+  const [isPurchasedETH, setIsPurchasedETH] = useState(userData?.eth_boost >= 1); // Проверяем значение eth_boost из userData
+  const [isPurchasedBTC, setIsPurchasedBTC] = useState(userData?.btc_boost >= 1); // Проверяем значение btc_boost из userData
    const [webApp, setWebApp] = useState(null);
 
     useEffect(() => {
