@@ -108,6 +108,7 @@
     color: var(--container-color-two);
     font-size: 12px;
     text-align: center; /* Размещаем % ровно по центру */
+    margin-right: 40px;
 }
 
 .info-button {
@@ -133,9 +134,9 @@
 
 .points-balance {
   text-align: center; /* Выравниваем значение очков по центру */
-  flex-grow: 1; /* Растягиваем значение очков, чтобы занять доступное пространство */
-  margin-left: 0; /* Убираем отступ слева */
+  margin-left: 80px;
 }
+
 .two-span{
   color: var(--container-color-two);
   font-size: 12px;
