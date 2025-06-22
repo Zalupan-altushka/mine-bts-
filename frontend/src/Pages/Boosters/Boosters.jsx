@@ -8,7 +8,7 @@ import ListContainerThree from './Boosters-list/ListContainerThree';
 function Boosters({ isActive, userData, updateUserData }) {
     return (
         <section className='bodyboostpage'>
-            <BoostersBox userData={userData} />
+            <BoostersBox userData={userData} updateUserData={updateUserData} />
             <div className='containers-scroll-wrapper'>
                 <div className='center-content'>
                     <ListsContainerFirst isActive={isActive} userData={userData} updateUserData={updateUserData} />

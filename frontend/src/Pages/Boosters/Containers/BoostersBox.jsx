@@ -3,7 +3,7 @@ import './BoostersBox.css';
 import StarBr from '../img-jsx-br/StarBr';
 import axios from 'axios';
 
-function BoostersBox({ userData }) {
+function BoostersBox({ userData, updateUserData }) {
     const [webApp, setWebApp] = useState(null); // Добавьте состояние для webApp
     const [pointsBalance, setPointsBalance] = useState(() => {
         // Read pointsBalance from local storage on component mount
@@ -106,6 +106,9 @@ function BoostersBox({ userData }) {
                 setPointsBalance(0);
                 localStorage.setItem('pointsBalance', '0'); // Ensure localStorage is also updated
                 console.log('Points added successfully');
+                 if (updateUserData) {
+                    await updateUserData();
+                }
             } else {
                 // Claim failed, handle error
                 console.error('Failed to add points:', responseData.error);
@@ -133,16 +136,9 @@ function BoostersBox({ userData }) {
             <div className='polosa' />
             <article className='middle-section-box'>
                 <div className='center-section-middle'>
-                    <div className="balance-container">
-                        Balance:
+                    <div className="points-container">
                         <span className='points-balance'>{pointsBalance.toFixed(3)}</span>
-                    </div>
-                    <div className="storage-container">
-                        Storage:
-                        <div className="storage-fill-wrapper">
-                            <span className='storage-fill'>{storageFillPercentage.toFixed(0)}%</span>
-                            <button className='info-button'>inf</button>
-                        </div>
+                        <span className='storage-fill'>{storageFillPercentage.toFixed(0)}%</span>
                     </div>
                 </div>
                 <button

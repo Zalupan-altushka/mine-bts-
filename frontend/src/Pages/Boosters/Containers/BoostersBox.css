@@ -45,7 +45,7 @@
   font-weight: bold;
   display: flex;
   flex-direction: column; /* Располагаем элементы вертикально */
-  align-items: center; /* Выравниваем по центру по горизонтали */
+  align-items: center; /* Выравниваем элементы по центру по горизонтали */
   margin-top: 10px;
   margin-bottom: 10px;
   text-align: center; /* Убеждаемся, что текст внутри span тоже выровнен по центру */
@@ -61,13 +61,12 @@
   padding: 10px;
   margin-top: auto; /* Выровнять кнопку внизу */
   box-sizing: border-box;
-  text-align: center;
-  align-items: center;
+  text-align: center; /* Выравниваем текст кнопки по центру */
 }
 
 .Claim-button-br.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .two-span{
@@ -110,33 +109,16 @@
     color: var(--container-color-two);
     font-size: 12px;
     text-align: center; /* Размещаем % ровно по центру */
-    margin-right: 55px;
-}
-
-.info-button {
-    background-color: var(--container-color);
-    color: var(--container-color-two);
-    border-radius: 25px;
-    font-size: 12px;
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.balance-container {
-  display: flex; /* Используем flexbox для выравнивания */
-  justify-content: space-between; /* Растягиваем элементы по краям */
-  align-items: center; /* Выравниваем элементы по вертикали */
-  width: 100%; /* Занимаем всю доступную ширину */
-}
-
-.balance-container > *:first-child {
-  text-align: left; /* Выравниваем текст "Balance:" по левому краю */
 }
 
 .points-balance {
   text-align: center; /* Выравниваем значение очков по центру */
+  margin-left: 0; /* Убираем отступ слева */
+}
+.points-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .two-span{
