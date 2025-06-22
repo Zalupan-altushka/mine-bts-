@@ -8,42 +8,51 @@ function BoostersBox({ userData }) {
     const [storageFillPercentage, setStorageFillPercentage] = useState(0); // State for storage fill percentage
     const [isClaimButtonDisabled, setIsClaimButtonDisabled] = useState(false);
     const [isClaiming, setIsClaiming] = useState(false);
+    const [webApp, setWebApp] = useState(null); // Добавьте состояние для webApp
 
     useEffect(() => {
-        let totalBoostRate = 0;
+        if (window.Telegram && window.Telegram.WebApp) {
+            setWebApp(window.Telegram.WebApp); // Инициализируйте webApp
+        }
+    }, []);
+
+
+    useEffect(() => {
+        let totalBoostRatePerHour = 0; // Total boost rate per hour
 
         if (userData) {
-            // Calculate total boost rate based on purchased boosters
+            // Calculate total boost rate based on purchased boosters (per hour)
             if (userData.ton_boost === true) {
-                totalBoostRate += 0.072;
+                totalBoostRatePerHour += 0.072;
             }
             if (userData.apps_boost === true) {
-                totalBoostRate += 18.472;
+                totalBoostRatePerHour += 18.472;
             }
             if (userData.prem_boost === true) {
-                totalBoostRate += 38.172;
+                totalBoostRatePerHour += 38.172;
             }
             if (userData.eth_boost === true) {
-                totalBoostRate += 48.472;
+                totalBoostRatePerHour += 48.472;
             }
             if (userData.btc_boost === true) {
-                totalBoostRate += 68.172;
+                totalBoostRatePerHour += 68.172;
             }
         }
+
+        // Convert hourly rate to per-second rate
+        const totalBoostRatePerSecond = totalBoostRatePerHour / 3600;
 
         // Function to update points balance
         const updatePointsBalance = () => {
             setPointsBalance(prevBalance => {
-                let newBalance = prevBalance + totalBoostRate;
+                let newBalance = prevBalance + totalBoostRatePerSecond;
                 if (newBalance > 1000) {
                     newBalance = 1000;
                 }
                 return newBalance;
             });
-
             // Update storage fill percentage
             setStorageFillPercentage(Math.min((pointsBalance / 1000) * 100, 100));
-
         };
 
         // Set interval to update points balance every second
@@ -65,27 +74,43 @@ function BoostersBox({ userData }) {
         setIsClaimButtonDisabled(true); // Disable the claim button immediately
 
         try {
-            const response = await axios.post(
-                'https://ah-user.netlify.app/.netlify/functions/update-points', // Замените URL
-                { points: pointsBalance, userId: webApp.initDataUnsafe.user.id },
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
+            // Prepare request body
+            const requestBody = {
+                telegramId: webApp?.initDataUnsafe?.user?.id,  // Use correct user ID
+                points: pointsBalance, // The points to be claimed
+            };
 
-            if (response.data.success) {
+            // Отправляем запрос к существующей Netlify Function
+            const response = await fetch('https://ah-user.netlify.app/.netlify/functions/update-points', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody),
+            });
+
+            if (!response.ok) {
+                // Log the error details
+                const errorData = await response.json();
+                console.error('Failed to claim points:', errorData);
+                throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.error}`);
+            }
+
+            const responseData = await response.json();
+
+            if (responseData.success) {
+                // Claim successful, reset points
                 setPointsBalance(0);
                 setStorageFillPercentage(0);
                 console.log('Points claimed successfully');
             } else {
-                console.error('Failed to claim points:', response.data.error);
-                // Handle error
+                // Claim failed, handle error
+                console.error('Failed to claim points:', responseData.error);
+                // Optionally show an error message to the user
             }
         } catch (error) {
             console.error('Error claiming points:', error);
-            // Handle error
+            // Optionally show an error message to the user
         } finally {
             setIsClaiming(false);
             setIsClaimButtonDisabled(false); // Re-enable the claim button after claiming
@@ -111,18 +136,18 @@ function BoostersBox({ userData }) {
                     <div>
                         Balance:
                         <span className='points-balance'>{pointsBalance.toFixed(3)}</span>
-                        <button className='info-button'>inf</button>
                     </div>
-                    <div>
+                    <div className="storage-container">
                         Storage:
-                        <span className='green-background' style={{ width: `${storageFillPercentage}%` }}></span>
-                        <span className='storage-fill'>{storageFillPercentage.toFixed(0)}%</span>
+                        <div className="storage-fill-wrapper">
+                            <span className='storage-fill'>{storageFillPercentage.toFixed(0)}%</span>
+                            <button className='info-button'>inf</button>
+                        </div>
                     </div>
                 </div>
                 <button className='Claim-button-br' onClick={handleClaimClick} disabled={isClaimButtonDisabled || isClaiming}>
                     {isClaiming ? 'Claiming...' : 'Claim'}
                 </button>
-
             </article>
         </section>
     );

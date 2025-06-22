@@ -71,7 +71,7 @@
 }
 
 .two-span{
-  color: #b9bbbc;
+  color: var(--container-color-two);
   font-size: 12px;
 }
 
@@ -91,18 +91,19 @@
   background-color: var(--container-color-two);
 }
 
-.green-background {
-  margin-left: 50px;
-  background-color: var(--green-color); /* Или другой зеленый цвет */
-  height: 15px;
-  border-radius: 15px;
-  width: 100px; /* Или другую ширину, если нужно */
-  display: inline-block; /* Важно, чтобы span занимал только необходимую область */
-  vertical-align: middle; /* Выравнивание по вертикали с текстом "Storage:" */
+.storage-container {
+    position: relative; /* Создаем контекст позиционирования для .info-button */
+    display: flex;
+    align-items: center;
+}
+
+.storage-fill-wrapper {
+    position: relative; /*  относительное позиционирование внутри .storage-container */
+    display: inline-block; /* Располагаем в строку */
 }
 
 .storage-fill {
-  margin-left: 65px;
+  margin-left: 5px;
   color: var(--container-color-two);
 }
 
@@ -111,11 +112,22 @@
   color: var(--container-color-two);
   border-radius: 25px;
   font-size: 12px;
-  margin-left: 88px;
+    position: absolute; /* Абсолютное позиционирование */
+    right: 0;           /* Прижать к правому краю */
+    top: 50%;           /* Выровнять по вертикали */
+    transform: translateY(-50%); /* Скорректировать вертикальное выравнивание */
 }
 
 .points-balance {
-  margin-left: 80px;
+  margin-left: 10px;
+}
+
+.center-section-middle div {
+    margin-bottom: 5px;
+    color: #fff;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
 }
 
 @media (max-height: 800px) {
