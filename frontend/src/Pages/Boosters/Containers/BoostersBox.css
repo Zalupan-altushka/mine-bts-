@@ -105,11 +105,13 @@
 .points-balance {
     text-align: center;
     flex: 1; /* Take up remaining space */
+    margin-right: 63px;
 }
 
 .storage-fill {
     text-align: center;
     flex: 1; /* Take up remaining space */
+    margin-right: 60px;
 }
 
 .balance-text {
