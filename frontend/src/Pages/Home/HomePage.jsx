@@ -9,7 +9,7 @@ import TimerHm from './Containers/img-jsx/Timer';
 
 const tg = window.Telegram.WebApp;
 
-function HomePage({ userData }) {
+function HomePage({ userData, updateUserData }) {
     const [points, setPoints] = useState(() => {
         const storedPoints = localStorage.getItem('points');
         return storedPoints ? parseFloat(storedPoints) : 0;
@@ -69,13 +69,16 @@ function HomePage({ userData }) {
         setIsClaimButton(false);
         setIsButtonDisabled(false);
         setIsLoading(false); // Скрываем индикатор загрузки
+         if (updateUserData) {
+            await updateUserData();
+        }
     };
 
     const handleMineFor100 = () => {
         setIsLoading(true); // Показываем индикатор загрузки
-        const sixHoursInSeconds = 6 * 60 * 60; // 6 часов в секундах
-        setTimeRemaining(sixHoursInSeconds);
-        startTimer(sixHoursInSeconds);
+        const oneMinutesInSeconds = 1 * 60; // 1 минута в секундах
+        setTimeRemaining(oneMinutesInSeconds);
+        startTimer(oneMinutesInSeconds);
         setIsMining(true);
         setIsButtonDisabled(true);
         setIsClaimButton(false); // Disable Claim button when mining
@@ -134,6 +137,9 @@ function HomePage({ userData }) {
             }
 
             console.log("Очки успешно обновлены в базе данных!");
+             if (updateUserData) {
+            await updateUserData();
+        }
         } catch (error) {
             console.error("Ошибка при обновлении очков:", error);
         }
@@ -156,6 +162,7 @@ function HomePage({ userData }) {
         setIsMining(storedIsMining);
         setIsButtonDisabled(storedIsButtonDisabled);
         setIsClaimButton(storedIsClaimButton);
+        localStorage.setItem('isClaimButton', storedIsClaimButton.toString());
 
         if (storedEndTime && storedIsButtonDisabled) {
             const endTime = parseInt(storedEndTime, 10);
@@ -166,12 +173,14 @@ function HomePage({ userData }) {
             } else {
                 // Если таймер истек, кнопка должна отображать "Claim 52.033 BTS"
                 setIsClaimButton(true);
+                 localStorage.setItem('isClaimButton', 'true');
                 setIsButtonDisabled(false);
                 setIsMining(false);
             }
         } else {
             // Если таймер не запущен, кнопка должна отображать "Mine 52.033 BTS"
             setIsClaimButton(false);
+             localStorage.setItem('isClaimButton', 'false');
             setIsButtonDisabled(false);
         }
     }, []);
@@ -200,7 +209,7 @@ function HomePage({ userData }) {
     return (
         <section className='bodyhomepage'>
             <span className='points-count'>{points.toFixed(3)}</span>
-            <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} />
+            <DayCheck onPointsUpdate={updatePointsInDatabase} userData={userData} updateUserData={updateUserData} />
             <Game />
             <BoosterContainer />
             <FriendsConnt />
