@@ -136,14 +136,14 @@ function BoostersBox({ userData, updateUserData, isActive }) {
             <div className='polosa' />
             <article className='middle-section-box'>
                 <div className='center-section-middle'>
-                    <div className="points-container">
-                        <span>Balance:</span>
-                        <span className='points-balance'>{pointsBalance.toFixed(3)}</span>
-                    </div>
-                    <div className="storage-container">
-                        <span>Storage:</span>
-                        <span className='storage-fill'>{storageFillPercentage.toFixed(0)}%</span>
-                    </div>
+                  <div className="balance-container">
+                      <span className="balance-text">Balance:</span>
+                      <span className='points-balance'>{pointsBalance.toFixed(3)}</span>
+                  </div>
+                  <div className="storage-container">
+                      <span className="storage-text">Storage:</span>
+                      <span className='storage-fill'>{storageFillPercentage.toFixed(0)}%</span>
+                  </div>
                 </div>
                 <button
                   className={`Claim-button-br ${isClaimButtonDisabled ? 'disabled' : ''}`}

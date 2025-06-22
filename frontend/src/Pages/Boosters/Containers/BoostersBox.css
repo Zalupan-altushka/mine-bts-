@@ -44,11 +44,11 @@
   font-size: 15px;
   font-weight: bold;
   display: flex;
-  flex-direction: column; /* Располагаем элементы вертикально */
-  align-items: center; /* Выравниваем элементы по центру по горизонтали */
+  flex-direction: column;
+  align-items: center;
   margin-top: 10px;
   margin-bottom: 10px;
-  text-align: center; /* Убеждаемся, что текст внутри span тоже выровнен по центру */
+  text-align: center;
   gap: 10px;
 }
 
@@ -59,9 +59,9 @@
   width: 100%;
   align-self: stretch;
   padding: 10px;
-  margin-top: auto; /* Выровнять кнопку внизу */
+  margin-top: auto;
   box-sizing: border-box;
-  text-align: center; /* Выравниваем текст кнопки по центру */
+  text-align: center;
 }
 
 .Claim-button-br.disabled {
@@ -90,37 +90,36 @@
   background-color: var(--container-color-two);
 }
 
-.storage-container {
-    position: relative;
+.balance-container {
     display: flex;
-    flex-direction: column;
+    justify-content: flex-start; /* Align to the start (left) */
     align-items: center;
-    justify-content: center; /* Центрируем содержимое контейнера */
-    width: 100%; /* Занимаем всю ширину */
+    width: 100%;
 }
 
-.storage-fill-wrapper {
-    position: relative;
-    display: inline-block;
-    width: 100%; /* Растягиваем на всю доступную ширину */
-    text-align: center; /* Выравниваем текст по центру */
-}
-
-.storage-fill {
-    color: var(--container-color-two);
-    font-size: 12px;
-    text-align: center; /* Размещаем % ровно по центру */
+.storage-container {
+    display: flex;
+    justify-content: flex-start; /* Align to the start (left) */
+    align-items: center;
+    width: 100%;
 }
 
 .points-balance {
-  text-align: center; /* Выравниваем значение очков по центру */
-  margin-left: 0; /* Убираем отступ слева */
+    text-align: center;
+    flex-grow: 1; /* Take up remaining space */
 }
 
-.points-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.storage-fill {
+    text-align: center;
+    flex-grow: 1; /* Take up remaining space */
+}
+
+.balance-text {
+    margin-right: auto; /* Push to the left */
+}
+
+.storage-text {
+    margin-right: auto; /* Push to the left */
 }
 
 .two-span{
