@@ -4,7 +4,7 @@ import PremiumTG from '../img-jsx-br/PremiumTG';
 import TGcenter from '../img-jsx-br/TGcenter';
 import CheckIconBr from '../img-jsx-br/CheckIconBr';
 
-function ListsContainerSecond({ isActive, userData, updateUserData }) {
+function ListContainerSecond({ isActive, userData, updateUserData }) {
     const [isLoadingApps, setIsLoadingApps] = useState(false);
     const [isLoadingPrem, setIsLoadingPrem] = useState(false);
     const [isPurchasedApps, setIsPurchasedApps] = useState(false);
@@ -193,4 +193,4 @@ function ListsContainerSecond({ isActive, userData, updateUserData }) {
     );
 }
 
-export default ListsContainerSecond;
+export default ListContainerSecond;
