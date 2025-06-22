@@ -11,7 +11,7 @@ function Boosters({ isActive, userData, updateUserData }) {
             <BoostersBox userData={userData} />
             <div className='containers-scroll-wrapper'>
                 <div className='center-content'>
-                    <ListsContainerFirst isActive={isActive} userData={userData} />
+                    <ListsContainerFirst isActive={isActive} userData={userData} updateUserData={updateUserData} />
                     <ListContainerSecond isActive={isActive} userData={userData} updateUserData={updateUserData} /> 
                     <ListContainerThree isActive={isActive} userData={userData} updateUserData={updateUserData} /> 
                 </div>
