@@ -8,7 +8,7 @@ function ListsContainerFirst({ isActive }) {
   const [isLoading, setIsLoading] = useState(false);
   const [webApp, setWebApp] = useState(null);
   const [userData, setUserData] = useState(null);
-  const [isPurchased, setIsPurchased] = useState(false); // Initial state is false
+  const [isPurchased, setIsPurchased] = useState(false);
 
   useEffect(() => {
     if (window.Telegram && window.Telegram.WebApp) {
@@ -17,16 +17,14 @@ function ListsContainerFirst({ isActive }) {
   }, []);
 
   useEffect(() => {
-    // Function to fetch user data from auth.js
     const fetchUserData = async () => {
       try {
-        // Get initData (assumed getTelegramInitData is available here)
         const initData = getTelegramInitData();
         const response = await axios.post('https://ah-user.netlify.app/.netlify/functions/auth', { initData });
 
         if (response.data) {
           setUserData(response.data);
-          setIsPurchased(response.data?.ton_boost >= 1); // Обновляем isPurchased при получении данных
+          setIsPurchased(response.data?.ton_boost >= 1);
         } else {
           console.error('Error fetching user data');
         }
@@ -35,11 +33,10 @@ function ListsContainerFirst({ isActive }) {
       }
     };
 
-    // Call fetchUserData on component mount
     fetchUserData();
   }, []);
 
-  const boosterInfo = { // Прямой импорт
+  const boosterInfo = {
     ton_boost: {
       item_id: "ton_boost",
       title: "TON Booster",
@@ -59,11 +56,11 @@ function ListsContainerFirst({ isActive }) {
 
     try {
       const invoiceData = {
-        title: boosterInfo.ton_boost.title, //ton_boost
-        description: boosterInfo.ton_boost.description, //ton_boost
-        payload: JSON.stringify({ item_id: boosterInfo.ton_boost.item_id, user_id: webApp.initDataUnsafe.user.id }), //ton_boost
-        currency: boosterInfo.ton_boost.currency, //ton_boost
-        prices: [{ amount: boosterInfo.ton_boost.price, label: boosterInfo.ton_boost.title }], //ton_boost
+        title: boosterInfo.ton_boost.title,
+        description: boosterInfo.ton_boost.description,
+        payload: JSON.stringify({ item_id: boosterInfo.ton_boost.item_id, user_id: webApp.initDataUnsafe.user.id }),
+        currency: boosterInfo.ton_boost.currency,
+        prices: [{ amount: boosterInfo.ton_boost.price, label: boosterInfo.ton_boost.title }],
       };
 
       const response = await axios.post(
@@ -101,15 +98,23 @@ function ListsContainerFirst({ isActive }) {
               const data = verificationResponse.data;
 
               if (data.success) {
-                setUserData(response.data);
-                setIsPurchased(true); // Set isPurchased to true
+                // Successful purchase, update userData and set isPurchased to true
+                const initData = getTelegramInitData();
+                const authResponse = await axios.post('/.netlify/functions/auth', { initData });
+
+                if (authResponse.data) {
+                  setUserData(authResponse.data);
+                  setIsPurchased(true);
+                } else {
+                  console.error('Error fetching updated user data');
+                }
               } else {
                 console.error("Payment verification failed:", data.error);
-                // Payment verification error handling
+                // Handle payment verification failure
               }
             } else {
               console.error("Verification error:", verificationResponse.status);
-              // HTTP error handling
+              // Handle HTTP error
             }
 
           } catch (verificationError) {
@@ -129,7 +134,6 @@ function ListsContainerFirst({ isActive }) {
     }
   };
 
-  // Update isPurchased when userData changes
   useEffect(() => {
     if (userData) {
       setIsPurchased(userData.ton_boost >= 1);
