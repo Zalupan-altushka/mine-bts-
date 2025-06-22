@@ -4,11 +4,19 @@ import StarBr from '../img-jsx-br/StarBr';
 import axios from 'axios';
 
 function BoostersBox({ userData }) {
-    const [pointsBalance, setPointsBalance] = useState(0);
-    const [storageFillPercentage, setStorageFillPercentage] = useState(0); // State for storage fill percentage
-    const [isClaimButtonDisabled, setIsClaimButtonDisabled] = useState(false);
-    const [isClaiming, setIsClaiming] = useState(false);
     const [webApp, setWebApp] = useState(null); // Добавьте состояние для webApp
+    const [pointsBalance, setPointsBalance] = useState(() => {
+        // Read pointsBalance from local storage on component mount
+        const storedBalance = localStorage.getItem('pointsBalance');
+        return storedBalance ? parseFloat(storedBalance) : 0;
+    });
+
+    useEffect(() => {
+        localStorage.setItem('pointsBalance', pointsBalance.toString());
+    }, [pointsBalance]); // Update localStorage when pointsBalance changes
+
+    const [storageFillPercentage, setStorageFillPercentage] = useState(0);
+    const [isClaiming, setIsClaiming] = useState(false);
 
     useEffect(() => {
         if (window.Telegram && window.Telegram.WebApp) {
@@ -51,8 +59,6 @@ function BoostersBox({ userData }) {
                 }
                 return newBalance;
             });
-            // Update storage fill percentage
-            setStorageFillPercentage(Math.min((pointsBalance / 1000) * 100, 100));
         };
 
         // Set interval to update points balance every second
@@ -61,8 +67,7 @@ function BoostersBox({ userData }) {
         // Cleanup interval on component unmount
         return () => clearInterval(intervalId);
 
-    }, [userData, pointsBalance]); // Depend on pointsBalance
-
+    }, [userData]);
 
     useEffect(() => {
         // Update storage fill percentage when pointsBalance changes
@@ -71,7 +76,6 @@ function BoostersBox({ userData }) {
 
     const handleClaimClick = async () => {
         setIsClaiming(true);
-        setIsClaimButtonDisabled(true); // Disable the claim button immediately
 
         try {
             // Prepare request body
@@ -101,7 +105,6 @@ function BoostersBox({ userData }) {
             if (responseData.success) {
                 // Claim successful, reset points
                 setPointsBalance(0);
-                setStorageFillPercentage(0);
                 console.log('Points claimed successfully');
             } else {
                 // Claim failed, handle error
@@ -113,11 +116,10 @@ function BoostersBox({ userData }) {
             // Optionally show an error message to the user
         } finally {
             setIsClaiming(false);
-            setIsClaimButtonDisabled(false); // Re-enable the claim button after claiming
         }
     };
 
-
+    const isClaimButtonDisabled = pointsBalance < 1000;
 
     return (
         <section className='boosters-box'>
@@ -145,7 +147,11 @@ function BoostersBox({ userData }) {
                         </div>
                     </div>
                 </div>
-                <button className='Claim-button-br' onClick={handleClaimClick} disabled={isClaimButtonDisabled || isClaiming}>
+                <button
+                  className={`Claim-button-br ${isClaimButtonDisabled ? 'disabled' : ''}`}
+                  onClick={handleClaimClick}
+                  disabled={isClaimButtonDisabled || isClaiming}
+                >
                     {isClaiming ? 'Claiming...' : 'Claim'}
                 </button>
             </article>

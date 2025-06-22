@@ -1,7 +1,7 @@
 .boosters-box {
-  background-color: rgba(0, 0, 0, 0.6); /* Задайте нужный цвет фона */
+  background-color: rgba(0, 0, 0, 0.6);
   width: 365px;
-  padding: 20px; /* Можно настроить отступы по желанию */
+  padding: 20px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -11,63 +11,117 @@
   position: relative;
 }
 
-/* Расположение height-section-box у верхней части */
 .height-section-box {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   position: relative;
-  padding-bottom: 10px; /* Отступ снизу от height-section-box */
+  padding-bottom: 10px;
 }
 
-/* left-section-box у левого края внутри height-section-box */
 .left-section-box {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 
-/* Сделать span вертикально */
 .left-section-box span {
   flex-direction: column;
-  margin-bottom: 1px; /* Расстояние между двумя span */
+  margin-bottom: 1px;
 }
 
-/* right-section-box у правого края внутри height-section-box */
 .right-section-box {
   align-self: flex-start;
-  /* Можно дополнительно задать размер или отступы, если нужно */
 }
 
-/* Расположение middle-section-box под height-section-box */
 .middle-section-box {
   display: flex;
   flex-direction: column;
   align-items: stretch;
 }
 
-/* center-section-middle по центру в middle-section-box */
 .center-section-middle {
   font-size: 15px;
   font-weight: bold;
   display: flex;
   flex-direction: column; /* Располагаем элементы вертикально */
-  align-items: flex-start; /* Выравниваем по левому краю */
+  align-items: center; /* Выравниваем по центру по горизонтали */
   margin-top: 10px;
   margin-bottom: 10px;
-  text-align: left; /* Убеждаемся, что текст внутри span тоже выровнен по левому краю */
+  text-align: center; /* Убеждаемся, что текст внутри span тоже выровнен по центру */
   gap: 10px;
 }
 
 .Claim-button-br {
-  background-color: var(--green-color);
-  color: var(--background-color);
+  background-color: var(--container-color);
+  color: var(--container-color-two);
   border-radius: 15px;
   width: 100%;
   align-self: stretch;
   padding: 10px;
   margin-top: auto; /* Выровнять кнопку внизу */
   box-sizing: border-box;
+}
+
+.Claim-button-br.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.two-span{
+  color: var(--container-color-two);
+  font-size: 12px;
+}
+
+.first-span-box{
+  font-size: 16px;
+  color: gold;
+  font-weight: bold;
+}
+
+.polosa {
+  position: relative;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% + 40px);
+  height: 1px;
+  background-color: var(--container-color-two);
+}
+
+.storage-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Центрируем содержимое контейнера */
+    width: 100%; /* Занимаем всю ширину */
+}
+
+.storage-fill-wrapper {
+    position: relative;
+    display: inline-block;
+        width: 100%; /* Растягиваем на всю доступную ширину */
+    text-align: center; /* Выравниваем текст по центру */
+}
+
+.storage-fill {
+  color: var(--container-color-two);
+    font-size: 12px;
+}
+
+.info-button {
+  background-color: var(--container-color);
+  color: var(--container-color-two);
+  border-radius: 25px;
+  font-size: 12px;
+    position: absolute; /* Абсолютное позиционирование */
+    right: 0;           /* Прижать к правому краю */
+    top: 50%;           /* Выровнять по вертикали */
+    transform: translateY(-50%); /* Скорректировать вертикальное выравнивание */
+}
+
+.points-balance {
+        text-align: center; /* Выравнивание текста по центру */
 }
 
 .two-span{
@@ -91,44 +145,6 @@
   background-color: var(--container-color-two);
 }
 
-.storage-container {
-    position: relative; /* Создаем контекст позиционирования для .info-button */
-    display: flex;
-    align-items: center;
-}
-
-.storage-fill-wrapper {
-    position: relative; /*  относительное позиционирование внутри .storage-container */
-    display: inline-block; /* Располагаем в строку */
-}
-
-.storage-fill {
-  margin-left: 5px;
-  color: var(--container-color-two);
-}
-
-.info-button {
-  background-color: var(--container-color);
-  color: var(--container-color-two);
-  border-radius: 25px;
-  font-size: 12px;
-    position: absolute; /* Абсолютное позиционирование */
-    right: 0;           /* Прижать к правому краю */
-    top: 50%;           /* Выровнять по вертикали */
-    transform: translateY(-50%); /* Скорректировать вертикальное выравнивание */
-}
-
-.points-balance {
-  margin-left: 10px;
-}
-
-.center-section-middle div {
-    margin-bottom: 5px;
-    color: #fff;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-}
 
 @media (max-height: 800px) {
   .boosters-box {
