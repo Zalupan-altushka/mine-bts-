@@ -100,30 +100,42 @@
 .storage-fill-wrapper {
     position: relative;
     display: inline-block;
-        width: 100%; /* Растягиваем на всю доступную ширину */
+    width: 100%; /* Растягиваем на всю доступную ширину */
     text-align: center; /* Выравниваем текст по центру */
 }
 
 .storage-fill {
-  color: var(--container-color-two);
+    color: var(--container-color-two);
     font-size: 12px;
+    text-align: center; /* Размещаем % ровно по центру */
 }
 
 .info-button {
-  background-color: var(--container-color);
-  color: var(--container-color-two);
-  border-radius: 25px;
-  font-size: 12px;
-    position: absolute; /* Абсолютное позиционирование */
-    right: 0;           /* Прижать к правому краю */
-    top: 50%;           /* Выровнять по вертикали */
-    transform: translateY(-50%); /* Скорректировать вертикальное выравнивание */
+    background-color: var(--container-color);
+    color: var(--container-color-two);
+    border-radius: 25px;
+    font-size: 12px;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.balance-container {
+  display: flex; /* Используем flexbox для выравнивания */
+  justify-content: space-between; /* Растягиваем элементы по краям */
+  align-items: center; /* Выравниваем элементы по вертикали */
+  width: 100%; /* Занимаем всю доступную ширину */
+}
+
+.balance-container > *:first-child {
+  text-align: left; /* Выравниваем текст "Balance:" по левому краю */
 }
 
 .points-balance {
-        text-align: center; /* Выравнивание текста по центру */
+  text-align: center; /* Выравниваем значение очков по центру */
+  flex-grow: 1; /* Растягиваем значение очков, чтобы занять доступное пространство */
+  margin-left: 0; /* Убираем отступ слева */
 }
-
 .two-span{
   color: var(--container-color-two);
   font-size: 12px;

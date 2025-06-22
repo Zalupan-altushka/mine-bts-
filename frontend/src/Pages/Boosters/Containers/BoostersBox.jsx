@@ -81,11 +81,11 @@ function BoostersBox({ userData }) {
             // Prepare request body
             const requestBody = {
                 telegramId: webApp?.initDataUnsafe?.user?.id,  // Use correct user ID
-                points: pointsBalance, // The points to be claimed
+                pointsToAdd: pointsBalance, // Send the points to add
             };
 
-            // Отправляем запрос к существующей Netlify Function
-            const response = await fetch('https://ah-user.netlify.app/.netlify/functions/add-points', {
+            // Отправляем запрос к Netlify Function add-points
+            const response = await fetch('/.netlify/functions/add-points', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -94,26 +94,24 @@ function BoostersBox({ userData }) {
             });
 
             if (!response.ok) {
-                // Log the error details
                 const errorData = await response.json();
-                console.error('Failed to claim points:', errorData);
+                console.error('Failed to add points:', errorData);
                 throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.error}`);
             }
 
             const responseData = await response.json();
 
             if (responseData.success) {
-                // Claim successful, reset points
+                // Claim successful, reset pointsBalance in local storage
                 setPointsBalance(0);
-                console.log('Points claimed successfully');
+                localStorage.setItem('pointsBalance', '0'); // Ensure localStorage is also updated
+                console.log('Points added successfully');
             } else {
                 // Claim failed, handle error
-                console.error('Failed to claim points:', responseData.error);
-                // Optionally show an error message to the user
+                console.error('Failed to add points:', responseData.error);
             }
         } catch (error) {
-            console.error('Error claiming points:', error);
-            // Optionally show an error message to the user
+            console.error('Error adding points:', error);
         } finally {
             setIsClaiming(false);
         }
@@ -135,7 +133,7 @@ function BoostersBox({ userData }) {
             <div className='polosa' />
             <article className='middle-section-box'>
                 <div className='center-section-middle'>
-                    <div>
+                    <div className="balance-container">
                         Balance:
                         <span className='points-balance'>{pointsBalance.toFixed(3)}</span>
                     </div>
