@@ -76,9 +76,9 @@ function HomePage({ userData, updateUserData }) {
 
     const handleMineFor100 = () => {
         setIsLoading(true); // Показываем индикатор загрузки
-        const oneMinutesInSeconds = 1 * 60; // 1 минута в секундах
-        setTimeRemaining(oneMinutesInSeconds);
-        startTimer(oneMinutesInSeconds);
+        const sixHoursInSeconds = 6 * 60 * 60; // 6 часов в секундах
+        setTimeRemaining(sixHoursInSeconds);
+        startTimer(sixHoursInSeconds);
         setIsMining(true);
         setIsButtonDisabled(true);
         setIsClaimButton(false); // Disable Claim button when mining
