@@ -85,7 +85,7 @@ function BoostersBox({ userData }) {
             };
 
             // Отправляем запрос к существующей Netlify Function
-            const response = await fetch('https://ah-user.netlify.app/.netlify/functions/update-points', {
+            const response = await fetch('https://ah-user.netlify.app/.netlify/functions/add-points', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
