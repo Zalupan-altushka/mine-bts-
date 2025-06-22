@@ -7,8 +7,8 @@ import CheckIconBr from '../img-jsx-br/CheckIconBr';
 function ListContainerSecond({ isActive, userData }) {
   const [isLoadingApps, setIsLoadingApps] = useState(false);
   const [isLoadingPrem, setIsLoadingPrem] = useState(false);
-  const [isPurchasedApps, setIsPurchasedApps] = useState(userData?.apps_boost >= 1); // Проверяем значение apps_boost из userData
-  const [isPurchasedPrem, setIsPurchasedPrem] = useState(userData?.prem_boost >= 1); // Проверяем значение prem_boost из userData
+  const [isPurchasedApps, setIsPurchasedApps] = useState(false);
+  const [isPurchasedPrem, setIsPurchasedPrem] = useState(false);
   const [webApp, setWebApp] = useState(null);
 
   useEffect(() => {
@@ -16,6 +16,14 @@ function ListContainerSecond({ isActive, userData }) {
       setWebApp(window.Telegram.WebApp);
     }
   }, []);
+
+  // Initialize isPurchased from userData prop
+  useEffect(() => {
+    if (userData) {
+      setIsPurchasedApps(userData.apps_boost === true);
+      setIsPurchasedPrem(userData.prem_boost === true);
+    }
+  }, [userData]);
 
   const handleBuyClick = async (itemType) => {
     let setIsLoading, setIsPurchased, title, description, prices, item_id;
@@ -25,14 +33,14 @@ function ListContainerSecond({ isActive, userData }) {
       setIsPurchased = setIsPurchasedApps;
       title = "Apps Booster";
       description = "Increase power by 18.472 BTS/hr";
-      prices = [{ amount: 1, label: "Apps Boost" }]; // 0.3 Stars
+      prices = [{ amount: 1, label: "Apps Boost" }]; // Correct price
       item_id = "apps_boost";
     } else if (itemType === "prem") {
       setIsLoading = setIsLoadingPrem;
       setIsPurchased = setIsPurchasedPrem;
       title = "Prem Booster";
       description = "Increase power by 38.172 BTS/hr";
-      prices = [{ amount: 1, label: "Prem Boost" }]; // 0.5 Stars
+      prices = [{ amount: 1, label: "Prem Boost" }]; // Correct price
       item_id = "prem_boost";
     } else {
       console.error("Invalid itemType:", itemType);
@@ -80,19 +88,31 @@ function ListContainerSecond({ isActive, userData }) {
               }
             );
 
-            if (verificationResponse.data.success) {
-              if (itemType === "apps") {
-                setIsPurchasedApps(true);
-              } else if (itemType === "prem") {
-                setIsPurchasedPrem(true);
+            if (verificationResponse.status === 200) {
+              const data = verificationResponse.data;
+
+              if (data.success) {
+                if (!data.duplicate && !data.alreadyOwned) {
+                  // Correctly update the state using the function
+                  if (itemType === "apps") {
+                    setIsPurchasedApps(true);
+                  } else if (itemType === "prem") {
+                    setIsPurchasedPrem(true);
+                  }
+                } else if (data.duplicate) {
+                  console.warn('Это дубликат платежа, не обновляем UI');
+                } else if (data.alreadyOwned) {
+                  console.warn('Бустер уже куплен, не обновляем UI');
+                }
+              } else {
+                console.error("Payment verification failed:", verificationResponse.data.error);
               }
             } else {
-              console.error("Payment verification failed:", verificationResponse.data.error);
+              console.error("Error during payment verification:", verificationResponse.status);
             }
           } catch (verificationError) {
             console.error("Error verifying payment:", verificationError);
           }
-
         } else {
           console.log("Payment failed or canceled:", status);
         }
@@ -100,6 +120,8 @@ function ListContainerSecond({ isActive, userData }) {
     } catch (error) {
       console.error("Error creating or opening invoice:", error);
       setIsLoading(false);
+    } finally {
+      setIsLoading(false); // Ensure loading state is reset after any operation
     }
   };
 

@@ -8,15 +8,23 @@ import CheckIconBr from '../img-jsx-br/CheckIconBr';
 function ListContainerThree({ isActive, userData }) {
   const [isLoadingETH, setIsLoadingETH] = useState(false);
   const [isLoadingBTC, setIsLoadingBTC] = useState(false);
-  const [isPurchasedETH, setIsPurchasedETH] = useState(userData?.eth_boost >= 1); // Проверяем значение eth_boost из userData
-  const [isPurchasedBTC, setIsPurchasedBTC] = useState(userData?.btc_boost >= 1); // Проверяем значение btc_boost из userData
-   const [webApp, setWebApp] = useState(null);
+  const [isPurchasedETH, setIsPurchasedETH] = useState(false);
+  const [isPurchasedBTC, setIsPurchasedBTC] = useState(false);
+  const [webApp, setWebApp] = useState(null);
 
-    useEffect(() => {
+  useEffect(() => {
     if (window.Telegram && window.Telegram.WebApp) {
       setWebApp(window.Telegram.WebApp);
     }
   }, []);
+
+  // Initialize isPurchased from userData prop
+  useEffect(() => {
+    if (userData) {
+      setIsPurchasedETH(userData.eth_boost === true);
+      setIsPurchasedBTC(userData.btc_boost === true);
+    }
+  }, [userData]);
 
   const handleBuyClick = async (itemType) => {
     let setIsLoading, setIsPurchased, title, description, prices, item_id;
@@ -26,14 +34,14 @@ function ListContainerThree({ isActive, userData }) {
       setIsPurchased = setIsPurchasedETH;
       title = "ETH Boost";
       description = "Increase power by 48.472 BTS/hr";
-      prices = [{ amount: 1, label: "ETH Boost" }]; // 3.9 Stars
+      prices = [{ amount: 3.9, label: "ETH Boost" }]; // 3.9 Stars
       item_id = "eth_boost";
     } else if (itemType === "btc") {
       setIsLoading = setIsLoadingBTC;
       setIsPurchased = setIsPurchasedBTC;
       title = "BTC Boost";
       description = "Increase power by 68.172 BTS/hr";
-      prices = [{ amount: 1, label: "BTC Boost" }]; // 5.9 Stars
+      prices = [{ amount: 5.9, label: "BTC Boost" }]; // 5.9 Stars
       item_id = "btc_boost";
     } else {
       console.error("Invalid itemType:", itemType);
@@ -82,10 +90,17 @@ function ListContainerThree({ isActive, userData }) {
             );
 
             if (verificationResponse.data.success) {
-              if (itemType === "eth") {
-                setIsPurchasedETH(true);
-              } else if (itemType === "btc") {
-                setIsPurchasedBTC(true);
+              if (!verificationResponse.data.duplicate && !verificationResponse.data.alreadyOwned) {
+                  // Correctly update the state using the function
+                if (itemType === "eth") {
+                  setIsPurchasedETH(true);
+                } else if (itemType === "btc") {
+                  setIsPurchasedBTC(true);
+                }
+              } else if (verificationResponse.data.duplicate) {
+                console.warn('Это дубликат платежа, не обновляем UI');
+              } else if (verificationResponse.data.alreadyOwned) {
+                 console.warn('Бустер уже куплен, не обновляем UI');
               }
             } else {
               console.error("Payment verification failed:", verificationResponse.data.error);
@@ -101,14 +116,16 @@ function ListContainerThree({ isActive, userData }) {
     } catch (error) {
       console.error("Error creating or opening invoice:", error);
       setIsLoading(false);
+    } finally {
+      setIsLoading(false); // Ensure loading state is reset after any operation
     }
   };
 
   const getButtonContent = (itemType) => {
     if (itemType === "eth") {
-      return isPurchasedETH ? <CheckIconBr /> : "1.0K";
+      return isPurchasedETH ? <CheckIconBr /> : "3.9K";
     } else if (itemType === "btc") {
-      return isPurchasedBTC ? <CheckIconBr /> : "1.3k";
+      return isPurchasedBTC ? <CheckIconBr /> : "5.9K";
     }
     return null;
   };
@@ -152,7 +169,7 @@ function ListContainerThree({ isActive, userData }) {
       </article>
       <article className='boosters-list-BTS'>
         <section className='list'>
-          <div className='hight-section-list'>
+          <div classNameclassName='hight-section-list'>
             <span>BTC</span>
             <button
               className={getButtonClassName("btc")}

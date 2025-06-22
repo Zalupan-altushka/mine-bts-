@@ -13,8 +13,8 @@ function Boosters({ userData, isActive  }) {
       <div className='containers-scroll-wrapper'>
         <div className='center-content'>
           <ListsContainerFirst isActive={isActive} userData={userData} />
-          <ListsContainerSecond isActive={isActive} />
-          <ListContainerThree isActive={isActive} />
+          <ListsContainerSecond isActive={isActive} userData={userData} />
+          <ListContainerThree isActive={isActive} userData={userData} />
         </div>
       </div>
       <Menu />
