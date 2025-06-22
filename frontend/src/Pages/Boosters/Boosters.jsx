@@ -1,11 +1,11 @@
 import './Boosters.css'
-import ListContainerThree from './Boosters-list/ListContainetThree';
+import ListContainerThree from './Boosters-list/ListContainerThree';
 import ListsContainerFirst from './Boosters-list/ListContainerFirst';
-import ListsContainerSecond from './Boosters-list/ListContainerSecond';
+import ListsContainerSecond from './Boosters-list/ListsContainerSecond';
 import BoostersBox from './Containers/BoostersBox';
 import Menu from '../Menus/Menu/Menu';
 
-function Boosters({ userData, isActive  }) {
+function Boosters({ isActive, userData }) {
 
   return (
     <section className='bodyboostpage'>

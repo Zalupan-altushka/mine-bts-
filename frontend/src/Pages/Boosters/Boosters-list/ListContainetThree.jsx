@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './List.css';
 import axios from 'axios';
 import BitcoinBr from '../img-jsx-br/BitcoinBr';
 import EthereumBr from '../img-jsx-br/EthereumBr';
 import CheckIconBr from '../img-jsx-br/CheckIconBr';
+import { BoosterContext } from '../BoosterContext'; // Import BoosterContext
 
 function ListContainerThree({ isActive, userData }) {
+  const { isPurchasedETH, setIsPurchasedETH, isPurchasedBTC, setIsPurchasedBTC } = useContext(BoosterContext);
   const [isLoadingETH, setIsLoadingETH] = useState(false);
   const [isLoadingBTC, setIsLoadingBTC] = useState(false);
-  const [isPurchasedETH, setIsPurchasedETH] = useState(false);
-  const [isPurchasedBTC, setIsPurchasedBTC] = useState(false);
   const [webApp, setWebApp] = useState(null);
 
   useEffect(() => {
@@ -17,14 +17,6 @@ function ListContainerThree({ isActive, userData }) {
       setWebApp(window.Telegram.WebApp);
     }
   }, []);
-
-  // Initialize isPurchased from userData prop
-  useEffect(() => {
-    if (userData) {
-      setIsPurchasedETH(userData.eth_boost === true);
-      setIsPurchasedBTC(userData.btc_boost === true);
-    }
-  }, [userData]);
 
   const handleBuyClick = async (itemType) => {
     let setIsLoading, setIsPurchased, title, description, prices, item_id;
@@ -34,14 +26,14 @@ function ListContainerThree({ isActive, userData }) {
       setIsPurchased = setIsPurchasedETH;
       title = "ETH Boost";
       description = "Increase power by 48.472 BTS/hr";
-      prices = [{ amount: 3.9, label: "ETH Boost" }]; // 3.9 Stars
+      prices = [{ amount: 1, label: "ETH Boost" }]; // 3.9 Stars
       item_id = "eth_boost";
     } else if (itemType === "btc") {
       setIsLoading = setIsLoadingBTC;
       setIsPurchased = setIsPurchasedBTC;
       title = "BTC Boost";
       description = "Increase power by 68.172 BTS/hr";
-      prices = [{ amount: 5.9, label: "BTC Boost" }]; // 5.9 Stars
+      prices = [{ amount: 1, label: "BTC Boost" }]; // 5.9 Stars
       item_id = "btc_boost";
     } else {
       console.error("Invalid itemType:", itemType);
@@ -169,7 +161,7 @@ function ListContainerThree({ isActive, userData }) {
       </article>
       <article className='boosters-list-BTS'>
         <section className='list'>
-          <div classNameclassName='hight-section-list'>
+          <div className='hight-section-list'>
             <span>BTC</span>
             <button
               className={getButtonClassName("btc")}

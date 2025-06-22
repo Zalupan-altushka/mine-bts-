@@ -1,13 +1,16 @@
+// App.jsx
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import axios from 'axios';
 import HomePage from './Pages/Home/HomePage.jsx';
 import Friends from './Pages/Friends/Friends.jsx';
 import Tasks from './Pages/Tasks/Tasks.jsx';
 import Boosters from './Pages/Boosters/Boosters.jsx';
 import PageTransition from './Pages/Transition/PageTransition.jsx';
 import Loader from './Pages/Loader/Loader.jsx';
+import { BoosterProvider } from './BoosterContext';
 
-const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth'; // Убедитесь, что URL правильный
+const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth';
 
 const App = () => {
     const location = useLocation();
@@ -63,7 +66,7 @@ const App = () => {
             setIsActive(window.Telegram.WebApp.isActive);
             if (window.Telegram.WebApp.isActive) {
                 window.Telegram.WebApp.requestFullscreen();
-               window.Telegram.WebApp.isVerticalSwipesEnabled = false; // Disable vertical swipes
+                window.Telegram.WebApp.isVerticalSwipesEnabled = false; // Disable vertical swipes
             }
         }
     }, []);
@@ -148,7 +151,6 @@ const App = () => {
                         <Route path="/boost" element={<Boosters isActive={isActive} userData={userData} />} />
                     </Routes>
                 </PageTransition>
-
             )}
         </>
     );
@@ -157,7 +159,9 @@ const App = () => {
 const Main = () => {
     return (
         <Router>
-            <App />
+            <BoosterProvider userData={null}>
+              <App />
+            </BoosterProvider>
         </Router>
     );
 };

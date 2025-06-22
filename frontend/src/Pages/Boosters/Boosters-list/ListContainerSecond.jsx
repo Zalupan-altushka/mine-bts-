@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import PremiumTG from '../img-jsx-br/PremiumTG';
 import TGcenter from '../img-jsx-br/TGcenter';
 import CheckIconBr from '../img-jsx-br/CheckIconBr';
+import { BoosterContext } from '../BoosterContext'; // Import BoosterContext
 
-function ListContainerSecond({ isActive, userData }) {
+function ListsContainerSecond({ isActive, userData }) {
+  const { isPurchasedApps, setIsPurchasedApps, isPurchasedPrem, setIsPurchasedPrem } = useContext(BoosterContext);
   const [isLoadingApps, setIsLoadingApps] = useState(false);
   const [isLoadingPrem, setIsLoadingPrem] = useState(false);
-  const [isPurchasedApps, setIsPurchasedApps] = useState(false);
-  const [isPurchasedPrem, setIsPurchasedPrem] = useState(false);
   const [webApp, setWebApp] = useState(null);
 
   useEffect(() => {
@@ -16,14 +16,6 @@ function ListContainerSecond({ isActive, userData }) {
       setWebApp(window.Telegram.WebApp);
     }
   }, []);
-
-  // Initialize isPurchased from userData prop
-  useEffect(() => {
-    if (userData) {
-      setIsPurchasedApps(userData.apps_boost === true);
-      setIsPurchasedPrem(userData.prem_boost === true);
-    }
-  }, [userData]);
 
   const handleBuyClick = async (itemType) => {
     let setIsLoading, setIsPurchased, title, description, prices, item_id;
@@ -93,16 +85,16 @@ function ListContainerSecond({ isActive, userData }) {
 
               if (data.success) {
                 if (!data.duplicate && !data.alreadyOwned) {
-                  // Correctly update the state using the function
-                  if (itemType === "apps") {
-                    setIsPurchasedApps(true);
-                  } else if (itemType === "prem") {
-                    setIsPurchasedPrem(true);
-                  }
+                    // Correctly update the state using the function
+                    if (itemType === "apps") {
+                        setIsPurchasedApps(true);
+                    } else if (itemType === "prem") {
+                        setIsPurchasedPrem(true);
+                    }
                 } else if (data.duplicate) {
                   console.warn('Это дубликат платежа, не обновляем UI');
                 } else if (data.alreadyOwned) {
-                  console.warn('Бустер уже куплен, не обновляем UI');
+                    console.warn('Бустер уже куплен, не обновляем UI');
                 }
               } else {
                 console.error("Payment verification failed:", verificationResponse.data.error);
@@ -196,4 +188,4 @@ function ListContainerSecond({ isActive, userData }) {
   );
 }
 
-export default ListContainerSecond;
+export default ListsContainerSecond;
