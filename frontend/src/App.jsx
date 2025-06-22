@@ -1,6 +1,5 @@
-// App.jsx
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import HomePage from './Pages/Home/HomePage.jsx';
 import Friends from './Pages/Friends/Friends.jsx';
@@ -8,7 +7,6 @@ import Tasks from './Pages/Tasks/Tasks.jsx';
 import Boosters from './Pages/Boosters/Boosters.jsx';
 import PageTransition from './Pages/Transition/PageTransition.jsx';
 import Loader from './Pages/Loader/Loader.jsx';
-import { BoosterProvider } from './BoosterContext';
 
 const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth';
 
@@ -138,6 +136,16 @@ const App = () => {
         }
     }, [telegramReady]);
 
+    const updateUserData = async () => {
+        try {
+            const initData = window.Telegram?.WebApp?.initData || '';
+            const response = await axios.post(AUTH_FUNCTION_URL, { initData });
+            setUserData(response.data.userData);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    };
+
     return (
         <>
             {authCheckLoading ? (
@@ -148,7 +156,7 @@ const App = () => {
                         <Route path="/" element={<HomePage isActive={isActive} userData={userData} />} />
                         <Route path="/friends" element={<Friends isActive={isActive} userData={userData} />} />
                         <Route path="/tasks" element={<Tasks isActive={isActive} userData={userData} />} />
-                        <Route path="/boost" element={<Boosters isActive={isActive} userData={userData} />} />
+                        <Route path="/boost" element={<Boosters isActive={isActive} userData={userData} updateUserData={updateUserData} />} />
                     </Routes>
                 </PageTransition>
             )}
@@ -159,9 +167,7 @@ const App = () => {
 const Main = () => {
     return (
         <Router>
-            <BoosterProvider userData={null}>
-              <App />
-            </BoosterProvider>
+            <App />
         </Router>
     );
 };
