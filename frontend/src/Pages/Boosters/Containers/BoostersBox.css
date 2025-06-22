@@ -93,6 +93,7 @@
 .storage-container {
     position: relative;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center; /* Центрируем содержимое контейнера */
     width: 100%; /* Занимаем всю ширину */
@@ -115,6 +116,7 @@
   text-align: center; /* Выравниваем значение очков по центру */
   margin-left: 0; /* Убираем отступ слева */
 }
+
 .points-container {
   display: flex;
   flex-direction: column;

@@ -3,7 +3,7 @@ import './BoostersBox.css';
 import StarBr from '../img-jsx-br/StarBr';
 import axios from 'axios';
 
-function BoostersBox({ userData, updateUserData }) {
+function BoostersBox({ userData, updateUserData, isActive }) {
     const [webApp, setWebApp] = useState(null); // Добавьте состояние для webApp
     const [pointsBalance, setPointsBalance] = useState(() => {
         // Read pointsBalance from local storage on component mount
@@ -137,7 +137,11 @@ function BoostersBox({ userData, updateUserData }) {
             <article className='middle-section-box'>
                 <div className='center-section-middle'>
                     <div className="points-container">
+                        <span>Balance:</span>
                         <span className='points-balance'>{pointsBalance.toFixed(3)}</span>
+                    </div>
+                    <div className="storage-container">
+                        <span>Storage:</span>
                         <span className='storage-fill'>{storageFillPercentage.toFixed(0)}%</span>
                     </div>
                 </div>
