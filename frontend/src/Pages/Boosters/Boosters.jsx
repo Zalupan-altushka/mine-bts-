@@ -1,5 +1,4 @@
 import './Boosters.css';
-
 import BoostersBox from './Containers/BoostersBox';
 import Menu from '../Menus/Menu/Menu';
 import ListsContainerFirst from './Boosters-list/ListContainerFirst';
@@ -9,7 +8,7 @@ import ListContainerThree from './Boosters-list/ListContainerThree';
 function Boosters({ isActive, userData, updateUserData }) {
     return (
         <section className='bodyboostpage'>
-            <BoostersBox />
+            <BoostersBox userData={userData} />
             <div className='containers-scroll-wrapper'>
                 <div className='center-content'>
                     <ListsContainerFirst isActive={isActive} userData={userData} />
