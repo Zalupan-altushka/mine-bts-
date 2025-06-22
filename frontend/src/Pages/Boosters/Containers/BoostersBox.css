@@ -92,57 +92,37 @@
 
 .balance-container {
     display: flex;
-    justify-content: flex-start; /* Align to the start (left) */
     align-items: center;
     width: 100%;
 }
 
 .storage-container {
     display: flex;
-    justify-content: flex-start; /* Align to the start (left) */
     align-items: center;
     width: 100%;
 }
 
 .points-balance {
     text-align: center;
-    flex-grow: 1; /* Take up remaining space */
+    flex: 1; /* Take up remaining space */
 }
 
 .storage-fill {
     text-align: center;
-    flex-grow: 1; /* Take up remaining space */
+    flex: 1; /* Take up remaining space */
 }
 
 .balance-text {
     margin-right: auto; /* Push to the left */
+    text-align: left; /* Ensure text is aligned left */
+    width: auto;
 }
 
 .storage-text {
     margin-right: auto; /* Push to the left */
+    text-align: left; /* Ensure text is aligned left */
+    width: auto;
 }
-
-.two-span{
-  color: var(--container-color-two);
-  font-size: 12px;
-}
-
-.first-span-box{
-  font-size: 16px;
-  color: gold;
-  font-weight: bold;
-}
-
-.polosa {
-  position: relative; /* Или relative, если контейнер с позиционированием */
-  top: 0; /* или нужное расположение */
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% + 40px); /* увеличиваем ширину на 40px (по 20px с каждой стороны) */
-  height: 1px; /* толщина полосы */
-  background-color: var(--container-color-two);
-}
-
 
 @media (max-height: 800px) {
   .boosters-box {
