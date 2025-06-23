@@ -61,7 +61,7 @@ function HomePage({ userData, updateUserData }) {
 
     const handleClaimPoints = async () => {
         setIsLoading(true); // Показываем индикатор загрузки
-        const bonusPoints = 52.033; // Изменено количество очков
+        const bonusPoints = 0.867; // Изменено количество очков
         const newPoints = points + bonusPoints;
         await updatePointsInDatabase(newPoints);
         setPoints(parseFloat(newPoints.toFixed(3))); // Округляем до 3 знаков после запятой
@@ -76,9 +76,9 @@ function HomePage({ userData, updateUserData }) {
 
     const handleMineFor100 = () => {
         setIsLoading(true); // Показываем индикатор загрузки
-        const sixHoursInSeconds = 6 * 60 * 60; // 6 часов в секундах
-        setTimeRemaining(sixHoursInSeconds);
-        startTimer(sixHoursInSeconds);
+        const oneMinutesInSeconds = 1 * 60; // 1 минута в секундах
+        setTimeRemaining(oneMinutesInSeconds);
+        startTimer(oneMinutesInSeconds);
         setIsMining(true);
         setIsButtonDisabled(true);
         setIsClaimButton(false); // Disable Claim button when mining
@@ -230,7 +230,7 @@ function HomePage({ userData, updateUserData }) {
                 ) : (
                     <>
                         {isButtonDisabled && isMining && <TimerHm style={{ marginRight: '9px' }} />}
-                        {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
+                        {isClaimButton ? 'Claim 0.867 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 0.867 BTS')}
                     </>
                 )}
             </button>

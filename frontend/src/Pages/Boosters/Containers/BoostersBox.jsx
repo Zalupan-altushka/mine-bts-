@@ -4,32 +4,28 @@ import StarBr from '../img-jsx-br/StarBr';
 import axios from 'axios';
 
 function BoostersBox({ userData, updateUserData, isActive }) {
-    const [webApp, setWebApp] = useState(null); // Добавьте состояние для webApp
+    const [webApp, setWebApp] = useState(null);
     const [pointsBalance, setPointsBalance] = useState(() => {
-        // Read pointsBalance from local storage on component mount
         const storedBalance = localStorage.getItem('pointsBalance');
         return storedBalance ? parseFloat(storedBalance) : 0;
     });
 
     useEffect(() => {
         localStorage.setItem('pointsBalance', pointsBalance.toString());
-    }, [pointsBalance]); // Update localStorage when pointsBalance changes
+    }, [pointsBalance]);
 
     const [storageFillPercentage, setStorageFillPercentage] = useState(0);
     const [isClaiming, setIsClaiming] = useState(false);
 
     useEffect(() => {
         if (window.Telegram && window.Telegram.WebApp) {
-            setWebApp(window.Telegram.WebApp); // Инициализируйте webApp
+            setWebApp(window.Telegram.WebApp);
         }
     }, []);
 
-
     useEffect(() => {
-        let totalBoostRatePerHour = 0; // Total boost rate per hour
-
+        let totalBoostRatePerHour = 0;
         if (userData) {
-            // Calculate total boost rate based on purchased boosters (per hour)
             if (userData.ton_boost === true) {
                 totalBoostRatePerHour += 0.072;
             }
@@ -46,11 +42,27 @@ function BoostersBox({ userData, updateUserData, isActive }) {
                 totalBoostRatePerHour += 68.172;
             }
         }
-
-        // Convert hourly rate to per-second rate
         const totalBoostRatePerSecond = totalBoostRatePerHour / 3600;
 
-        // Function to update points balance
+        const calculatePointsSinceLastUpdate = () => {
+            const lastUpdateTimestamp = localStorage.getItem('lastPointsUpdate');
+            if (lastUpdateTimestamp) {
+                const timePassed = Date.now() - parseFloat(lastUpdateTimestamp);
+                const pointsToAdd = (timePassed / 1000) * totalBoostRatePerSecond;
+                return pointsToAdd;
+            }
+            return 0;
+        };
+
+        const initialPointsToAdd = calculatePointsSinceLastUpdate();
+        setPointsBalance(prevBalance => {
+            let newBalance = prevBalance + initialPointsToAdd;
+            if (newBalance > 1000) {
+                newBalance = 1000;
+            }
+            return newBalance;
+        });
+
         const updatePointsBalance = () => {
             setPointsBalance(prevBalance => {
                 let newBalance = prevBalance + totalBoostRatePerSecond;
@@ -59,18 +71,15 @@ function BoostersBox({ userData, updateUserData, isActive }) {
                 }
                 return newBalance;
             });
+            localStorage.setItem('lastPointsUpdate', Date.now().toString());
         };
 
-        // Set interval to update points balance every second
+        localStorage.setItem('lastPointsUpdate', Date.now().toString());
         const intervalId = setInterval(updatePointsBalance, 1000);
-
-        // Cleanup interval on component unmount
         return () => clearInterval(intervalId);
-
     }, [userData]);
 
     useEffect(() => {
-        // Update storage fill percentage when pointsBalance changes
         setStorageFillPercentage(Math.min((pointsBalance / 1000) * 100, 100));
     }, [pointsBalance]);
 
@@ -78,13 +87,11 @@ function BoostersBox({ userData, updateUserData, isActive }) {
         setIsClaiming(true);
 
         try {
-            // Prepare request body
             const requestBody = {
-                telegramId: webApp?.initDataUnsafe?.user?.id,  // Use correct user ID
-                pointsToAdd: pointsBalance, // Send the points to add
+                telegramId: webApp?.initDataUnsafe?.user?.id,
+                pointsToAdd: pointsBalance,
             };
 
-            // Отправляем запрос к Netlify Function add-points
             const response = await fetch('/.netlify/functions/add-points', {
                 method: 'POST',
                 headers: {
@@ -102,15 +109,13 @@ function BoostersBox({ userData, updateUserData, isActive }) {
             const responseData = await response.json();
 
             if (responseData.success) {
-                // Claim successful, reset pointsBalance in local storage
                 setPointsBalance(0);
-                localStorage.setItem('pointsBalance', '0'); // Ensure localStorage is also updated
+                localStorage.setItem('pointsBalance', '0');
                 console.log('Points added successfully');
-                 if (updateUserData) {
+                if (updateUserData) {
                     await updateUserData();
                 }
             } else {
-                // Claim failed, handle error
                 console.error('Failed to add points:', responseData.error);
             }
         } catch (error) {
@@ -136,14 +141,14 @@ function BoostersBox({ userData, updateUserData, isActive }) {
             <div className='polosa' />
             <article className='middle-section-box'>
                 <div className='center-section-middle'>
-                  <div className="balance-container">
-                      <span className="balance-text">Balance:</span>
-                      <span className='points-balance'>{pointsBalance.toFixed(3)}</span>
-                  </div>
-                  <div className="storage-container">
-                      <span className="storage-text">Storage:</span>
-                      <span className='storage-fill'>{storageFillPercentage.toFixed(0)}%</span>
-                  </div>
+                    <div className="balance-container">
+                        <span className="balance-text">Balance:</span>
+                        <span className='points-balance'>{pointsBalance.toFixed(3)}</span>
+                    </div>
+                    <div className="storage-container">
+                        <span className="storage-text">Storage:</span>
+                        <span className='storage-fill'>{storageFillPercentage.toFixed(0)}%</span>
+                    </div>
                 </div>
                 <button
                   className={`Claim-button-br ${isClaimButtonDisabled ? 'disabled' : ''}`}
