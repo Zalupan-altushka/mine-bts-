@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './Reward.css';
 import MoneyGIFFr from '../img-jsx-fr/MoneyGIFFr';
 
-function Reward({ userData, updateUserData }) {
+function Reward({ userData }) {
     const [rewardPoints, setRewardPoints] = useState(userData?.reward_fr || 0);
 
     useEffect(() => {

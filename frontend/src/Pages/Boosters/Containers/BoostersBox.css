@@ -1,3 +1,16 @@
+:root {
+  --text-color: white;
+  --font-family: "Rubik", serif;
+  --green-color: #c4f85c;
+  --container-color: #1c1c1e;
+  --container-color-two: #b9bbbc;
+  --background-color: #000000;
+  --purple-color: #7685f7;
+  --blue-color: #0098EA;
+  --blue-another-color: #1d71d1;
+}
+
+
 .boosters-box {
   background-color: rgba(0, 0, 0, 0.6);
   width: 365px;
@@ -53,8 +66,8 @@
 }
 
 .Claim-button-br {
-  background-color: var(--container-color);
-  color: var(--container-color-two);
+  background-color: var(--green-color);
+  color: var( --background-color);
   border-radius: 15px;
   width: 100%;
   align-self: stretch;
@@ -67,6 +80,8 @@
 .Claim-button-br.disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    background-color: var(--container-color);
+    color: var(--container-color-two);
 }
 
 .two-span{

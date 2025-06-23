@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './TotalFR.css';
 import BeachGIFFr from '../img-jsx-fr/BeachGIFFr';
 
-function TotalFR({ totalFriends, updateUserData }) {
+function TotalFR({ totalFriends }) {
     const [friendsCount, setFriendsCount] = useState(totalFriends || 0);
 
     useEffect(() => {

@@ -92,7 +92,7 @@ function BoostersBox({ userData, updateUserData, isActive }) {
                 pointsToAdd: pointsBalance,
             };
 
-            const response = await fetch('/.netlify/functions/add-points', {
+            const response = await fetch('https://ah-user.netlify.app/.netlify/functions/add-points', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
