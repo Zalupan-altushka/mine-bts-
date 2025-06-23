@@ -25,7 +25,7 @@ function HomePage({ userData, updateUserData }) {
     const [timeRemaining, setTimeRemaining] = useState(0);
     const [isClaimButton, setIsClaimButton] = useState(() => {
         const storedIsClaimButton = localStorage.getItem('isClaimButton') === 'true';
-        return storedIsClaimButton;
+        return storedIsClaimButton === 'true'; // Convert string to boolean
     });
     const [isLoading, setIsLoading] = useState(false); // Состояние для индикатора загрузки
     const timerRef = useRef(null);
@@ -61,15 +61,16 @@ function HomePage({ userData, updateUserData }) {
 
     const handleClaimPoints = async () => {
         setIsLoading(true); // Показываем индикатор загрузки
-        const bonusPoints = 0.867; // Изменено количество очков
+        const bonusPoints = 52.033; // Изменено количество очков
         const newPoints = points + bonusPoints;
         await updatePointsInDatabase(newPoints);
         setPoints(parseFloat(newPoints.toFixed(3))); // Округляем до 3 знаков после запятой
         localStorage.setItem('points', newPoints.toFixed(3));
         setIsClaimButton(false);
+        localStorage.setItem('isClaimButton', 'false'); // Update localStorage
         setIsButtonDisabled(false);
         setIsLoading(false); // Скрываем индикатор загрузки
-         if (updateUserData) {
+        if (updateUserData) {
             await updateUserData();
         }
     };
@@ -82,6 +83,7 @@ function HomePage({ userData, updateUserData }) {
         setIsMining(true);
         setIsButtonDisabled(true);
         setIsClaimButton(false); // Disable Claim button when mining
+        localStorage.setItem('isClaimButton', 'false'); // Update localStorage
         setIsLoading(false); // Скрываем индикатор загрузки
     };
 
@@ -99,6 +101,7 @@ function HomePage({ userData, updateUserData }) {
                 setIsButtonDisabled(false);
                 setIsMining(false);
                 setIsClaimButton(true);
+                localStorage.setItem('isClaimButton', 'true'); // Update localStorage
                 setTimeRemaining(0);
             }
         }, 1000);
@@ -156,15 +159,15 @@ function HomePage({ userData, updateUserData }) {
         // Загрузка начального состояния из localStorage
         const storedIsMining = localStorage.getItem('isMining') === 'true';
         const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
-        const storedIsClaimButton = localStorage.getItem('isClaimButton') === 'true';
+        const storedIsClaimButton = localStorage.getItem('isClaimButton');
+
+        setIsMining(storedIsMining === 'true');
+        setIsButtonDisabled(storedIsButtonDisabled === 'true');
+        setIsClaimButton(storedIsClaimButton === 'true');
+
         const storedEndTime = localStorage.getItem('homePageEndTime');
 
-        setIsMining(storedIsMining);
-        setIsButtonDisabled(storedIsButtonDisabled);
-        setIsClaimButton(storedIsClaimButton);
-        localStorage.setItem('isClaimButton', storedIsClaimButton.toString());
-
-        if (storedEndTime && storedIsButtonDisabled) {
+        if (storedEndTime && storedIsButtonDisabled === 'true') {
             const endTime = parseInt(storedEndTime, 10);
             const remainingTime = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
             setTimeRemaining(remainingTime);
@@ -173,14 +176,13 @@ function HomePage({ userData, updateUserData }) {
             } else {
                 // Если таймер истек, кнопка должна отображать "Claim 52.033 BTS"
                 setIsClaimButton(true);
-                 localStorage.setItem('isClaimButton', 'true');
+                localStorage.setItem('isClaimButton', 'true');
                 setIsButtonDisabled(false);
                 setIsMining(false);
             }
         } else {
             // Если таймер не запущен, кнопка должна отображать "Mine 52.033 BTS"
-            setIsClaimButton(false);
-             localStorage.setItem('isClaimButton', 'false');
+            setIsClaimButton(storedIsClaimButton === 'true');
             setIsButtonDisabled(false);
         }
     }, []);
@@ -230,7 +232,7 @@ function HomePage({ userData, updateUserData }) {
                 ) : (
                     <>
                         {isButtonDisabled && isMining && <TimerHm style={{ marginRight: '9px' }} />}
-                        {isClaimButton ? 'Claim 0.867 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 0.867 BTS')}
+                        {isClaimButton ? 'Claim 52.033 BTS' : (isButtonDisabled ? formatTime(timeRemaining) : 'Mine 52.033 BTS')}
                     </>
                 )}
             </button>
