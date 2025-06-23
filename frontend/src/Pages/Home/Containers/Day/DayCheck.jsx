@@ -3,7 +3,7 @@ import './DayCheck.css';
 import CheckIconDay from '../img-jsx/CheckIconDay';
 import MoomDay from '../img-jsx/MoomDay';
 
-function DayCheck({ userData, onPointsUpdate, updateUserData }) {
+function DayCheck({ userData, updateUserData }) {
     const [dayCheckCount, setDayCheckCount] = useState(0);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [timeRemaining, setTimeRemaining] = useState(0);

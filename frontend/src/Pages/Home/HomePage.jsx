@@ -16,75 +16,51 @@ function HomePage({ userData, updateUserData }) {
     });
     const [isMining, setIsMining] = useState(() => {
         const storedIsMining = localStorage.getItem('isMining') === 'true';
-        return storedIsMining;
+        return storedIsMining === 'true';
     });
     const [isButtonDisabled, setIsButtonDisabled] = useState(() => {
         const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
-        return storedIsButtonDisabled;
+        return storedIsButtonDisabled === 'true';
     });
     const [timeRemaining, setTimeRemaining] = useState(0);
     const [isClaimButton, setIsClaimButton] = useState(() => {
-        const storedIsClaimButton = localStorage.getItem('isClaimButton') === 'true';
-        return storedIsClaimButton === 'true'; // Convert string to boolean
+        const storedIsClaimButton = localStorage.getItem('isClaimButton');
+        return storedIsClaimButton === 'true';
     });
-    const [isLoading, setIsLoading] = useState(false); // Состояние для индикатора загрузки
+    const [isLoading, setIsLoading] = useState(false);
     const timerRef = useRef(null);
 
-    const fetchUserData = async (userId) => {
-        const AUTH_FUNCTION_URL = 'https://ah-user.netlify.app/.netlify/functions/auth';
-        try {
-            const response = await fetch(AUTH_FUNCTION_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ initData: window.Telegram?.WebApp?.initData }),
-            });
-
-            if (!response.ok) {
-                console.error("Ошибка при получении данных пользователяя:", response.status);
-                return;
-            }
-
-            const data = await response.json();
-            if (data.isValid && data.userData) {
-                const initialPoints = parseFloat(data.userData.points || 0);
-                setPoints(initialPoints);
-                localStorage.setItem('points', initialPoints.toString()); // Сохраняем очки в LocalStorage
-            } else {
-                console.warn("Не удалось получить данные пользователя");
-            }
-        } catch (error) {
-            console.error("Ошибка при запросе данных пользователя:", error);
-        }
-    };
-
     const handleClaimPoints = async () => {
-        setIsLoading(true); // Показываем индикатор загрузки
-        const bonusPoints = 52.033; // Изменено количество очков
+        setIsLoading(true);
+        const bonusPoints = 52.033;
         const newPoints = points + bonusPoints;
         await updatePointsInDatabase(newPoints);
-        setPoints(parseFloat(newPoints.toFixed(3))); // Округляем до 3 знаков после запятой
+        setPoints(parseFloat(newPoints.toFixed(3)));
         localStorage.setItem('points', newPoints.toFixed(3));
         setIsClaimButton(false);
-        localStorage.setItem('isClaimButton', 'false'); // Update localStorage
+        localStorage.setItem('isClaimButton', 'false');
         setIsButtonDisabled(false);
-        setIsLoading(false); // Скрываем индикатор загрузки
+        localStorage.setItem('isButtonDisabled', 'false');
+        setIsMining(false);
+        localStorage.setItem('isMining', 'false');
+        setIsLoading(false);
         if (updateUserData) {
             await updateUserData();
         }
     };
 
     const handleMineFor100 = () => {
-        setIsLoading(true); // Показываем индикатор загрузки
-        const oneMinutesInSeconds = 1 * 60; // 1 минута в секундах
+        setIsLoading(true);
+        const oneMinutesInSeconds = 1 * 60;
         setTimeRemaining(oneMinutesInSeconds);
         startTimer(oneMinutesInSeconds);
         setIsMining(true);
+        localStorage.setItem('isMining', 'true');
         setIsButtonDisabled(true);
-        setIsClaimButton(false); // Disable Claim button when mining
-        localStorage.setItem('isClaimButton', 'false'); // Update localStorage
-        setIsLoading(false); // Скрываем индикатор загрузки
+        localStorage.setItem('isButtonDisabled', 'true');
+        setIsClaimButton(false);
+        localStorage.setItem('isClaimButton', 'false');
+        setIsLoading(false);
     };
 
     const startTimer = (duration) => {
@@ -99,9 +75,11 @@ function HomePage({ userData, updateUserData }) {
                 clearInterval(timerRef.current);
                 localStorage.removeItem('homePageEndTime');
                 setIsButtonDisabled(false);
+                localStorage.setItem('isButtonDisabled', 'false');
                 setIsMining(false);
+                localStorage.setItem('isMining', 'false');
                 setIsClaimButton(true);
-                localStorage.setItem('isClaimButton', 'true'); // Update localStorage
+                localStorage.setItem('isClaimButton', 'true');
                 setTimeRemaining(0);
             }
         }, 1000);
@@ -124,7 +102,7 @@ function HomePage({ userData, updateUserData }) {
                 },
                 body: JSON.stringify({
                     telegramId: userId,
-                    points: newPoints.toFixed(3), // Округляем до 3 знаков после запятой
+                    points: newPoints.toFixed(3),
                 }),
             });
 
@@ -157,15 +135,14 @@ function HomePage({ userData, updateUserData }) {
 
     useEffect(() => {
         // Загрузка начального состояния из localStorage
-        const storedIsMining = localStorage.getItem('isMining') === 'true';
-        const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled') === 'true';
+        const storedIsMining = localStorage.getItem('isMining');
+        const storedIsButtonDisabled = localStorage.getItem('isButtonDisabled');
         const storedIsClaimButton = localStorage.getItem('isClaimButton');
+        const storedEndTime = localStorage.getItem('homePageEndTime');
 
         setIsMining(storedIsMining === 'true');
         setIsButtonDisabled(storedIsButtonDisabled === 'true');
         setIsClaimButton(storedIsClaimButton === 'true');
-
-        const storedEndTime = localStorage.getItem('homePageEndTime');
 
         if (storedEndTime && storedIsButtonDisabled === 'true') {
             const endTime = parseInt(storedEndTime, 10);
@@ -174,16 +151,18 @@ function HomePage({ userData, updateUserData }) {
             if (remainingTime > 0) {
                 startTimer(remainingTime);
             } else {
-                // Если таймер истек, кнопка должна отображать "Claim 52.033 BTS"
                 setIsClaimButton(true);
                 localStorage.setItem('isClaimButton', 'true');
                 setIsButtonDisabled(false);
+                localStorage.setItem('isButtonDisabled', 'false');
                 setIsMining(false);
+                localStorage.setItem('isMining', 'false');
+                setTimeRemaining(0);
             }
         } else {
-            // Если таймер не запущен, кнопка должна отображать "Mine 52.033 BTS"
             setIsClaimButton(storedIsClaimButton === 'true');
-            setIsButtonDisabled(false);
+            setIsButtonDisabled(storedIsButtonDisabled === 'true');
+            setIsMining(storedIsMining === 'true');
         }
     }, []);
 
@@ -196,16 +175,9 @@ function HomePage({ userData, updateUserData }) {
     }, [userData]);
 
     useEffect(() => {
-        const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
-        if (userId) {
-            fetchUserData(userId);
-        }
-    }, []);
-
-    useEffect(() => {
-        localStorage.setItem('isMining', isMining);
-        localStorage.setItem('isButtonDisabled', isButtonDisabled);
-        localStorage.setItem('isClaimButton', isClaimButton);
+        localStorage.setItem('isMining', isMining.toString());
+        localStorage.setItem('isButtonDisabled', isButtonDisabled.toString());
+        localStorage.setItem('isClaimButton', isClaimButton.toString());
     }, [isMining, isButtonDisabled, isClaimButton]);
 
     return (
