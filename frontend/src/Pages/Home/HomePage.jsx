@@ -9,7 +9,7 @@ import TimerHm from './Containers/img-jsx/Timer';
 
 const tg = window.Telegram.WebApp;
 
-function HomePage({ userData, updateUserData }) {
+function HomePage({ userData, updateUserData, isActive }) {
     const [points, setPoints] = useState(() => {
         const storedPoints = localStorage.getItem('points');
         return storedPoints ? parseFloat(storedPoints) : 0;
@@ -51,9 +51,9 @@ function HomePage({ userData, updateUserData }) {
 
     const handleMineFor100 = () => {
         setIsLoading(true);
-        const oneMinutesInSeconds = 1 * 60;
-        setTimeRemaining(oneMinutesInSeconds);
-        startTimer(oneMinutesInSeconds);
+        const sixHoursInSeconds = 6 * 60 * 60;
+        setTimeRemaining(sixHoursInSeconds);
+        startTimer(sixHoursInSeconds);
         setIsMining(true);
         localStorage.setItem('isMining', 'true');
         setIsButtonDisabled(true);
