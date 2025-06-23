@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './Reward.css';
-import MoneyGIFFr from '../img-jsx-fr/MoneyGIFFr';
+import FlyFR from '../img-jsx-fr/FlyFR';
 
 function Reward({ userData }) {
     const [rewardPoints, setRewardPoints] = useState(userData?.reward_fr || 0);
@@ -12,7 +12,7 @@ function Reward({ userData }) {
     return (
         <section className='section-reward'>
             <div className='left-section-gif-reward'>
-                <MoneyGIFFr />
+                <FlyFR />
             </div>
             <div className='mid-section-text-reward'>
                 <span>Reward for friends:</span>
