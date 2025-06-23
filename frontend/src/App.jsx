@@ -154,7 +154,7 @@ const App = () => {
                 <PageTransition location={location}>
                     <Routes location={location}>
                         <Route path="/" element={<HomePage isActive={isActive} userData={userData} updateUserData={updateUserData} />} />
-                        <Route path="/friends" element={<Friends isActive={isActive} userData={userData} />} />
+                        <Route path="/friends" element={<Friends isActive={isActive} userData={userData} updateUserData={updateUserData} />} />
                         <Route path="/tasks" element={<Tasks isActive={isActive} userData={userData} />} />
                         <Route path="/boost" element={<Boosters isActive={isActive} userData={userData} updateUserData={updateUserData} />} />
                     </Routes>
