@@ -1,12 +1,11 @@
+import React from 'react';
 import './Friends.css';
-
 import TotalFR from './Containers-fr/Total/TotalFR';
 import Bonus from './Containers-fr/Bonuses/Bonus';
 import Reward from './Containers-fr/Reward/Reward';
 import Menu from '../Menus/Menu/Menu';
 
-function Friends({ userData }) {
-
+function Friends({ userData, updateUserData }) {
     const handleInviteClick = () => {
         const telegramUserId = userData?.telegram_user_id;
         if (!telegramUserId) {
@@ -23,9 +22,9 @@ function Friends({ userData }) {
     return (
         <section className='bodyfriendspage'>
             <div className='margin-div-fr'></div>
-            <TotalFR totalFriends={userData?.total_fr} />
+            <TotalFR totalFriends={userData?.total_fr} updateUserData={updateUserData} />
             <Bonus />
-            <Reward userData={userData} /> {/*  Передаем userData в Reward  */}
+            <Reward userData={userData} updateUserData={updateUserData} /> {/*  Передаем userData и updateUserData в Reward  */}
             <section className='Container-button'>
                 <button className='get-reward-button'>About the Referral Program</button>
                 <button className='Invite-button' onClick={handleInviteClick}>Invite Friends</button>

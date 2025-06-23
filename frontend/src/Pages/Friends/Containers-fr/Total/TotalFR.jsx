@@ -1,8 +1,14 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './TotalFR.css';
 import BeachGIFFr from '../img-jsx-fr/BeachGIFFr';
 
-function TotalFR({ totalFriends }) {
+function TotalFR({ totalFriends, updateUserData }) {
+    const [friendsCount, setFriendsCount] = useState(totalFriends || 0);
+
+    useEffect(() => {
+        setFriendsCount(totalFriends || 0);
+    }, [totalFriends]);
+
     return (
         <section className='section-total'>
             <div className='left-section-gif-fr'>
@@ -13,7 +19,7 @@ function TotalFR({ totalFriends }) {
                 <span className='second-span'>Total friends:</span>
             </div>
             <div className='right-section-total-fr'>
-                <span className='span-count'>{totalFriends}</span>
+                <span className='span-count'>{friendsCount}</span>
             </div>
         </section>
     );
