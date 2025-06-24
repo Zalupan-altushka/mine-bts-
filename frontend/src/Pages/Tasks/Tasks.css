@@ -55,7 +55,7 @@ html, .bodytaskspage {
   justify-content: center;
   align-items: flex-start;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 20px;
 }
 
 .sub-tg, .tg-center {
@@ -78,10 +78,6 @@ html, .bodytaskspage {
     width: 100%;
     padding: 5px;
     box-sizing: border-box;
-}
-
-.hight-section-tg > *, .hight-section-cr > * {
-    /* убрал  margin-right */
 }
 
 .points-div-bk-tg, .points-div-bk-cr {
