@@ -5,7 +5,7 @@ function TonCoin() {
 
   return(
     <div>
-      <img src={Ton_Logo} alt="Star" style={{ width: '25px', height: '25px', marginTop: '7px', marginLeft: '10px' }}/>
+      <img src={Ton_Logo} alt="Star" style={{ width: '25px', height: '25px', marginTop: '7px', marginRight: '10px' }}/>
     </div>
   );
 }
