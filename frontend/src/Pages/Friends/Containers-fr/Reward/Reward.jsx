@@ -10,17 +10,15 @@ function Reward({ userData }) {
     }, [userData]);
 
     return (
-        <section className='section-reward'>
-            <div className='left-section-gif-reward'>
+        <section className='reward-section-fr'>
+            <article className='left-section-reward-fr'>
+                <span className='title-total-frends'>Your total reward!</span>
+                <span className='span-reward-fr'>{rewardPoints}</span>
+                <span className='span-about-fr'>+205.033 BTS for friend</span>
+            </article>
+            <article className='right-section-reward-fr'>
                 <FlyFR />
-            </div>
-            <div className='mid-section-text-reward'>
-                <span>Reward for friends:</span>
-                <span className='second-span'>Claim:</span>
-            </div>
-            <div className='right-section-reward'>
-                <span className='span-count'>{rewardPoints}</span>
-            </div>
+            </article>
         </section>
     );
 }

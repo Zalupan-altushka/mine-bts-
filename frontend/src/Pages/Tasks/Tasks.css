@@ -38,3 +38,95 @@ html, .bodytaskspage {
   overflow: hidden;
 }
 
+.higth-section-slipper {
+    overflow-x: auto;
+    white-space: nowrap;
+    box-sizing: border-box;
+    position: relative;
+    width: 80%; /* Ограничиваем ширину контейнера */
+    max-width: 600px; /* Максимальная ширина контейнера */
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.sub-tg , .connect-ton {
+    width: 170px;
+    background: linear-gradient(to bottom, var(--blue-color), var(--blue-another-color));
+    border-radius: 20px;
+    display: inline-block; /* Располагаем в строку */
+    flex-direction: column;
+    justify-content: space-between; /* Распределяем элементы по вертикали */
+    align-items: center;
+    padding: 10px;
+    box-sizing: border-box;
+    margin-right: 10px; /* Отступ между блоками */
+    vertical-align: top; /* Выравниваем по верхнему краю */
+}
+
+.hight-section-tg , .hight-section-wl{
+    display: flex;
+    justify-content: center; /* Выравниваем по центру по горизонтали */
+    align-items: center;
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.hight-section-tg, .hight-section-wl > * {
+    margin-right: 10px;
+}
+
+.points-div-bk-tg {
+    margin-left: 18px;
+    background-color: rgba(0, 0, 0, 0.3);
+    color: var(--text-color);
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.points-div-bk-wl {
+    margin-left: 10px;
+    background-color: rgba(0, 0, 0, 0.3);
+    color: var(--text-color);
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.middle-section-tg , .middle-section-wl{
+    color: var(--text-color);
+    font-size: 16px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.bottom-section-tg, .bottom-section-wl {
+    margin-top: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.bottom-section-tg button {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 15px;
+    width: 160px;
+    height: 40px;
+}
+
+.bottom-section-wl button {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    padding: 8px ;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 14px;
+    width: 100%;
+}
