@@ -1,0 +1,68 @@
+.wallet {
+    width: 360px;
+    background: linear-gradient(to bottom, var(--blue-color), var(--blue-another-color));
+    border-radius: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    box-sizing: border-box;
+    vertical-align: top;
+}
+
+.left-section-wallet {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 50%;
+    height: 100%;
+}
+
+.right-section-wallet {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    height: 100%;
+}
+
+.hight-section-wallet {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.points-div-bk-wallet {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 87%;
+}
+
+.middle-section-wallet {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 10px;
+    font-weight: bolder;
+    font-size: 15px;
+}
+
+.bottom-section-wallet {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.points-div-bk-wallet {
+    background-color: rgba(0, 0, 0, 0.3);
+    color: var(--text-color);
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 14px;
+}
