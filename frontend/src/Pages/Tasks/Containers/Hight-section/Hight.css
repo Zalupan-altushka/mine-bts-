@@ -1,3 +1,15 @@
+:root {
+  --text-color: white;
+  --font-family: "Rubik", serif;
+  --green-color: #c4f85c;
+  --container-color: #1c1c1e;
+  --container-color-two: #b9bbbc;
+  --background-color: #000000;
+  --purple-color: #7685f7;
+  --blue-color: #0098EA;
+  --blue-another-color: #1d71d1;
+}
+
 .mine-tasks-container {
   width: 100%;
   text-align: center;
@@ -20,7 +32,7 @@
 
 .sub-tg, .tg-center {
     width: 170px;
-    background: linear-gradient(to bottom, var(--blue-color), var(--blue-another-color));
+    background: #0f0f0f;
     border-radius: 20px;
     display: inline-block;
     flex-direction: column;
@@ -41,11 +53,12 @@
 }
 
 .points-div-bk-tg, .points-div-bk-cr {
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: var(--container-color);
     color: var(--text-color);
     padding: 5px 10px;
     border-radius: 10px;
     font-size: 14px;
+    font-weight: bolder;
 }
 
 .middle-section-tg , .middle-section-cr {
@@ -63,7 +76,7 @@
 }
 
 .bottom-section-tg button {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: #0098EA;
     color: #fff;
     border: none;
     padding: 10px;
@@ -75,7 +88,7 @@
 }
 
 .bottom-section-cr button {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: #0098EA;
     color: #fff;
     border: none;
     padding: 10px;

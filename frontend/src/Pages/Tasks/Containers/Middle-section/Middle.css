@@ -1,6 +1,18 @@
+:root {
+  --text-color: white;
+  --font-family: "Rubik", serif;
+  --green-color: #c4f85c;
+  --container-color: #1c1c1e;
+  --container-color-two: #b9bbbc;
+  --background-color: #000000;
+  --purple-color: #7685f7;
+  --blue-color: #0098EA;
+  --blue-another-color: #1d71d1;
+}
+
 .wallet {
     width: 360px;
-    background: linear-gradient(to bottom, var(--blue-color), var(--blue-another-color));
+    background: #0f0f0f;
     border-radius: 20px;
     display: flex;
     justify-content: space-between;
@@ -39,6 +51,7 @@
     justify-content: center;
     align-items: center;
     width: 87%;
+    font-weight: bolder;
 }
 
 .middle-section-wallet {
@@ -60,7 +73,7 @@
 }
 
 .points-div-bk-wallet {
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: var(--container-color);
     color: var(--text-color);
     padding: 5px 10px;
     border-radius: 10px;
